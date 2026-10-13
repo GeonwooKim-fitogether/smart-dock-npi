@@ -1,0 +1,337 @@
+<title>Cell 무선 추출 전환 리뷰</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #f5f8f7;
+    --card: #ffffff;
+    --ink: #17282a;
+    --ink-soft: #48605f;
+    --line: #d8e2e0;
+    --accent: #0e7c7b;
+    --accent-soft: #e2f0ef;
+    --warn: #a8731c;
+    --warn-soft: #f6ecd9;
+    --danger: #a8483e;
+    --danger-soft: #f6e4e1;
+    --shadow: 0 1px 3px rgba(23, 40, 42, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101b1c; --card: #17282a; --ink: #e4edec; --ink-soft: #9db4b2;
+      --line: #2b4143; --accent: #4cc2b8; --accent-soft: #1b3a3a;
+      --warn: #d9a959; --warn-soft: #3a2f1a; --danger: #d98a80; --danger-soft: #3a2320;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #101b1c; --card: #17282a; --ink: #e4edec; --ink-soft: #9db4b2;
+    --line: #2b4143; --accent: #4cc2b8; --accent-soft: #1b3a3a;
+    --warn: #d9a959; --warn-soft: #3a2f1a; --danger: #d98a80; --danger-soft: #3a2320;
+    --shadow: none;
+  }
+
+  body {
+    background: var(--ground); color: var(--ink);
+    font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 15.5px; line-height: 1.75; margin: 0; -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 880px; margin: 0 auto; padding: 48px 24px 96px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 12px;
+  }
+  h1 {
+    font-family: "Noto Serif KR", serif; font-weight: 700;
+    font-size: clamp(26px, 4.5vw, 38px); line-height: 1.3; margin: 0 0 8px; text-wrap: balance;
+  }
+  .meta { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 36px; }
+
+  .verdict {
+    background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 6px; box-shadow: var(--shadow); padding: 22px 26px; margin: 0 0 48px;
+  }
+  .verdict .label {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .14em;
+    color: var(--accent); margin: 0 0 8px;
+  }
+  .verdict p { margin: 0 0 10px; }
+  .verdict p:last-child { margin: 0; }
+
+  h2 {
+    font-family: "Noto Serif KR", serif; font-weight: 700; font-size: 22px; line-height: 1.4;
+    margin: 60px 0 6px; text-wrap: balance;
+  }
+  h2 .no {
+    font-family: "IBM Plex Mono", monospace; font-weight: 500; font-size: 14px;
+    color: var(--accent); margin-right: 10px; vertical-align: 2px;
+  }
+  .lede { color: var(--ink-soft); margin: 0 0 20px; font-size: 14.5px; }
+  h3 { font-size: 16.5px; font-weight: 700; margin: 32px 0 10px; }
+  p { max-width: 72ch; margin: 0 0 16px; }
+  ul, ol { max-width: 72ch; margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  strong { font-weight: 700; }
+  em { font-style: normal; background: linear-gradient(transparent 62%, var(--accent-soft) 62%); }
+  code {
+    font-family: "IBM Plex Mono", monospace; font-size: .86em; background: var(--accent-soft);
+    border-radius: 3px; padding: 1px 5px; word-break: break-all;
+  }
+
+  .tablewrap {
+    overflow-x: auto; margin: 0 0 24px; border: 1px solid var(--line);
+    border-radius: 6px; background: var(--card); box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; font-size: 13.8px; line-height: 1.6; }
+  th, td { text-align: left; vertical-align: top; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+  th {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .08em;
+    color: var(--ink-soft); background: color-mix(in srgb, var(--card) 60%, var(--ground)); white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.ok { color: var(--accent); font-weight: 700; white-space: nowrap; }
+  td.mid { color: var(--warn); font-weight: 700; white-space: nowrap; }
+  td.bad { color: var(--danger); font-weight: 700; white-space: nowrap; }
+
+  .tag {
+    display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11px;
+    letter-spacing: .06em; border-radius: 3px; padding: 1px 7px; white-space: nowrap;
+  }
+  .tag.unknown { color: var(--warn); background: var(--warn-soft); }
+  .tag.fixed { color: var(--accent); background: var(--accent-soft); }
+
+  pre.mermaid {
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+    padding: 16px; overflow-x: auto; margin: 0 0 24px;
+  }
+
+  .flip {
+    background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--warn);
+    border-radius: 6px; box-shadow: var(--shadow); padding: 20px 24px; margin: 0 0 20px;
+  }
+  .flip .head {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .1em;
+    color: var(--warn); margin: 0 0 8px;
+  }
+  .flip h3 { margin: 0 0 10px; font-size: 16px; }
+  .flip p:last-child { margin-bottom: 0; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: var(--shadow); padding: 24px 28px; margin: 0 0 28px;
+  }
+  .card h3 { margin-top: 0; }
+  .card .cardtag {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .1em;
+    color: var(--accent); display: block; margin-bottom: 6px;
+  }
+  .kv dt { font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
+  .kv dd { margin: 0 0 14px; max-width: 72ch; }
+  .rec { border-top: 1px dashed var(--line); padding-top: 14px; margin-top: 4px; }
+  .rec .pick { color: var(--accent); font-weight: 700; }
+
+  .foot {
+    margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line);
+    color: var(--ink-soft); font-size: 13px;
+  }
+  .foot a { color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <p class="eyebrow">v3 — 논의 누적 정리 (2026-09-29)</p>
+  <h1>Cell 데이터 추출 무선화 — 설계 논의 기록</h1>
+  <p class="meta">2026-09-01 착수 · KimPM 심의 2회 · 저장소 근거 확정 · 개발 자원 제약 반영 · KEE(엔지니어링) 감수 진행 중</p>
+
+  <div class="verdict">
+    <p class="label">지금 어디까지 왔나 — 한 문단</p>
+    <p><strong>Dock 케이스 안에 AP 모듈과 라즈베리파이를 넣고, Cell이 무선으로 데이터를 쏘면 Dock이 받아 보관하는 구조</strong>로 방향이 잡혔다. 둘은 Dock 본체에게서 <em>전력만</em> 받고, 폰은 명령과 상태 표시만 한다. Dock 본체(PCBA)와 기존 유선 경로는 건드리지 않으므로 되돌리기가 쉽고 병행 운영이 자동으로 성립한다.</p>
+    <p>이 방향을 지탱하는 가장 중요한 사실은 <strong>Cell(X5·X6)이 이미 Wi-Fi로 서버에 기록을 올리는 펌웨어를 갖고 출하되고 있다</strong>는 것이다. 그래서 목표는 "새 통신을 만든다"가 아니라 <em>"Cell이 이미 아는 상대인 척하는 수신기를 Dock 안에 둔다"</em>가 됐다. 성립 여부는 Cell 펌웨어 소스를 읽어야 판정된다 — 그것이 지금 가장 급한 다음 단계다.</p>
+    <p><strong>가장 큰 제약은 기술이 아니라 사람이다.</strong> 펌웨어 개발 인력이 없고 개발 주체가 비전공자와 Claude Code라서, <strong>Cell 펌웨어 무수정</strong>이 요구사항 0순위로 못 박혔다. 설계 선택 대부분이 이 제약에서 따라 나왔다.</p>
+  </div>
+
+  <h2><span class="no">01</span>풀려는 문제</h2>
+
+  <p>현재 Dock이 Cell(선수가 착용하는 GPS 트래커)의 데이터를 추출할 때, <strong>DataManager</strong>라는 PC 프로그램을 통해 <strong>유선(USB)</strong>으로 뽑는다. 여기서 품질 문제가 반복된다. 회사 정책은 추출을 무선으로 일원화하는 것이고, 이미 <strong>Cell이 LiveHub를 거쳐 iPad 앱으로 추출하는 경로</strong>는 있으나 <strong>저가 모델 고객은 LiveHub를 구매하지 않는다.</strong> 그 공백을 메우는 것이 이 제품의 목적이다.</p>
+
+  <h3>무선화가 실제로 해결하는 범위 (1차 심의의 결론, 지금도 유효)</h3>
+  <div class="tablewrap"><table>
+    <tr><th>유선 품질 문제</th><th>근본 원인</th><th>무선화로 해소되나</th></tr>
+    <tr>
+      <td>컴퓨터 호환성</td><td>PC마다 다른 OS·드라이버·USB 스택</td>
+      <td class="mid">대체로 해소 — 단 "폰 기종·OS 파편화"라는 새 축이 생긴다</td>
+    </tr>
+    <tr>
+      <td>케이블 오사용</td><td>사용자가 충전 전용선·규격 미달선을 꽂음</td>
+      <td class="ok">완전 해소 — 데이터 경로에서 케이블이 사라진다</td>
+    </tr>
+    <tr>
+      <td>Dock–Cell 결합 불량</td><td>접점·포고핀의 기구 공차·마모·이물</td>
+      <td class="bad">해소 안 됨 — 충전은 여전히 접점을 거친다</td>
+    </tr>
+  </table></div>
+
+  <p>세 번째 줄이 핵심이다. 다만 <strong>실패의 심각도가 달라진다.</strong> 무선화 후에는 접점이 나빠도 Cell 배터리가 남아 있는 한 데이터는 무선으로 살아 나온다. 그래서 정직한 효과 서술은 "품질 문제 해소"가 아니라 <em>"케이블 문제 제거 + 접촉 불량의 피해를 비가역(데이터 손실)에서 가역(충전 재시도)으로 강등"</em>이다. 접점 자체의 개선은 별개 과제로 남는다.</p>
+
+  <h2><span class="no">02</span>저장소에서 확정한 사실 8건</h2>
+  <p class="lede">회로도·펌웨어 원본은 Drive와 별도 저장소에 있어, 이 저장소에 남은 산출물 기록(스펙 마이그레이션·맵 절차 문서)으로 판정했다. 각 사실에 파일과 행을 단다.</p>
+
+  <ol>
+    <li><strong>Cell X5·X6의 두뇌는 ESP32-S3이고, Wi-Fi TCP로 서버에 접속해 기록을 올리는 코드가 출하 빌드에 실재한다.</strong> <code>20260821053831_cell_spec_fill_biometric_satellite_comm.sql:117-131</code> — <code>main/wifi_tcp.c</code>("서버와 TCP로 이어 명령을 주고받으며 기록을 올린다")와 <code>main/wifi_udp.c</code>. 소스 저장소명은 <code>cell-y1-ESP32-S3-firmware</code>.</li>
+    <li><strong>오늘의 그 "서버"는 LiveHub다.</strong> <code>20260812015735_cell_x6_spec_fill_from_workbook.sql:71</code> — "Transmits tracking data to Live Hub".</li>
+    <li><strong>Cell 무선은 2.4GHz Wi-Fi + BLE 5뿐이고 5GHz는 없다. BLE는 외부 심박대 연결 전용</strong>(<code>ble_hr.c</code>). 같은 파일 75행.</li>
+    <li><strong>Dock에 무선 모듈을 품었던 설계 이력이 있다.</strong> <code>retired/20260818092933_dock_fitogether_spec_onto_rev_c_and_d.sql:121-134</code> — DKP2-1B(PCBA1-0035 Rev A)에 라즈베리파이 제로 2W(U48) <strong>실장</strong>, 포고 5핀으로 전원·USB 연결. Rev C에서는 그것이 빠지고 <strong>Wi-Fi AP 라우터 U76(BL-M7628AR4)·이더넷 트랜스 U77·BPI-M4 자리가 전부 미실장(NC)</strong>.</li>
+    <li><strong>Dock PCBA에는 저장장치가 없다.</strong> 같은 파일 128행. Dock MCU는 STM32F103C8T6이고 내부 플래시에 셀 전원 상태만 기록한다.</li>
+    <li><strong>기존 유선 경로는 Dock의 USB 허브·멀티플렉서를 지나는 가상 COM 포트다</strong>(같은 파일 105-107행). <em>이 설계안은 이 경로를 전혀 건드리지 않는다.</em></li>
+    <li><strong>X5·X6 출하 펌웨어에 무선 원격 갱신(OTA) 경로가 없다.</strong> <code>docs/2-build/map-registry-procedure.md:596</code> — 정식 타깃 빌드에서 원격 갱신 파일 전부가 빠진다.</li>
+    <li><strong>LiveHub는 창고가 아니라 중계기이고, 실제 창고는 iPad다.</strong> <code>20260812025416_live_hub_spec_fill_from_workbook.sql:72,74</code> — "Relays tracking data from multiple Cells to iPad", 최대 100대. 회로도 실측도 같은 말을 한다 — P1·P2는 Broadcom BCM47081A0 라우터 SoC 단독이고 저장장치는 부팅용 32MB 플래시 + 작업용 128MB 램뿐(<code>20260821132832_lhp1_lhp2_spec_fill_from_maps.sql:168-183</code>), LTE형은 MT7986A이고 BPI-M4는 회로도에 "*option"으로 그려져 있으나 <strong>실제 미실장이며 BOM에도 없다</strong>(<code>20260818095758_live_hub_lte_spec_fill_from_schematics.sql:57-60,91</code>).</li>
+  </ol>
+
+  <h2><span class="no">03</span>논의 중 뒤집힌 판단 세 가지</h2>
+  <p class="lede">이 기록의 목적은 같은 논쟁을 다시 하지 않기 위한 것이다. 무엇이 왜 바뀌었는지 남긴다.</p>
+
+  <div class="flip">
+    <p class="head">뒤집힘 1 — 구상의 정체</p>
+    <h3>"Dock 안에 AP"는 Dock PCBA에 Wi-Fi를 통합하는 안이 아니었다</h3>
+    <p>1차 심의는 이것을 "Dock 보드에 무선 칩을 얹고 Dock 펌웨어가 접점으로 읽은 데이터를 폰에 쏜다"로 모델링하고 공격했다. 실제 구상은 <strong>AP가 케이스 안에 사는 독립 모듈이고 Dock에게서 전력만 받는 것</strong>이었다. 즉 실체는 "LiveHub 토폴로지를 Dock 케이스 안으로 옮긴 것"이며, 1차의 공격 상당수가 과녁을 빗나갔다. 특히 "LiveHub를 유추한 것은 첫 안 애착"이라던 지적은 <strong>철회했다</strong> — 유추가 아니라 재사용이었다.</p>
+  </div>
+
+  <div class="flip">
+    <p class="head">뒤집힘 2 — 소프트웨어 재사용 전제</p>
+    <h3>"LiveHub의 수신 소프트웨어를 옮겨 담으면 된다"는 틀렸다</h3>
+    <p>그렇게 추천했으나, 확인해 보니 <strong>LiveHub에는 데이터를 담을 저장장치가 없다</strong>(사실 8). 32MB는 기기가 자기를 켜는 부팅 파일 용량이지 한 경기치 데이터를 담을 그릇이 아니다. 받아서 보관하고 앱에 응답하는 본체는 <strong>iPad 쪽</strong>에 있다. 그러므로 허브에서 옮겨 담을 서버가 애초에 없다.</p>
+  </div>
+
+  <div class="flip">
+    <p class="head">뒤집힘 3 — 부품 선택의 이유</p>
+    <h3>라우터 칩 단독(B안)은 "팀에 없는 새 기술"이 아니라 이미 두 번 출하한 길이다</h3>
+    <p>그렇게 말했으나 사실이 아니었다. LiveHub P1·P2와 LTE형 모두 별도 컴퓨터 보드 없이 라우터 SoC 단독으로 돌고 있고, LTE형은 BPI-M4를 <em>일부러 안 붙인</em> 설계다. 그래서 라즈베리파이를 고르는 근거를 <strong>소프트웨어 재사용에서 개발 자원의 성격으로 바꿨다</strong> — 라즈베리파이 위의 프로그램은 펌웨어 개발이 아니라 평범한 리눅스 프로그래밍이고, 그것이 지금 가용한 자원(비전공자 + Claude Code)이 실제로 감당할 수 있는 유일한 하드웨어 영역이다. 덤으로 SD카드·SSD 같은 저장장치가 딸려 와 "Dock이 창고" 시나리오가 하드웨어 추가 없이 성립한다.</p>
+  </div>
+
+  <h2><span class="no">04</span>현재 설계안</h2>
+
+  <pre class="mermaid">
+flowchart LR
+    subgraph DOCK["Dock 케이스 (하나의 외형)"]
+        DPCBA["Dock PCBA (무변경)&lt;br/&gt;STM32 · 충전 · 기존 유선 경로&lt;br/&gt;역할: 충전 + 전력 공급"]
+        AP["AP 모듈&lt;br/&gt;무선망을 띄운다"]
+        PI["라즈베리파이&lt;br/&gt;받아서 저장 + 앱에 응답"]
+        DPCBA -- "전력만" --> AP
+        DPCBA -- "전력만" --> PI
+        AP -- "케이스 안 이더넷" --> PI
+    end
+    CELL["Cell (X5 · X6)&lt;br/&gt;Dock 접점 = 충전만"]
+    PHONE["폰 / 노트북&lt;br/&gt;명령 + 상태 표시"]
+    CELL -- "2.4GHz Wi-Fi&lt;br/&gt;세션 데이터 업로드" --> AP
+    PHONE -- "명령 · 상태 조회" --> PI
+  </pre>
+
+  <p>역할을 세 가지로 갈라 보면 이해가 쉽다. <strong>무선망 만들기</strong>(AP 모듈), <strong>데이터 받아 주기</strong>(파이 위의 프로그램), <strong>데이터 보관하기</strong>(파이의 저장장치). 이 셋을 라즈베리파이 한 대에 몰 수도 있었지만(파이에도 Wi-Fi가 내장돼 있다), <strong>파이 내장 Wi-Fi가 20여 대 동시 업로드를 감당할지가 미지수</strong>라 무선을 전용 AP에 맡기는 구성을 택했다.</p>
+  <p>이 선택의 좋은 성질 하나: <strong>무선을 파이가 쏘든 옆의 AP가 쏘든 우리가 만드는 소프트웨어는 바뀌지 않는다.</strong> 위험하고 비싼 부분(프로그램)은 한 번만 만들면 된다.</p>
+
+  <h2><span class="no">05</span>확정된 결정</h2>
+
+  <div class="tablewrap"><table>
+    <tr><th>#</th><th>결정</th><th>근거</th></tr>
+    <tr>
+      <td>1</td>
+      <td><strong>Cell 펌웨어는 건드리지 않는다 (0순위 제약)</strong></td>
+      <td>출하 펌웨어에 OTA가 없어(사실 7) 잘못 나가면 팔린 Cell을 한 대씩 물리적으로 다시 구워야 한다. 20여 대 규모 무선 시험 환경도 없고, 임베디드 C를 다룰 인력도 없다.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>구성은 "AP 모듈 + 라즈베리파이", 창고는 Dock 안</strong></td>
+      <td>폰을 창고로 쓰면 iOS·Android가 백그라운드 통신을 강제로 멈춰 긴 전송이 끊기고, 앱 두 벌에 각각 수신·저장 기능을 넣어야 해 오히려 개발이 는다. 파이를 넣으면 프로그램은 한 벌이고 앱은 화면만 있으면 된다.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>시제품과 양산의 부품을 분리한다</strong></td>
+      <td>시제품은 시판 여행용 공유기 + Pi 4/5(랜선 구멍이 있어야 AP와 이을 수 있다). 양산은 임베디드용 AP 모듈 + Compute Module(CM4/CM5) 검토 — 소비자용 공유기는 단종 위험과 완제품 인증 문제가 있다.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>AP는 WAN(인터넷 뒷길) 포트가 있는 것으로 고른다</strong></td>
+      <td>출시는 로컬 완결(서버비 0)로 가되, 나중에 클라우드 자동 업로드를 소프트웨어만으로 열 수 있게 문을 달아 둔다. 문을 다는 비용은 0에 가깝고, 안 달았다가 나중에 다는 비용은 제품을 다시 만드는 값이다.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>파이는 처음부터 "전원이 갑자기 끊겨도 안 깨지게" 설계한다</strong></td>
+      <td>SD카드에 쓰는 도중 플러그가 뽑히면 카드가 깨져 그 Dock이 벽돌이 된다. 시스템 영역은 읽기전용으로 잠그고, 고객 데이터는 별도 저장장치에 안전한 형식으로 둔다. <em>다 만든 뒤에 바꾸면 프로그램이 안 돌기 때문에 처음부터 그렇게 만들어야 한다.</em></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>슬롯별 상태를 앱에 못 보여주는 한계를 이번 세대에서 수용한다</strong></td>
+      <td>파이와 Dock PCBA 사이에 데이터선이 없어 "3번 슬롯 충전 60%"를 알 수 없다. 접속한 Cell의 업로드 진행률은 보여줄 수 있으나, "꽂혔는데 아직 말을 안 건 Cell"은 알 수 없다. 해결하려면 선을 이어야 하고 그 순간 "전력만 받는다"가 깨진다.</td>
+    </tr>
+  </table></div>
+
+  <h2><span class="no">06</span>열린 것 — 무엇을 알아야 다음으로 가나</h2>
+
+  <h3>펌웨어 소스를 읽어야 답이 나오는 것 (가장 급함)</h3>
+  <p>Cell 펌웨어는 별도 저장소에 있어 아직 못 읽었다. <strong>읽는 것은 고치는 것과 달리 위험이 전혀 없고</strong>, 이 세 가지 답이 프로젝트 규모를 몇 배로 가른다.</p>
+  <ol>
+    <li><strong>Cell이 어떤 무선망 이름과 비밀번호로 붙는가</strong>, 그 값은 어디에 박혀 있는가. 우리 AP가 그 이름을 쓰면 Cell은 수정 없이 그대로 붙는다.</li>
+    <li><strong>붙은 뒤 어느 주소의 서버를 찾는가</strong> — 고정 주소인가, 탐색인가.</li>
+    <li><strong>Dock에 꽂혀 충전 중인 상태에서 Wi-Fi를 켜고 업로드하는 동작이 있는가.</strong> 오늘의 두 경로는 "야외 착용 중 LiveHub로"와 "꽂힌 채 유선으로"뿐이다. 이 설계는 그 둘을 교차한 <em>제3의 상태</em>를 요구한다.</li>
+  </ol>
+
+  <h3>실측해야 하는 것</h3>
+  <ul>
+    <li><strong>세션 데이터 크기</strong> — 선수 1인 1세션이 몇 MB인가. "완충 시간 안에 다 올라가는가"의 분모다.</li>
+    <li><strong>Dock의 USB-C 전력 여유</strong> — Cell 24대 충전 위에 AP와 파이의 20~25W를 얹을 수 있는가.</li>
+    <li><strong>밀집 무선 성능</strong> — 금속 슬롯에 20여 대가 꽂힌 채 2.4GHz로 동시 업로드할 때의 실효 속도. 이 결과가 "파이 한 대로 충분한가, 전용 AP가 필요한가"도 함께 판정한다.</li>
+    <li><strong>충전과 송신이 겹칠 때의 발열</strong> — 리튬폴리머 충전 온도 창과 충돌하는가.</li>
+  </ul>
+
+  <h3>설계로 정해야 하는 것</h3>
+  <ul>
+    <li><strong>무선망 이름 충돌.</strong> 한 구단이 LiveHub와 이 Dock을 둘 다 가지면 Cell이 훈련 중에 Dock 쪽으로 붙어 실시간이 끊길 수 있다. Cell이 무선망 이름을 여러 개 기억할 수 있으면 Dock 전용 이름을 주면 되고, 하나만 기억하면 Dock의 AP를 평소엔 꺼 두고 "추출 시작"을 누를 때만 켜는 방식이 필요하다(그러면 자동 추출은 포기하게 된다).</li>
+  </ul>
+
+  <h3>사람만 답할 수 있는 것</h3>
+  <ul>
+    <li><strong>DKP2-1B에서 라즈베리파이가 왜 빠졌는가</strong> — 원가인지 품질인지 공급인지. 같은 구상이 한 번 후퇴한 이력이므로, 이유를 모르고 재추진하면 같은 벽을 다시 만난다.</li>
+    <li><strong>기존 iPad 앱이 실제 서버 노릇을 하는가, 그리고 아이폰에서도 도는가</strong> — 둘 다 "예"라면 훨씬 가벼운 길이 열린다. 앱 담당자에게 한 번 물으면 되는 일이다.</li>
+    <li><strong>저가 고객이 LiveHub를 안 사는 진짜 이유</strong> — 가격인지, 설치 복잡성인지, iPad를 요구해서인지.</li>
+  </ul>
+
+  <h2><span class="no">07</span>다음 단계 — 실험으로 정한다</h2>
+  <p class="lede">남은 결정들은 회의로 정할 수 없다. 사실이 부족하기 때문이다. 싸고 빠른 실험으로 사실부터 확보한다.</p>
+
+  <div class="tablewrap"><table>
+    <tr><th>단계</th><th>하는 일</th><th>알게 되는 것</th></tr>
+    <tr>
+      <td><strong>0. 펌웨어 읽기</strong></td>
+      <td>Cell 펌웨어 저장소를 붙여 소스를 읽는다 (고치지 않는다)</td>
+      <td>§6의 세 질문. 실험 설계가 이것으로 정해진다</td>
+    </tr>
+    <tr>
+      <td><strong>1. 실험 장비 구입</strong><br>(약 10만 원)</td>
+      <td>시판 여행용 공유기 1대 + 라즈베리파이 1대</td>
+      <td>제품에 무엇이 들어가든 필요하다 — 파이는 이 단계에서 부품이 아니라 <strong>계측기</strong>다. 없으면 무선에서 무슨 일이 벌어지는지 볼 수 없다</td>
+    </tr>
+    <tr>
+      <td><strong>2. 실험 A — 붙는가</strong></td>
+      <td>공유기를 LiveHub와 같은 무선망 이름으로 설정하고 Cell을 켠다</td>
+      <td>Cell이 우리 AP에 <strong>수정 없이</strong> 붙는지. 되면 프로젝트 절반이 해결된다</td>
+    </tr>
+    <tr>
+      <td><strong>3. 실험 B — 무슨 말을 하나</strong></td>
+      <td>파이를 같은 망에 두고 Cell이 보내는 것을 기록한다</td>
+      <td>서버가 iPad 앱인지, 허브 위의 프로그램인지</td>
+    </tr>
+    <tr>
+      <td><strong>4. 실험 C — 대답할 수 있나</strong></td>
+      <td>파이가 그 서버인 척 대답해 본다</td>
+      <td>파이 한 대로 창고 노릇이 가능한지</td>
+    </tr>
+  </table></div>
+
+  <h2><span class="no">08</span>남겨 둔 위험 하나</h2>
+  <p>시제품과 시장 검증까지는 지금 방식(비전공자 + Claude Code)이 충분히 훌륭하다. 다만 이것이 <strong>고객 데이터를 보관하며 매일 도는 출하 제품</strong>이 되는 시점에는 사람이 필요하다 — 만드는 것보다 2년 뒤의 유지보수와 보안에서 갈린다. "어느 단계에서 사람을 붙일 것인가"는 나중에 결정 카드로 올릴 항목이다.</p>
+
+  <div class="foot">
+    <p>이 문서의 판단 근거는 이 저장소의 마이그레이션 주석과 절차 문서를 직접 읽어 확인한 것이다. 회로도·펌웨어 원본은 Drive와 별도 저장소에 있어 그 산출물 기록으로 판정했으며, 라이브 데이터베이스 조회는 하지 않았다. 저장소에 파일을 만들지 않았다 — 이 논의는 제품 기획이지 시스템 코드 작업이 아니다.</p>
+    <p>인증 일반 요건 참고: <a href="https://micomlabs.com/global-dfs-testing-requirements-the-complete-guide-to-5-ghz-wi-fi-compliance-and-radar-detection-certification/">MiCOM Labs — Global DFS Testing Requirements</a> · <a href="https://ib-lenhardt.com/kb/wi-fi">IB-Lenhardt — Wi-Fi Standards &amp; Certification</a> · <a href="https://www.nxp.com/docs/en/application-note/AN13006.pdf">NXP AN13006</a></p>
+  </div>
+</div>

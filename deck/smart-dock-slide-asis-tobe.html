@@ -1,0 +1,2172 @@
+<title>Smart Dock 기획 보고</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root {
+  --page: #E4E8EA;
+  --paper: #FFFFFF;
+  --ink: #1A2C34;
+  --text: #24343B;
+  --muted: #5B686E;
+  --faint: #8A959A;
+  --rule: #1A2C34;
+  --line: #CBD2D5;
+  --line-soft: #E2E6E8;
+  --band: #EEF1F2;
+  --th: #E6EAEC;
+  --label: #F5F7F8;
+  --frame: #F5F7F8;
+  --box: #FFFFFF;
+  --bar: #B4BDC1;
+  --accent: #1F7A84;
+  --accent-line: #51B0BB;
+  --accent-tint: #EAF5F6;
+  --logo-filter: none;
+  --s: 1;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0A1115;
+    --paper: #13212A;
+    --ink: #E5EBED;
+    --text: #D2DADD;
+    --muted: #9AA7AC;
+    --faint: #6F7E85;
+    --rule: #C4CFD3;
+    --line: #34464E;
+    --line-soft: #26363E;
+    --band: #1B2C34;
+    --th: #1E3038;
+    --label: #182730;
+    --frame: #172730;
+    --box: #13212A;
+    --bar: #53646C;
+    --accent: #7FCDD6;
+    --accent-line: #51B0BB;
+    --accent-tint: #173A42;
+    --logo-filter: invert(1);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0A1115;
+  --paper: #13212A;
+  --ink: #E5EBED;
+  --text: #D2DADD;
+  --muted: #9AA7AC;
+  --faint: #6F7E85;
+  --rule: #C4CFD3;
+  --line: #34464E;
+  --line-soft: #26363E;
+  --band: #1B2C34;
+  --th: #1E3038;
+  --label: #182730;
+  --frame: #172730;
+  --box: #13212A;
+  --bar: #53646C;
+  --accent: #7FCDD6;
+  --accent-line: #51B0BB;
+  --accent-tint: #173A42;
+  --logo-filter: invert(1);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--page);
+  color: var(--text);
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "WenQuanYi Zen Hei", sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.deck {
+  max-width: 1312px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--line-soft);
+}
+.slide {
+  position: absolute;
+  left: 0; top: 0;
+  width: 1280px; height: 720px;
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+  background: var(--paper);
+  padding: 34px 56px 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* 머리글: 쪽 제목 + 괘선 */
+.hd {
+  height: 50px;
+  border-bottom: 2px solid var(--rule);
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 9px;
+}
+.hd h1 {
+  margin: 0;
+  font-size: 27px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.2px;
+}
+.hd h1 .no { color: var(--muted); margin-right: 10px; }
+
+/* 헤드메시지 */
+.msg {
+  margin: 16px 0 0;
+  background: var(--band);
+  padding: 13px 20px;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.2px;
+}
+
+.body { margin-top: 22px; }
+
+/* 바닥글 */
+.ft {
+  position: absolute;
+  left: 56px; right: 56px; bottom: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* 소제목·개조식 */
+.sec {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--ink);
+}
+.sec::before { content: "\25A1"; font-weight: 400; margin-right: 7px; }
+.sec .note { font-size: 13px; font-weight: 400; color: var(--muted); margin-left: 8px; }
+ul.d { list-style: none; margin: 0; padding: 0; }
+ul.d > li { position: relative; padding-left: 15px; line-height: 1.6; }
+ul.d > li::before { content: "-"; position: absolute; left: 2px; top: 0; color: var(--muted); }
+.k { font-weight: 700; color: var(--ink); margin-right: 10px; }
+ul.d.al .k { display: inline-block; min-width: 74px; }
+.t.roomy th, .t.roomy td { padding-top: 10px; padding-bottom: 10px; }
+.sub { color: var(--muted); }
+.memo { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.lines p { margin: 0; line-height: 1.7; }
+
+/* 표 */
+table.t {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+}
+.t th, .t td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 400;
+}
+.t th + th, .t th + td, .t td + td, .t td + th { border-left: 1px solid var(--line-soft); }
+.t thead th {
+  background: var(--th);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 13.5px;
+  text-align: center;
+  border-top: 2px solid var(--rule);
+  border-bottom: 1px solid var(--faint);
+}
+.t tbody th { background: var(--label); color: var(--ink); font-weight: 700; }
+.t tbody tr:last-child > * { border-bottom: 1px solid var(--rule); }
+.t .c { text-align: center; }
+.t .m { color: var(--muted); }
+.t tr.rec > td, .t tr.rec > th { background: var(--accent-tint); }
+.ac { color: var(--accent) !important; font-weight: 700; }
+.t.tight th, .t.tight td { padding-top: 5px; padding-bottom: 5px; }
+.t.sm { font-size: 13.5px; }
+.t.ex tr.gs > * { border-top: 1px solid var(--faint); }
+.t.ex tbody th { border-bottom: 1px solid var(--faint); }
+.t.ex td:first-child { border-left: 1px solid var(--line-soft); }
+.kv th { width: 150px; padding: 10px 16px; }
+.kv td { padding: 10px 16px; }
+
+.row { display: flex; gap: 36px; }
+.row > .col { min-width: 0; }
+
+/* 도식 */
+svg.dg { display: block; overflow: visible; }
+.dg text { font-family: inherit; fill: var(--text); font-size: 14px; }
+.dg .bx { fill: var(--box); stroke: var(--ink); stroke-width: 1.2; }
+.dg .bx.ac { fill: var(--accent-tint); stroke: var(--accent-line); stroke-width: 1.8; }
+.dg .fr { fill: var(--frame); stroke: var(--faint); stroke-width: 1.2; }
+.dg .ln { stroke: var(--ink); stroke-width: 1.2; fill: none; }
+.dg .ah { fill: var(--ink); }
+.dg .tb { font-weight: 700; fill: var(--ink); }
+.dg .ts { font-size: 12px; fill: var(--muted); }
+.dg .tac { font-weight: 700; fill: var(--accent); }
+.dg .bar { fill: var(--bar); }
+.dg .bar.ac { fill: var(--accent-line); }
+.dg .cx { color: var(--ink); }
+.dg .ln.ex { stroke-width: 1.8; }
+.dg .ln.up { stroke-width: 1.5; stroke-dasharray: 5 3.5; }
+.dg .ln.sub { stroke: var(--muted); stroke-width: 1; }
+.dg .ah.m { fill: var(--muted); }
+.dg .hdr { font-size: 13px; font-weight: 700; fill: var(--muted); }
+.dg .hl { stroke: var(--line); stroke-width: 1; }
+.t.xt th, .t.xt td { padding-top: 3.5px; padding-bottom: 3.5px; }
+.t .dt { font-size: 10px; color: var(--ink); }
+.dg .ts.tl { font-size: 8px; }
+.dg .tag { font-size: 11.5px; font-weight: 700; fill: var(--accent); }
+.t .ac-h { color: var(--accent); }
+
+/* 키워드 줄 */
+.kw p { margin: 0; line-height: 1.75; }
+.kw .k { display: inline-block; min-width: 92px; }
+
+/* 프로젝트 개요 */
+.ov { display: grid; grid-template-columns: 318px 40px 262px 40px 1fr; align-items: stretch; }
+.ov .arr { display: flex; align-items: center; justify-content: center; padding-top: 38px; }
+.ov .arr svg { display: block; }
+.ov .arr .ln { stroke: var(--ink); stroke-width: 1.2; fill: none; }
+.ov .arr .ah { fill: var(--ink); }
+.ovh {
+  background: var(--th); border-top: 2px solid var(--rule); border-bottom: 1px solid var(--faint);
+  text-align: center; font-weight: 700; font-size: 14.5px; line-height: 1.4; color: var(--ink);
+  padding: 7px 8px; margin-bottom: 10px;
+}
+.ovh span { font-weight: 400; color: var(--muted); font-size: 13px; margin-left: 4px; }
+.it { border: 1px solid var(--line); padding: 8px 14px; background: var(--paper); }
+.it + .it { margin-top: 8px; }
+.ov .t thead th { border-top: 1px solid var(--faint); }
+.ov .t td, .ov .t th { padding-top: 4px; padding-bottom: 4px; }
+.it .h { font-weight: 700; color: var(--ink); font-size: 14.5px; line-height: 1.45; }
+.it .s { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.it.goal { border: 1.8px solid var(--accent-line); background: var(--accent-tint); text-align: center; padding: 14px 14px; }
+.it.goal .h { color: var(--accent); font-size: 16px; line-height: 1.5; }
+.ovsub { margin: 10px 0 6px; font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.scope { margin-top: 34px; }
+.scope th { width: 110px; }
+
+/* 표지 */
+.cover { padding: 0; }
+.cover .logo {
+  position: absolute; left: 72px; top: 60px;
+  height: 30px; width: auto;
+  filter: var(--logo-filter);
+}
+.cover .tblock { position: absolute; left: 72px; right: 72px; top: 262px; }
+.cover .ttl {
+  margin: 0;
+  font-size: 40px; line-height: 1.3; font-weight: 700;
+  color: var(--ink); letter-spacing: -0.5px;
+}
+.cover .subt { margin: 14px 0 0; font-size: 20px; line-height: 1.4; color: var(--muted); font-weight: 500; }
+.cover .crule { margin-top: 34px; border-top: 2px solid var(--rule); }
+.cover .meta {
+  margin-top: 16px; display: flex; justify-content: flex-end; gap: 28px;
+  font-size: 17px; line-height: 1.4; color: var(--ink); font-weight: 500;
+}
+.cover .cls { position: absolute; left: 72px; bottom: 44px; font-size: 12px; color: var(--muted); }
+</style>
+
+<!-- Cell X 외곽선 (제품 사진 기준 60×100). 28px 미만으로 그릴 때는 cell-x-sm 을 쓴다 -->
+<svg class="defs" aria-hidden="true" focusable="false">
+  <symbol id="cell-x" viewBox="-1 -1 62 102">
+    <path class="cx-body" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M21.2 0H38.8C45 0 50.5 .9 52.6 2.2C53.6 2.9 53.9 3.8 54.2 5C56 12 59.66 30 59.66 50C59.66 70 56 88 54.2 95C53.9 96.2 53.6 97.1 52.6 97.8C50.5 99.1 45 100 38.8 100H21.2C15 100 9.5 99.1 7.4 97.8C6.4 97.1 6.1 96.2 5.8 95C4 88 .34 70 .34 50C.34 30 4 12 5.8 5C6.1 3.8 6.4 2.9 7.4 2.2C9.5 .9 15 0 21.2 0Z"/>
+    <path class="cx-window" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M15.5 5H44.5Q48.8 5 48.8 9.5V31C48.8 37.5 46 40.2 40.5 40.2H19.5C14 40.2 11.2 37.5 11.2 31V9.5Q11.2 5 15.5 5Z"/>
+    <path class="cx-mark" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M20 42.9H40L30 45.6Z"/>
+  </symbol>
+  <symbol id="cell-x-sm" viewBox="-1 -1 62 102">
+    <path class="cx-body" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M21.2 0H38.8C45 0 50.5 .9 52.6 2.2C53.6 2.9 53.9 3.8 54.2 5C56 12 59.66 30 59.66 50C59.66 70 56 88 54.2 95C53.9 96.2 53.6 97.1 52.6 97.8C50.5 99.1 45 100 38.8 100H21.2C15 100 9.5 99.1 7.4 97.8C6.4 97.1 6.1 96.2 5.8 95C4 88 .34 70 .34 50C.34 30 4 12 5.8 5C6.1 3.8 6.4 2.9 7.4 2.2C9.5 .9 15 0 21.2 0Z"/>
+  </symbol>
+</svg>
+
+<div class="deck">
+
+<!-- 표지 -->
+<div class="frame">
+<section class="slide cover" id="s0">
+  <img class="logo" alt="FITOGETHER" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALIAAAA3CAYAAACo9xADAAAFV0lEQVR42u1dLa8UMRRdSQJyQT1TCAaBIEhM0c8gwdWBRYAufwASNCG5CoMFPwn8AbCYYuEPEJJlxW4yTNq5H73tvLdzxVEz787O7Wnnnva0b7M9u7kxGC47LAkGI7LBYEQ2GIzIBoMR2WBENhiMyAaDEdlg6E1kvwfskfbYKSCNYqcM4oobMJePMHN/Lr9gRP4fbo9BibxjxFH8uetrAzcfJ50/zWAtSDxOdChc9yslcmTm46Tz1zqpGvDIMzZG5GwZRm0jq5EntdpupgaLhxFBgrkRP62YyLl8DMz7kxEZr73S4ZrWj7X6uC4fJ50/jSChQ5JM6NHyEdaav5b1sVtQ2KxV6K02f61qtbSwsDGht7L8tarVhg7CZs1ETib0dIncq/ay+rgu5yefv5a1qyPgGOdOBncJDZeLlWv4OBmVjsu5wGzQuVgDM9YxTul3+RkLADXnmDAMo2fuJu/hhPnYCfLhDr8FDhhGCEsSmeOhuFK4/ojxjFi5ZI5NFQaGdwTzf3ByBhV/HyvbKM10Jnf4bdQ4AfHlUBbEmhK5Zln6mOgHhetnjIbwxFGLak6iTC9KSACCWEGY86A02DhiacPNLTVOl9JCw0PxPHPtJ7PhaklcGgE1Y8VtvfuPk3MtD0yYkC8pxKH+rtSDyG6r46H4kLn2kfEMSkOnSU0dibMtc7E8EisxY/kZkjhmzhPxfijUuCUCwsygFJB8AKFTp4mdwfcgcpx5KU/AMc6PTIyXSENoOLwwr0JtrCSIhS10eGY+HGN6FAhETsQ6HrsPtKcDe64u5XC9EOOh8BkDwzgOSANzYmFEps77Yu+rtaInGQQ4Hbu7r3zpRYrzwktdE/ZczlI5IETlJDsJYgXGqCjNOSd/GOmB2CkwH4hvYSfVro9BYVT/Llw1DMwEJYGJPwgWHAKjg0k6BCituoLgqwKMdnAtl8tr9uVpfB4+ZWK8F36CYMtbtpVMWTlGwwXmSOaROK23NmGkp3aiQfBVGZYispab6lcmxjOhsOHUtNioAYzRPQpiDQwCOOFWJU7+nPCrEojPlJZszYkMCnXOrUKM+0JhwykFsN+fKkXjjjjtdkSqmLLSEHpeKPRg9A4DYarVbRvZSTUXQrh1zuNMjL9CYeOYQk9LnGGxaufaa7Z6DR2EHndBJ7QQelIia02fvM7E+CoUNkFx9A7MTiGJxVn51NzapDl9KFnibuaLXlLofcnEeNNB6HnF+lhaa3NNNksIPewLhb3DUKljmhNZS+j9ycR4IhQ2SXH05sy9SmrtYVIfx8kSr8aZFKGD0IPCO/glfNGajjdOjHuFGLcVicwReiDcfYHdq3VEFXdfZA+h55RKUr8UkTWE3tNMjN9EHwd1ISEKdx8nop1xEH6Sh62ur8UtJPT8tr+lQY3IWkLvXSbGZ6Ll8Vh/AaFzeaIlk0LQNNrBQJlpcMg7wAyoZiJOPqJQ6EXhO1BsrGkpImudYfEtE+MV0wccid5WTHF7BSN96ZMrVfuSjQJRUehFhXwAocPEpYisIfSuFmKcM43XUcEAzxE/XEN7DQm4x5JJD3ukkF5qpoeeG2CXcLyVSHejIMxSpZeXu49sgxjE50Z5jjVTsiuCkg9N62bNkcGhl9CTEDlXB3F71Ys93maAkT+MpnkA2RRZEmwYgUvPHb+rF8xIuNGuh4ggEHTKOB+QWcrG6tXp5k/KveP3iAS4yXNy99i/XiAKU7dtcywU1+ZpsP8hcmmOdN1ZXozIFwGUs5rjzPQbWA6NyBf1vOHaGRCDEbn7aGwkNiKf7HnDNcdKGYzIBoMR2WBENhiMyAaDEdlgMCIbVo9//2e7rKF/65wAAAAASUVORK5CYII=">
+  <div class="tblock">
+    <h1 class="ttl">Smart Dock 무선 데이터 추출 체계 개발 기획</h1>
+    <p class="subt">DKPX-2 / DKPY-2 · NPI 기획 단계 보고</p>
+    <div class="crule"></div>
+    <div class="meta"><span>2026. 09. 30</span><span>하드웨어팀</span></div>
+  </div>
+  <div class="cls">사내 한정</div>
+</section>
+</div>
+
+<!-- 1. 프로젝트 개요 -->
+<div class="frame">
+<section class="slide" id="s1">
+  <header class="hd"><h1><span class="no">1.</span>프로젝트 개요</h1></header>
+  <p class="msg">LiveHub 미보유 고객을 위해 Dock 단독 무선 추출 체계를 구축하고, Dock 하드웨어를 단순화하여 PC·전용 충전기 의존을 제거함</p>
+  <div class="body" style="margin-top:14px">
+    <div class="ov">
+      <div>
+        <div class="ovh">추진 배경<span>(Why)</span></div>
+        <div class="it"><div class="h">유선 추출 의존</div><div class="s">LiveHub 미보유 고객<br>PC·DataManager·USB 케이블</div></div>
+        <div class="it"><div class="h">통제 밖 실패 요인</div><div class="s">접점·케이블·PC 호환성</div></div>
+        <div class="it"><div class="h">과잉 배터리</div><div class="s">약 100 Wh, 야외 충전 수요 낮음<br>부피·무게 부담</div></div>
+      </div>
+      <div class="arr"><svg width="30" height="14" viewBox="0 0 30 14" aria-hidden="true"><line class="ln" x1="0" y1="7" x2="24" y2="7"/><path class="ah" d="M22,2 L30,7 L22,12 z"/></svg></div>
+      <div>
+        <div class="ovh">목적<span>(What)</span></div>
+        <div class="it goal"><div class="h">LiveHub 없이<br>Dock 단독 무선 추출·업로드</div></div>
+        <p class="ovsub">구성</p>
+        <div class="it"><div class="h">개선 A</div><div class="s">iPad·LiveApp 유지 (보급형)</div></div>
+        <div class="it"><div class="h">개선 B</div><div class="s">SBC 내장 (iPad 미사용)</div></div>
+      </div>
+      <div class="arr"><svg width="30" height="14" viewBox="0 0 30 14" aria-hidden="true"><line class="ln" x1="0" y1="7" x2="24" y2="7"/><path class="ah" d="M22,2 L30,7 L22,12 z"/></svg></div>
+      <div>
+        <div class="ovh">달성 목표<span>(Goal)</span></div>
+        <table class="t sm">
+          <colgroup><col style="width:128px"><col style="width:150px"><col></colgroup>
+          <thead><tr><th>항목</th><th>현행</th><th>목표</th></tr></thead>
+          <tbody>
+            <tr><th>추출 시간 (24대)</th><td>유선 추출</td><td><b class="k" style="margin:0">10분 이내</b> <span class="m">(LiveHub 5분)</span></td></tr>
+            <tr><th>필요 장비</th><td>Dock + PC + 케이블</td><td><b class="k" style="margin:0">Dock + iPad 또는 휴대폰</b></td></tr>
+            <tr><th>실패 요인</th><td>3개</td><td><b class="k" style="margin:0">1개</b></td></tr>
+            <tr><th>내장 배터리</th><td>약 100 Wh</td><td><b class="k" style="margin:0">12 Wh 이하</b></td></tr>
+            <tr><th>충전기</th><td>자사 100 W 어댑터</td><td><b class="k" style="margin:0">시판 USB-C</b> <span class="m">45 W 이하 (추정)</span></td></tr>
+            <tr><th>셀·앱·서버 변경</th><td class="c">-</td><td><b class="k" style="margin:0">없음</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="sec" style="margin-top:12px">Dock 하드웨어 변경</p>
+    <table class="t sm tight xt">
+      <colgroup><col style="width:130px"><col style="width:270px"><col style="width:250px"><col></colgroup>
+      <thead><tr><th>항목</th><th>현행</th><th>변경</th><th>사유</th></tr></thead>
+      <tbody>
+        <tr><th>MCU</th><td>STM32F103C8T6</td><td><b class="k" style="margin:0">ESP32 계열 (셀과 동일)</b></td><td>개발 환경·부품 공용화</td></tr>
+        <tr><th>셀 충전</th><td>24개 동시</td><td><b class="k" style="margin:0">6개 단위 순차</b></td><td>고출력 전용 충전기 불필요</td></tr>
+        <tr><th>USB-C PD 칩</th><td>TI TPS25750 (고기능·설정 필요)</td><td><b class="k" style="margin:0">단순 수전 칩</b></td><td>원가·설정 작업 축소</td></tr>
+        <tr><th>내장 배터리</th><td>3S 팩 약 100 Wh</td><td><b class="k" style="margin:0">1셀 상용 배터리 (10쪽)</b></td><td>맞춤 팩 MOQ 회피, 충전·게이지 칩도 1셀용으로 단순화</td></tr>
+      </tbody>
+    </table>
+    <div class="row lines" style="margin-top:6px">
+      <p class="col" style="flex:1.45"><span class="k">범위</span>DKPX-2 / DKPY-2 Dock 하드웨어, Dock 웹 화면 (개선 B)</p>
+      <p class="col" style="flex:1"><span class="k">제외</span>셀 펌웨어 변경, LTE·유선 LAN</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>1</span></footer>
+</section>
+</div>
+
+<!-- 2. 현황 및 개선 방향 -->
+<div class="frame">
+<section class="slide" id="s2">
+  <header class="hd"><h1><span class="no">2.</span>현황 및 개선 방향</h1></header>
+  <p class="msg">Dock 내장 Wi-Fi 모듈로 PC와 케이블을 제거하며, iPad 사용 여부에 따라 2개 구성(개선 A: iPad 유지, 개선 B: SBC 내장)으로 운영함</p>
+  <div class="body" style="margin-top:18px">
+    <svg class="dg" width="1168" height="226" viewBox="0 0 1168 226" role="img" aria-label="현행, 개선 A, 개선 B의 추출 경로와 업로드 경로. 개선 B는 사용자 스마트폰이 SBC의 웹 화면으로 조작">
+      <defs><marker id="p2a" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p2as" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p2m" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah m" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p2ms" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah m" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <text class="hdr" x="446" y="7" text-anchor="middle" dominant-baseline="central">추출</text>
+      <line class="hl" x1="112" y1="17" x2="772" y2="17"/>
+      <text class="hdr" x="974" y="7" text-anchor="middle" dominant-baseline="central">업로드 (추출 종료 후)</text>
+      <line class="hl" x1="788" y1="17" x2="1168" y2="17"/>
+      <text class="tb" x="0" y="46" dominant-baseline="central">현행</text>
+      <use href="#cell-x" class="cx" x="112" y="27" width="23" height="38"/>
+      <text x="146" y="46" dominant-baseline="central">셀</text>
+      <line class="ln ex" x1="168" y1="46" x2="218" y2="46" marker-end="url(#p2a)"/>
+      <rect class="bx" x="220" y="26" width="250" height="40"/>
+      <text x="345" y="46" text-anchor="middle" dominant-baseline="central">Pogo 접점 · USB 케이블</text>
+      <line class="ln ex" x1="470" y1="46" x2="528" y2="46" marker-end="url(#p2a)"/>
+      <rect class="bx" x="530" y="26" width="250" height="40"/>
+      <text x="655" y="46" text-anchor="middle" dominant-baseline="central">PC (DataManager)</text>
+      <line class="ln up" x1="780" y1="46" x2="918" y2="46" marker-end="url(#p2a)"/>
+      <text class="ts" x="849" y="36" text-anchor="middle" dominant-baseline="central">PC 인터넷</text>
+      <rect class="bx" x="920" y="26" width="248" height="40"/>
+      <text x="1044" y="46" text-anchor="middle" dominant-baseline="central">서버</text>
+      <text class="tb" x="0" y="96" dominant-baseline="central">개선 A</text>
+      <use href="#cell-x" class="cx" x="112" y="77" width="23" height="38"/>
+      <text x="146" y="96" dominant-baseline="central">셀</text>
+      <line class="ln ex" x1="168" y1="96" x2="218" y2="96" marker-end="url(#p2a)"/>
+      <text class="ts" x="193" y="87" text-anchor="middle" dominant-baseline="central">Wi-Fi</text>
+      <rect class="bx ac" x="220" y="76" width="250" height="40"/>
+      <text class="tac" x="345" y="96" text-anchor="middle" dominant-baseline="central">Dock 내장 Wi-Fi 모듈</text>
+      <line class="ln ex" x1="470" y1="96" x2="528" y2="96" marker-end="url(#p2a)"/>
+      <rect class="bx" x="530" y="76" width="250" height="40"/>
+      <text x="655" y="96" text-anchor="middle" dominant-baseline="central">iPad (LiveApp)</text>
+      <line class="ln up" x1="780" y1="96" x2="918" y2="96" marker-end="url(#p2a)"/>
+      <text class="ts" x="849" y="86" text-anchor="middle" dominant-baseline="central">Dock 모듈 · 핫스팟</text>
+      <rect class="bx" x="920" y="76" width="248" height="40"/>
+      <text x="1044" y="96" text-anchor="middle" dominant-baseline="central">서버</text>
+      <text class="tb" x="0" y="146" dominant-baseline="central">개선 B</text>
+      <use href="#cell-x" class="cx" x="112" y="127" width="23" height="38"/>
+      <text x="146" y="146" dominant-baseline="central">셀</text>
+      <line class="ln ex" x1="168" y1="146" x2="218" y2="146" marker-end="url(#p2a)"/>
+      <text class="ts" x="193" y="137" text-anchor="middle" dominant-baseline="central">Wi-Fi</text>
+      <rect class="bx ac" x="220" y="126" width="250" height="40"/>
+      <text class="tac" x="345" y="146" text-anchor="middle" dominant-baseline="central">Dock 내장 Wi-Fi 모듈</text>
+      <line class="ln ex" x1="470" y1="146" x2="528" y2="146" marker-end="url(#p2a)"/>
+      <rect class="bx ac" x="530" y="126" width="250" height="40"/>
+      <text class="tac" x="655" y="146" text-anchor="middle" dominant-baseline="central">Dock 내장 SBC</text>
+      <line class="ln up" x1="780" y1="146" x2="918" y2="146" marker-end="url(#p2a)"/>
+      <text class="ts" x="849" y="136" text-anchor="middle" dominant-baseline="central">Dock 모듈 · 핫스팟</text>
+      <rect class="bx" x="920" y="126" width="248" height="40"/>
+      <text x="1044" y="146" text-anchor="middle" dominant-baseline="central">서버</text>
+      <line class="ln sub" x1="655" y1="168" x2="655" y2="188" marker-start="url(#p2ms)" marker-end="url(#p2m)"/>
+      <text class="ts" x="667" y="178" text-anchor="start" dominant-baseline="central">조작 (Wi-Fi · 웹 화면)</text>
+      <rect class="bx" x="530" y="190" width="250" height="36"/>
+      <text x="655" y="208" text-anchor="middle" dominant-baseline="central">사용자 스마트폰 · 노트북</text>
+      <text class="ts" x="220" y="208" text-anchor="start" dominant-baseline="central">※ 개선 B = 개선 A + SBC (개선 A 무선 추출이 전제)</text>
+      </svg>
+
+    <table class="t sm tight xt" style="margin-top:12px">
+      <colgroup><col style="width:140px"><col><col><col></colgroup>
+      <thead><tr><th>구분</th><th>현행</th><th>개선 A (iPad 유지)</th><th>개선 B (SBC 내장)</th></tr></thead>
+      <tbody>
+        <tr><th>추출 경로</th><td>셀 → Pogo → USB 케이블 → PC</td><td>셀 → Wi-Fi → Dock 모듈 → iPad</td><td>셀 → Wi-Fi → Dock 모듈 → SBC</td></tr>
+        <tr><th>업로드 경로</th><td>PC → 인터넷 → 서버</td><td>iPad → Dock 모듈 → 핫스팟·현장 Wi-Fi → 서버</td><td>SBC → Dock 모듈 → 핫스팟·현장 Wi-Fi → 서버</td></tr>
+        <tr><th>업로드 주체</th><td>PC DataManager</td><td>iPad LiveApp (완료까지 iPad 대기)</td><td>Dock 자동 (인터넷 연결 시, 단말 불필요)</td></tr>
+        <tr><th>조작 수단</th><td>PC DataManager</td><td>iPad LiveApp</td><td>사용자 스마트폰·노트북 브라우저</td></tr>
+        <tr><th>필요 장비</th><td>Dock, PC, USB 케이블</td><td>Dock, iPad</td><td>Dock, 스마트폰 또는 노트북</td></tr>
+        <tr><th>Pogo 접점 용도</th><td>충전 + 데이터</td><td>충전 + 설정</td><td>충전 + 설정</td></tr>
+        <tr><th>실패 요인</th><td>접점·케이블·PC 호환성 (3개)</td><td>무선 환경 (1개)</td><td>무선 환경 (1개)</td></tr>
+        <tr><th>개발 범위</th><td class="m">해당 없음</td><td>Dock 하드웨어</td><td>Dock 하드웨어 + SBC 소프트웨어</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>2</span></footer>
+</section>
+</div>
+
+<!-- 3. 사용자 시나리오 -->
+<div class="frame">
+<section class="slide" id="s3">
+  <header class="hd"><h1><span class="no">3.</span>사용자 시나리오</h1></header>
+  <p class="msg">일 1회 전체 일정 종료 후 일괄 추출하며, 추출 장소에 따라 2개 안으로 구분함</p>
+  <div class="body">
+    <p class="sec">운영 절차<span class="note">(음영: 변경 단계 · 추출과 업로드는 별도 단계)</span></p>
+    <svg class="dg" width="1168" height="72" viewBox="0 0 1168 72" role="img" aria-label="운영 절차 7단계">
+      <defs><marker id="a3" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <rect class="bx" x="0" y="2" width="142" height="44"/>
+      <rect class="bx" x="171" y="2" width="142" height="44"/>
+      <rect class="bx" x="342" y="2" width="142" height="44"/>
+      <rect class="bx ac" x="513" y="2" width="142" height="44"/>
+      <rect class="bx" x="684" y="2" width="142" height="44"/>
+      <rect class="bx ac" x="855" y="2" width="142" height="44"/>
+      <rect class="bx" x="1026" y="2" width="142" height="44"/>
+      <text x="71" y="24" text-anchor="middle" dominant-baseline="central">충전</text>
+      <text x="242" y="24" text-anchor="middle" dominant-baseline="central">훈련·경기</text>
+      <text x="413" y="24" text-anchor="middle" dominant-baseline="central">반납 (Dock 거치)</text>
+      <text class="tac" x="584" y="24" text-anchor="middle" dominant-baseline="central">무선 추출</text>
+      <text x="755" y="24" text-anchor="middle" dominant-baseline="central">결과 확인</text>
+      <text class="tac" x="926" y="24" text-anchor="middle" dominant-baseline="central">업로드</text>
+      <text x="1097" y="24" text-anchor="middle" dominant-baseline="central">충전</text>
+      <line class="ln" x1="142" y1="24" x2="169" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="313" y1="24" x2="340" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="484" y1="24" x2="511" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="655" y1="24" x2="682" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="826" y1="24" x2="853" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="997" y1="24" x2="1024" y2="24" marker-end="url(#a3)"/>
+      <text class="ts" x="584" y="62" text-anchor="middle" dominant-baseline="central">A: iPad 수신 · B: SBC 수신</text>
+      <text class="ts" x="926" y="62" text-anchor="middle" dominant-baseline="central">A: iPad · B: Dock 자동</text>
+    </svg>
+
+    <div class="row" style="margin-top:22px">
+      <div class="col" style="width:400px">
+        <p class="sec">전제 조건<span class="note">(PM 확인, 2026-09-29)</span></p>
+        <ul class="d al">
+          <li><span class="k">추출 빈도</span>일 1회 (전 일정 종료 후)</li>
+          <li><span class="k">셀 잔량</span>통상 30% 이상</li>
+          <li><span class="k">목표 시간</span>10분 이내</li>
+          <li><span class="k">초과 시</span>고객 불만 (야외 심화)</li>
+          <li><span class="k">비교 기준</span>LiveHub 대부분 5분 이내</li>
+        </ul>
+        <p class="memo" style="margin-top:22px">※ 셀 잔량 30% 이상: Dock 충전 없이 추출 가능</p>
+      </div>
+      <div class="col" style="flex:1">
+        <p class="sec">추출 장소별 안 비교</p>
+        <table class="t roomy">
+          <colgroup><col style="width:150px"><col><col></colgroup>
+          <thead><tr><th>구분</th><th>1안 클럽하우스 (기본)</th><th>2안 야외 (검토 중)</th></tr></thead>
+          <tbody>
+            <tr><th>전원</th><td>어댑터 연결</td><td>내장 배터리</td></tr>
+            <tr><th>추출·충전</th><td>동시 진행</td><td>추출만 (충전은 실내)</td></tr>
+            <tr><th>업로드 (추출 종료 후)</th><td>실내 Wi-Fi</td><td>핫스팟 또는 실내 복귀 후</td></tr>
+            <tr><th>배터리 필요 용량</th><td>정상 종료용 (최소)</td><td>추출 1회분 (약 12 Wh)</td></tr>
+            <tr><th>10분 초과 시 영향</th><td>낮음</td><td>높음</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>3</span></footer>
+</section>
+</div>
+
+<!-- 4. 시스템 구성 및 조작 방식 -->
+<div class="frame">
+<section class="slide" id="s4">
+  <header class="hd"><h1><span class="no">4.</span>시스템 구성 및 조작 방식</h1></header>
+  <p class="msg">추출은 Dock 모듈을 거쳐 iPad(개선 A) 또는 SBC(개선 B)가 받고, 업로드는 추출 종료 후 모듈의 인터넷 연결로 수행함</p>
+  <div class="body" style="margin-top:18px">
+    <svg class="dg" width="1168" height="236" viewBox="0 0 1168 236" role="img" aria-label="개선 A와 개선 B의 시스템 구성. 실선은 추출, 점선은 업로드, 가는 선은 조작과 내부 연결">
+      <defs><marker id="p4a" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p4as" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p4m" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah m" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p4ms" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah m" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <text class="tb" x="0" y="8" text-anchor="start" dominant-baseline="central" style="font-size:14px">개선 A · iPad·LiveApp 유지 (SBC 미탑재)</text>
+      <rect class="fr" x="0" y="22" width="300" height="184" rx="8"/>
+      <text class="tb" x="286" y="194" text-anchor="end" dominant-baseline="central" style="font-size:12.5px">Dock</text>
+      <use href="#cell-x" class="cx" x="14" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="35" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="56" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="77" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="98" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="119" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="14" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="35" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="56" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="77" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="98" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="119" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="14" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="35" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="56" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="77" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="98" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="119" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="14" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="35" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="56" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="77" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="98" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="119" y="146" width="16.8" height="28"/>
+      <text class="tb" x="74.9" y="192" text-anchor="middle" dominant-baseline="central" style="font-size:12.5px">셀 ×24</text>
+      <line class="ln ex" x1="139" y1="54" x2="178" y2="54" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="158" y="45" text-anchor="middle" dominant-baseline="central">추출</text>
+      <text class="ts tl" x="158" y="64" text-anchor="middle" dominant-baseline="central">Wi-Fi</text>
+      <rect class="bx ac" x="180" y="40" width="110" height="28"/>
+      <text class="tac" x="235" y="54" text-anchor="middle" dominant-baseline="central">Wi-Fi 모듈</text>
+      <line class="ln sub" x1="139" y1="160" x2="178" y2="160"/>
+      <text class="ts tl" x="158" y="151" text-anchor="middle" dominant-baseline="central">Pogo</text>
+      <rect class="bx" x="180" y="146" width="110" height="28"/>
+      <text x="235" y="160" text-anchor="middle" dominant-baseline="central">MCU (ESP32)</text>
+      <rect class="bx" x="400" y="100" width="170" height="28"/>
+      <text x="485" y="114" text-anchor="middle" dominant-baseline="central">핫스팟 · 현장 Wi-Fi</text>
+      <rect class="bx" x="400" y="150" width="170" height="28"/>
+      <text x="485" y="164" text-anchor="middle" dominant-baseline="central">서버</text>
+      <line class="ln up" x1="485" y1="128" x2="485" y2="148" marker-end="url(#p4a)"/>
+      <text class="ts" x="493" y="138" text-anchor="start" dominant-baseline="central">인터넷</text>
+      <rect class="bx" x="400" y="34" width="170" height="40"/>
+      <text x="485" y="47" text-anchor="middle" dominant-baseline="central">iPad (LiveApp)</text>
+      <text class="ts" x="485" y="64" text-anchor="middle" dominant-baseline="central">수신 · 조작 · 업로드</text>
+      <line class="ln ex" x1="290" y1="48" x2="398" y2="48" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="344" y="39" text-anchor="middle" dominant-baseline="central">추출</text>
+      <line class="ln up" x1="398" y1="61" x2="292" y2="61" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="344" y="72" text-anchor="middle" dominant-baseline="central">업로드</text>
+      <path class="ln up" d="M270,68 V114 H398" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="349" y="125" text-anchor="middle" dominant-baseline="central">업로드</text>
+      <text class="ts" x="228" y="113" text-anchor="middle" dominant-baseline="central">SBC 없음</text>
+      <text class="tb" x="598" y="8" text-anchor="start" dominant-baseline="central" style="font-size:14px">개선 B · SBC 내장</text>
+      <rect class="fr" x="598" y="22" width="300" height="184" rx="8"/>
+      <text class="tb" x="884" y="194" text-anchor="end" dominant-baseline="central" style="font-size:12.5px">Dock</text>
+      <use href="#cell-x" class="cx" x="612" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="633" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="654" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="675" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="696" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="717" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="612" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="633" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="654" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="675" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="696" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="717" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="612" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="633" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="654" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="675" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="696" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="717" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="612" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="633" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="654" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="675" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="696" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="717" y="146" width="16.8" height="28"/>
+      <text class="tb" x="672.9" y="192" text-anchor="middle" dominant-baseline="central" style="font-size:12.5px">셀 ×24</text>
+      <line class="ln ex" x1="737" y1="54" x2="776" y2="54" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="756" y="45" text-anchor="middle" dominant-baseline="central">추출</text>
+      <text class="ts tl" x="756" y="64" text-anchor="middle" dominant-baseline="central">Wi-Fi</text>
+      <rect class="bx ac" x="778" y="40" width="110" height="28"/>
+      <text class="tac" x="833" y="54" text-anchor="middle" dominant-baseline="central">Wi-Fi 모듈</text>
+      <line class="ln sub" x1="737" y1="160" x2="776" y2="160"/>
+      <text class="ts tl" x="756" y="151" text-anchor="middle" dominant-baseline="central">Pogo</text>
+      <rect class="bx" x="778" y="146" width="110" height="28"/>
+      <text x="833" y="160" text-anchor="middle" dominant-baseline="central">MCU (ESP32)</text>
+      <rect class="bx" x="998" y="100" width="170" height="28"/>
+      <text x="1083" y="114" text-anchor="middle" dominant-baseline="central">핫스팟 · 현장 Wi-Fi</text>
+      <rect class="bx" x="998" y="150" width="170" height="28"/>
+      <text x="1083" y="164" text-anchor="middle" dominant-baseline="central">서버</text>
+      <line class="ln up" x1="1083" y1="128" x2="1083" y2="148" marker-end="url(#p4a)"/>
+      <text class="ts" x="1091" y="138" text-anchor="start" dominant-baseline="central">인터넷</text>
+      <rect class="bx" x="998" y="34" width="170" height="40"/>
+      <text x="1083" y="47" text-anchor="middle" dominant-baseline="central">스마트폰 · 노트북</text>
+      <text class="ts" x="1083" y="64" text-anchor="middle" dominant-baseline="central">웹 화면 조작</text>
+      <line class="ln sub" x1="888" y1="48" x2="996" y2="48" marker-start="url(#p4ms)" marker-end="url(#p4m)"/>
+      <text class="ts tl" x="942" y="39" text-anchor="middle" dominant-baseline="central">조작</text>
+      <path class="ln up" d="M888,62 H938 V114 H996" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="945" y="90" text-anchor="start" dominant-baseline="central">업로드</text>
+      <rect class="bx ac" x="778" y="100" width="110" height="26"/>
+      <text class="tac" x="833" y="113" text-anchor="middle" dominant-baseline="central">SBC</text>
+      <line class="ln ex" x1="820" y1="68" x2="820" y2="98" marker-end="url(#p4a)"/>
+      <line class="ln up" x1="843" y1="100" x2="843" y2="70" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="812" y="84" text-anchor="end" dominant-baseline="central">추출</text>
+      <text class="ts tl" x="850" y="79" text-anchor="start" dominant-baseline="central">업로드</text>
+      <text class="ts tl" x="850" y="93" text-anchor="start" dominant-baseline="central">Ethernet</text>
+      <line class="ln sub" x1="833" y1="126" x2="833" y2="146"/>
+      <text class="ts" x="827" y="136" text-anchor="end" dominant-baseline="central">UART</text>
+      <line class="ln ex" x1="330" y1="226" x2="364" y2="226"/>
+      <text class="ts" x="372" y="226" text-anchor="start" dominant-baseline="central">추출</text>
+      <line class="ln up" x1="440" y1="226" x2="474" y2="226"/>
+      <text class="ts" x="482" y="226" text-anchor="start" dominant-baseline="central">업로드 (추출 종료 후, Dock 모듈의 인터넷 연결)</text>
+      <line class="ln sub" x1="770" y1="226" x2="804" y2="226"/>
+      <text class="ts" x="812" y="226" text-anchor="start" dominant-baseline="central">조작 · 내부 연결</text>
+      </svg>
+
+    <div class="row" style="margin-top:16px">
+      <div class="col" style="flex:1.45">
+        <table class="t sm tight">
+          <colgroup><col style="width:130px"><col><col style="width:108px"><col style="width:108px"></colgroup>
+          <thead><tr><th>구성품</th><th>역할</th><th>개선 A</th><th>개선 B</th></tr></thead>
+          <tbody>
+            <tr><th>Wi-Fi 모듈</th><td>셀 24대 수신 · 인터넷 연결 (2.4 + 5 GHz)</td><td class="c"><span class="dt">●</span></td><td class="c"><span class="dt">●</span></td></tr>
+            <tr><th>SBC</th><td>추출 수신 · 저장 · 업로드 · 웹 화면</td><td class="c m">—</td><td class="c"><span class="dt">●</span></td></tr>
+            <tr><th>MCU (ESP32)</th><td>충전 · 슬롯 전원 · 온도 (셀과 MCU 통일)</td><td class="c"><span class="dt">●</span></td><td class="c"><span class="dt">●</span></td></tr>
+            <tr><th>USB 허브</th><td>셀 설정 입력 (Pogo 경유)</td><td class="c">PC 연결 시</td><td class="c">SBC 연결</td></tr>
+            <tr><th>Pogo 접점</th><td>충전 전원 · 설정 입력</td><td class="c"><span class="dt">●</span></td><td class="c"><span class="dt">●</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col" style="flex:1">
+        <table class="t sm tight">
+          <colgroup><col><col style="width:92px"><col style="width:150px"></colgroup>
+          <thead><tr><th>조작 방식</th><th>구성</th><th>판단</th></tr></thead>
+          <tbody>
+            <tr><th>iPad LiveApp</th><td class="c">개선 A</td><td class="c">유지</td></tr>
+            <tr class="rec"><th>SBC 웹 화면</th><td class="c">개선 B</td><td class="c ac">채택</td></tr>
+            <tr><th>모바일 앱</th><td class="c">개선 B</td><td class="c">후속 검토</td></tr>
+            <tr><th>Dock 디스플레이</th><td class="c m">—</td><td class="c">미채택 (표시등)</td></tr>
+            <tr><th>고객 SW 연동 (API)</th><td class="c">개선 B</td><td class="c">병행</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row lines" style="margin-top:14px">
+      <p class="col" style="flex:1.45"><span class="k">확정 사항</span>인터넷: 현장 Wi-Fi·핫스팟 한정 (LTE·유선 LAN 미적용)</p>
+      <p class="col" style="flex:1"><span class="k">확인 필요 사항</span>안테나·외장 재질, WISP 지원, 개선 A 셀 설정 경로</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>4</span></footer>
+</section>
+</div>
+
+<!-- 5. 데이터 이동과 네트워크 연결 -->
+<div class="frame">
+<section class="slide" id="s4n">
+  <header class="hd"><h1><span class="no">5-A.</span>네트워크 길과 데이터 이동 · A안 (Wi-Fi 모듈이 핫스팟 접속)</h1></header>
+  <div class="body" style="margin-top:16px">
+    <svg class="dg" width="1168" height="560" viewBox="0 0 1168 560" role="img" aria-label="시간 순서 6단계마다 개선 B 구성도에서 열린 네트워크 길과 데이터 이동">
+      <defs><marker id="f6k" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--ink)"/></marker><marker id="f6ks" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--ink)"/></marker><marker id="f6d" viewBox="0 0 8 8" refX="6.5" refY="4" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent-line)"/></marker><marker id="f6h" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="f6hs" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="f6a" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <g transform="translate(0,0)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">① 준비</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">코치 · 셀 켠 채 거치, 스마트폰 Dock Wi-Fi 접속</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">열린 길: 스마트폰 ↔ 모듈 (Wi-Fi 5 GHz · HTTP) · 인터넷 없음</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">Dock Wi-Fi 접속 · 웹 화면</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="80" width="120" height="22"/><text x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-start="url(#f6ks)" marker-end="url(#f6k)"/>
+<text class="ts" x="224" y="5" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">조작</text>
+<text class="ts" x="224" y="13" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi · HTTP</text>
+<path d="M194,30 L222,30 L222,91 L248,91" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="226" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<text class="ts" x="226" y="66" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="6" y="121" width="49.6" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="9" y="128" text-anchor="start" dominant-baseline="central" style="font-size:8px">켜진 채 거치</text>
+<rect x="252" y="43" width="107.0" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="255" y="50" text-anchor="start" dominant-baseline="central" style="font-size:8px">핫스팟 정보 등록 (최초 1회)</text>
+</g></g>
+      <g transform="translate(399.333,0)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">② 추출</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">코치 START → Dock 자동 수신 (목표 10분)</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">데이터: 셀 → 모듈 (Wi-Fi 2.4/5) → SBC (Ethernet) 저장</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6d)"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6d)"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">진행 · 실패 칸 확인</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="80" width="120" height="22"/><text x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-start="url(#f6ks)" marker-end="url(#f6k)"/>
+<text class="ts" x="224" y="5" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">조작</text>
+<text class="ts" x="224" y="13" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi · HTTP</text>
+<path d="M194,30 L222,30 L222,91 L248,91" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="226" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<text class="ts" x="226" y="66" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="106" y="53" width="39.5" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="109" y="60" text-anchor="start" dominant-baseline="central" style="font-size:8px">파일 저장</text>
+<rect x="252" y="43" width="65.2" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="255" y="50" text-anchor="start" dominant-baseline="central" style="font-size:8px">자동 업로드 예약</text>
+</g></g>
+      <g transform="translate(798.667,0)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">③ 전환</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">코치 · Dock Wi-Fi 해제 → 핫스팟 ON</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">끊김: 조작 길 · 생김: 핫스팟 (셀룰러) · 데이터는 SBC 보관</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">핫스팟 켜기</text></g>
+<g><rect class="bx ac" x="250" y="80" width="120" height="22"/><text class="tac" x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--line)" stroke-width="1"/><text class="tb" x="221" y="20" text-anchor="middle" dominant-baseline="central" style="font-size:12px">✕</text>
+<text class="ts" x="224" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">조작 끊김</text>
+<path d="M366,38 V80" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1.5 2"/>
+<text class="ts" x="362" y="66" text-anchor="end" dominant-baseline="central" style="font-size:7.5px">같은 스마트폰</text>
+<path d="M194,30 L222,30 L222,91 L248,91" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2.5"/>
+<text class="ts" x="226" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<text class="ts" x="226" y="66" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#f6k)"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="106" y="53" width="31.7" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="109" y="60" text-anchor="start" dominant-baseline="central" style="font-size:8px">보관 중</text>
+<rect x="252" y="41" width="79.9" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="255" y="48" text-anchor="start" dominant-baseline="central" style="font-size:8px">지시 공백 · 자동 대기</text>
+</g></g>
+      <g transform="translate(0,270)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">④ 접속</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">Dock 자동 · 저장된 정보로 핫스팟 접속</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">열린 길: 모듈 → 핫스팟 (Wi-Fi 5 GHz) → 인터넷 (셀룰러)</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">핫스팟 망에서 다시 접속</text></g>
+<g><rect class="bx ac" x="250" y="80" width="120" height="22"/><text class="tac" x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2.5" marker-start="url(#f6hs)" marker-end="url(#f6h)"/>
+<text class="tac" x="224" y="5" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">조작</text>
+<text class="tac" x="224" y="13" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">확인 필요</text>
+<path d="M366,38 V80" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1.5 2"/>
+<text class="ts" x="362" y="66" text-anchor="end" dominant-baseline="central" style="font-size:7.5px">같은 스마트폰</text>
+<path d="M194,30 L222,30 L222,91 L248,91" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#f6k)"/>
+<text class="ts" x="226" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<text class="ts" x="226" y="66" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#f6k)"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="80" y="53" width="73.0" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="83" y="60" text-anchor="start" dominant-baseline="central" style="font-size:8px">핫스팟 정보로 접속</text>
+</g></g>
+      <g transform="translate(399.333,270)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">⑤ 업로드</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">Dock 자동 · SBC 파일을 서버로</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">데이터: SBC → 모듈 → 핫스팟 → 서버 (HTTPS)</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6d)"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">진행 보기 · 다시 시도</text></g>
+<g><rect class="bx ac" x="250" y="80" width="120" height="22"/><text class="tac" x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g><rect class="bx ac" x="250" y="146" width="120" height="22"/><text class="tac" x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2.5" marker-start="url(#f6hs)" marker-end="url(#f6h)"/>
+<text class="tac" x="224" y="5" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">조작</text>
+<text class="tac" x="224" y="13" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">확인 필요</text>
+<path d="M366,38 V80" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1.5 2"/>
+<text class="ts" x="362" y="66" text-anchor="end" dominant-baseline="central" style="font-size:7.5px">같은 스마트폰</text>
+<path d="M194,30 L222,30 L222,91 L248,91" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6d)"/>
+<text class="ts" x="226" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<text class="ts" x="226" y="66" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6d)"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+</g></g>
+      <g transform="translate(798.667,270)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">⑥ 완료</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">서버 확인 → 셀 원본 삭제 · 코치 핫스팟 OFF</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">닫힘: 핫스팟 길 · 남음: Dock AP (충전 대기) · 자동 종료</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M102,23 L80,23" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6d)"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6d)"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">핫스팟 끄기 · 표시등 확인</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="80" width="120" height="22"/><text x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M194,30 L222,30 L222,91 L248,91" fill="none" stroke="var(--line)" stroke-width="1"/><text class="tb" x="208" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:12px">✕</text>
+<text class="ts" x="226" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<text class="ts" x="226" y="66" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="6" y="121" width="39.5" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="9" y="128" text-anchor="start" dominant-baseline="central" style="font-size:8px">원본 삭제</text>
+<rect x="252" y="127" width="39.5" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="255" y="134" text-anchor="start" dominant-baseline="central" style="font-size:8px">도착 확인</text>
+</g></g>
+      <line class="ln" x1="371.333" y1="121" x2="396.333" y2="121" stroke-width="1.6" marker-end="url(#f6a)"/>
+      <line class="ln" x1="770.667" y1="121" x2="795.667" y2="121" stroke-width="1.6" marker-end="url(#f6a)"/>
+      <line class="ln" x1="371.333" y1="391" x2="396.333" y2="391" stroke-width="1.6" marker-end="url(#f6a)"/>
+      <line class="ln" x1="770.667" y1="391" x2="795.667" y2="391" stroke-width="1.6" marker-end="url(#f6a)"/>
+      <path class="ln" d="M983.333,244 V256 H184.667 V267" stroke-width="1.6" marker-end="url(#f6a)"/>
+      <line x1="0" y1="534" x2="28" y2="534" stroke="var(--line)" stroke-width="1"/>
+      <text class="ts" x="34" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">연결 없음 · 대기</text>
+      <line x1="150" y1="534" x2="178" y2="534" stroke="var(--ink)" stroke-width="1.4"/>
+      <text class="ts" x="184" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">연결됨 (길 열림)</text>
+      <line x1="300" y1="534" x2="328" y2="534" stroke="var(--accent-line)" stroke-width="3" marker-end="url(#f6d)"/>
+      <text class="ts" x="336" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">데이터 이동</text>
+      <text class="tb" x="430" y="534" text-anchor="middle" dominant-baseline="central" style="font-size:12px">✕</text>
+      <text class="ts" x="442" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">끊김</text>
+      <line x1="500" y1="534" x2="528" y2="534" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2.5"/>
+      <text class="ts" x="534" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">접속 중</text>
+      <line x1="610" y1="534" x2="638" y2="534" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2.5"/>
+      <text class="ts" x="644" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">핫스팟 망 경유 조작 (확인 필요)</text>
+      <line x1="828" y1="534" x2="856" y2="534" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1.5 2"/>
+      <text class="ts" x="862" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">같은 기기</text>
+      <text class="tb" x="0" y="554" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">업로드 지시:</text>
+      <text class="ts" x="74" y="554" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">② 자동 업로드 예약 → ③ 조작 끊김 동안 Dock 자동 대기 → ④ 핫스팟 접속 즉시 업로드 시작 (지시 없이 진행)</text>
+      <text class="tb" x="1168" y="554" text-anchor="end" dominant-baseline="central" style="font-size:10.5px">핫스팟 = 인터넷으로 가는 유일한 문 (③ 열림 · ⑥ 닫힘)</text>
+      </svg>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>5-A</span></footer>
+</section>
+</div>
+
+<!-- 5-B. 네트워크 길과 데이터 이동 · B안 -->
+<div class="frame">
+<section class="slide" id="s4nb">
+  <header class="hd"><h1><span class="no">5-B.</span>네트워크 길과 데이터 이동 · B안 (SBC가 핫스팟 직접 접속)</h1></header>
+  <div class="body" style="margin-top:16px">
+    <svg class="dg" width="1168" height="560" viewBox="0 0 1168 560" role="img" aria-label="시간 순서 6단계마다 개선 B 구성도에서 열린 네트워크 길과 데이터 이동">
+      <defs><marker id="f6Bk" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--ink)"/></marker><marker id="f6Bks" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--ink)"/></marker><marker id="f6Bd" viewBox="0 0 8 8" refX="6.5" refY="4" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent-line)"/></marker><marker id="f6Bh" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="f6Bhs" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker><marker id="f6Ba" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <g transform="translate(0,0)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">① 준비</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">코치 · 셀 켠 채 거치, 스마트폰 Dock Wi-Fi 접속</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">열린 길: 스마트폰 ↔ 모듈 (Wi-Fi 5 GHz · HTTP) · 인터넷 없음</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC + Wi-Fi</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">Dock Wi-Fi 접속 · 웹 화면</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="80" width="120" height="22"/><text x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-start="url(#f6Bks)" marker-end="url(#f6Bk)"/>
+<text class="ts" x="224" y="5" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">조작</text>
+<text class="ts" x="224" y="13" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi · HTTP</text>
+<path d="M194,90 L248,90" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="223" y="99" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi 5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="6" y="121" width="49.6" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="9" y="128" text-anchor="start" dominant-baseline="central" style="font-size:8px">켜진 채 거치</text>
+<rect x="252" y="43" width="107.0" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="255" y="50" text-anchor="start" dominant-baseline="central" style="font-size:8px">핫스팟 정보 등록 (최초 1회)</text>
+</g></g>
+      <g transform="translate(399.333,0)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">② 추출</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">코치 START → Dock 자동 수신 (목표 10분)</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">데이터: 셀 → 모듈 (Wi-Fi 2.4/5) → SBC (Ethernet) 저장</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6Bd)"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6Bd)"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC + Wi-Fi</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">진행 · 실패 칸 확인</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="80" width="120" height="22"/><text x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-start="url(#f6Bks)" marker-end="url(#f6Bk)"/>
+<text class="ts" x="224" y="5" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">조작</text>
+<text class="ts" x="224" y="13" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi · HTTP</text>
+<path d="M194,90 L248,90" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="223" y="99" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi 5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="106" y="53" width="39.5" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="109" y="60" text-anchor="start" dominant-baseline="central" style="font-size:8px">파일 저장</text>
+<rect x="252" y="43" width="65.2" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="255" y="50" text-anchor="start" dominant-baseline="central" style="font-size:8px">자동 업로드 예약</text>
+</g></g>
+      <g transform="translate(798.667,0)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">③ 전환</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">코치 · Dock Wi-Fi 해제 → 핫스팟 ON</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">끊김: 조작 길 · 생김: 핫스팟 (셀룰러) · 데이터는 SBC 보관</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC + Wi-Fi</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">핫스팟 켜기</text></g>
+<g><rect class="bx ac" x="250" y="80" width="120" height="22"/><text class="tac" x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--line)" stroke-width="1"/><text class="tb" x="221" y="20" text-anchor="middle" dominant-baseline="central" style="font-size:12px">✕</text>
+<text class="ts" x="224" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">조작 끊김</text>
+<path d="M366,38 V80" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1.5 2"/>
+<text class="ts" x="362" y="66" text-anchor="end" dominant-baseline="central" style="font-size:7.5px">같은 스마트폰</text>
+<path d="M194,90 L248,90" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2.5"/>
+<text class="ts" x="223" y="99" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi 5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#f6Bk)"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="106" y="53" width="31.7" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="109" y="60" text-anchor="start" dominant-baseline="central" style="font-size:8px">보관 중</text>
+<rect x="252" y="41" width="79.9" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="255" y="48" text-anchor="start" dominant-baseline="central" style="font-size:8px">지시 공백 · 자동 대기</text>
+</g></g>
+      <g transform="translate(0,270)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">④ 접속</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">SBC 자동 · 저장된 정보로 핫스팟 직접 접속</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">열린 길: SBC → 핫스팟 (Wi-Fi 5 GHz) → 인터넷 (셀룰러)</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC + Wi-Fi</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">핫스팟 망에서 SBC 직접 접속</text></g>
+<g><rect class="bx ac" x="250" y="80" width="120" height="22"/><text class="tac" x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M366,38 V80" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1.5 2"/>
+<text class="ts" x="362" y="66" text-anchor="end" dominant-baseline="central" style="font-size:7.5px">같은 스마트폰</text>
+<path d="M194,90 L248,90" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#f6Bk)"/>
+<text class="ts" x="223" y="99" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi 5 GHz</text>
+<path d="M248,32 L234,32 L234,74 L196,74" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2.5" marker-start="url(#f6Bhs)" marker-end="url(#f6Bh)"/>
+<text class="tac" x="238" y="50" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">조작 · 확인 필요</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#f6Bk)"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="78" y="101" width="73.0" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="81" y="108" text-anchor="start" dominant-baseline="central" style="font-size:8px">핫스팟 정보로 접속</text>
+</g></g>
+      <g transform="translate(399.333,270)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">⑤ 업로드</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">SBC 자동 · 파일을 서버로 (모듈 미경유)</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">데이터: SBC → 핫스팟 → 서버 (HTTPS) · 모듈은 셀 AP만</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M78,23 L102,23" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC + Wi-Fi</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">진행 보기 · 다시 시도</text></g>
+<g><rect class="bx ac" x="250" y="80" width="120" height="22"/><text class="tac" x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g><rect class="bx ac" x="250" y="146" width="120" height="22"/><text class="tac" x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M366,38 V80" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1.5 2"/>
+<text class="ts" x="362" y="66" text-anchor="end" dominant-baseline="central" style="font-size:7.5px">같은 스마트폰</text>
+<path d="M194,90 L248,90" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6Bd)"/>
+<text class="ts" x="223" y="99" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi 5 GHz</text>
+<path d="M248,32 L234,32 L234,74 L196,74" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2.5" marker-start="url(#f6Bhs)" marker-end="url(#f6Bh)"/>
+<text class="tac" x="238" y="50" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">조작 · 확인 필요</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6Bd)"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+</g></g>
+      <g transform="translate(798.667,270)">
+<rect x="0" y="0" width="369.333" height="242" rx="6" fill="var(--box)" stroke="var(--ink)" stroke-width="1.2"/>
+<rect x="10" y="8" width="66" height="20" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="43" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:12px">⑥ 완료</text>
+<text class="tb" x="84" y="18" text-anchor="start" dominant-baseline="central" style="font-size:11px">서버 확인 → 셀 원본 삭제 · 코치 핫스팟 OFF</text>
+<text class="ts" x="10" y="38" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">닫힘: 핫스팟 길 · 남음: Dock AP (충전 대기) · 자동 종료</text>
+<line x1="10" y1="48" x2="359.333" y2="48" stroke="var(--line)" stroke-width="1"/>
+<g transform="translate(10,56) scale(0.9441)">
+<rect class="fr" x="0" y="0" width="198" height="186" rx="6"/>
+<text class="tb" x="192" y="176" text-anchor="end" dominant-baseline="central" style="font-size:9.5px">Dock</text>
+<use href="#cell-x-sm" class="cx" x="6" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="14" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="36" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="58" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="6" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="18" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="30" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="42" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="54" y="80" width="10" height="17"/>
+<use href="#cell-x-sm" class="cx" x="66" y="80" width="10" height="17"/>
+<text class="tb" x="41" y="114" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 ×24</text>
+<path d="M102,23 L80,23" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6Bd)"/>
+<text class="ts" x="90" y="12" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi</text>
+<g><rect class="bx ac" x="104" y="12" width="90" height="22"/><text class="tac" x="149" y="23" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">Wi-Fi 모듈</text></g>
+<path d="M140,34 L140,70" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M158,70 L158,36" fill="none" stroke="var(--accent-line)" stroke-width="3" stroke-linejoin="round" marker-end="url(#f6Bd)"/>
+<text class="ts" x="163" y="52" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">Ethernet</text>
+<g><rect class="bx ac" x="104" y="72" width="90" height="22"/><text class="tac" x="149" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">SBC + Wi-Fi</text></g>
+<path d="M149,94 L149,130" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="153" y="112" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">UART</text>
+<path d="M78,143 L104,143" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+<text class="ts" x="91" y="135" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Pogo</text>
+<g><rect class="bx" x="104" y="132" width="90" height="22"/><text x="149" y="143" text-anchor="middle" dominant-baseline="central" style="font-size:10px">MCU (ESP32)</text></g>
+<g><rect class="bx" x="250" y="8" width="120" height="30"/><text x="310" y="18" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">스마트폰</text><text class="ts" x="310" y="30" text-anchor="middle" dominant-baseline="central" style="font-size:8px">핫스팟 끄기 · 표시등 확인</text></g>
+<g opacity=".35"><rect class="bx" x="250" y="80" width="120" height="22"/><text x="310" y="91" text-anchor="middle" dominant-baseline="central" style="font-size:10px">스마트폰 핫스팟</text></g>
+<g><rect class="bx" x="250" y="146" width="120" height="22"/><text x="310" y="157" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">서버</text></g>
+<path d="M194,20 L248,20" fill="none" stroke="var(--line)" stroke-width="1"/>
+<path d="M194,90 L248,90" fill="none" stroke="var(--line)" stroke-width="1"/><text class="tb" x="221" y="90" text-anchor="middle" dominant-baseline="central" style="font-size:12px">✕</text>
+<text class="ts" x="223" y="99" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">Wi-Fi 5 GHz</text>
+<path d="M310,102 L310,144" fill="none" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="314" y="123" text-anchor="start" dominant-baseline="central" style="font-size:7.5px">셀룰러 · HTTPS</text>
+<rect x="6" y="121" width="39.5" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="9" y="128" text-anchor="start" dominant-baseline="central" style="font-size:8px">원본 삭제</text>
+<rect x="252" y="127" width="39.5" height="14" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/>
+<text class="tac" x="255" y="134" text-anchor="start" dominant-baseline="central" style="font-size:8px">도착 확인</text>
+</g></g>
+      <line class="ln" x1="371.333" y1="121" x2="396.333" y2="121" stroke-width="1.6" marker-end="url(#f6Ba)"/>
+      <line class="ln" x1="770.667" y1="121" x2="795.667" y2="121" stroke-width="1.6" marker-end="url(#f6Ba)"/>
+      <line class="ln" x1="371.333" y1="391" x2="396.333" y2="391" stroke-width="1.6" marker-end="url(#f6Ba)"/>
+      <line class="ln" x1="770.667" y1="391" x2="795.667" y2="391" stroke-width="1.6" marker-end="url(#f6Ba)"/>
+      <path class="ln" d="M983.333,244 V256 H184.667 V267" stroke-width="1.6" marker-end="url(#f6Ba)"/>
+      <line x1="0" y1="534" x2="28" y2="534" stroke="var(--line)" stroke-width="1"/>
+      <text class="ts" x="34" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">연결 없음 · 대기</text>
+      <line x1="150" y1="534" x2="178" y2="534" stroke="var(--ink)" stroke-width="1.4"/>
+      <text class="ts" x="184" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">연결됨 (길 열림)</text>
+      <line x1="300" y1="534" x2="328" y2="534" stroke="var(--accent-line)" stroke-width="3" marker-end="url(#f6Bd)"/>
+      <text class="ts" x="336" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">데이터 이동</text>
+      <text class="tb" x="430" y="534" text-anchor="middle" dominant-baseline="central" style="font-size:12px">✕</text>
+      <text class="ts" x="442" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">끊김</text>
+      <line x1="500" y1="534" x2="528" y2="534" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2.5"/>
+      <text class="ts" x="534" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">접속 중</text>
+      <line x1="610" y1="534" x2="638" y2="534" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2.5"/>
+      <text class="ts" x="644" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">핫스팟 망 경유 조작 (확인 필요)</text>
+      <line x1="828" y1="534" x2="856" y2="534" stroke="var(--muted)" stroke-width="1" stroke-dasharray="1.5 2"/>
+      <text class="ts" x="862" y="534" text-anchor="start" dominant-baseline="central" style="font-size:10px">같은 기기</text>
+      <text class="tb" x="0" y="554" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">업로드 지시:</text>
+      <text class="ts" x="74" y="554" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">② 자동 업로드 예약 → ③ 조작 끊김 동안 Dock 자동 대기 → ④ 핫스팟 접속 즉시 업로드 시작 (지시 없이 진행)</text>
+      <text class="tb" x="1168" y="554" text-anchor="end" dominant-baseline="central" style="font-size:10.5px">핫스팟 = 인터넷으로 가는 유일한 문 (③ 열림 · ⑥ 닫힘)</text>
+      </svg>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>5-B</span></footer>
+</section>
+</div>
+
+<!-- 5-C. 업로드 경로 A안 · B안 비교 -->
+<div class="frame">
+<section class="slide" id="s4nc">
+  <header class="hd"><h1><span class="no">5-C.</span>업로드 경로 A안 · B안 비교 (팀 논의용)</h1></header>
+  <p class="msg">두 안 모두 성립하며 차이는 핫스팟에 붙는 기기(모듈 또는 SBC)이고, 공통 실기 시험 4항목으로 확정함</p>
+  <div class="body" style="margin-top:14px">
+    <table class="t sm tight xt" style="table-layout:fixed">
+      <colgroup><col style="width:150px"><col><col></colgroup>
+      <thead><tr><th>구분</th><th>A안 · Wi-Fi 모듈이 핫스팟 접속 (5-A쪽)</th><th>B안 · SBC가 핫스팟 직접 접속 (5-B쪽)</th></tr></thead>
+      <tbody>
+        <tr><th>핫스팟 손님</th><td>Wi-Fi 모듈 (공유기 + 손님 겸용)</td><td>SBC 자체 Wi-Fi</td></tr>
+        <tr><th>모듈 역할</th><td>셀·폰 AP + 핫스팟 중계</td><td>셀·폰 AP 전용</td></tr>
+        <tr><th>필요 조건</th><td>모듈 라디오 2개 (AP · 손님 분리) · 자동 재접속 펌웨어 · SBC가 모듈 설정을 바꿀 통로</td><td>SBC Wi-Fi 내장 또는 추가 (5 GHz) · 안테나 케이스 밖 배치</td></tr>
+        <tr><th>자동 재접속</th><td>모듈 펌웨어 기능 (OpenWrt travelmate 등)</td><td>리눅스 기본 기능 (저장된 Wi-Fi 자동 접속)</td></tr>
+        <tr><th>연결 상태 파악</th><td>SBC가 모듈에 조회</td><td>SBC가 직접 확인</td></tr>
+        <tr><th>⑧ 업로드 중 조작</th><td>어려움 — SBC가 모듈 뒤 (포트 전달 · 이름 알림 중계 설정 필요)</td><td>쉬움 — SBC가 핫스팟 망에 직접 참여</td></tr>
+        <tr><th>무선 · 안테나</th><td>모듈 1개 · 안테나 1벌</td><td>모듈 + SBC · 안테나 2벌 · 상호 간섭 검토</td></tr>
+        <tr><th>소프트웨어</th><td>모듈 펌웨어 + SBC (2곳)</td><td>SBC (1곳)</td></tr>
+        <tr><th>주요 위험</th><td>한 라디오 겸용 시 핫스팟 탐색 중 AP 중단 → 셀 연결 끊김</td><td>금속 케이스 내 SBC 신호 · 부품 추가</td></tr>
+        <tr><th>기존 이력</th><td>1C 기판 공유기 모듈 자리 (BL-M7628AR4 · 2.4 GHz 추정 · 미실장)</td><td>1B 기판 라즈베리파이 제로 2 W 실장 (Wi-Fi 내장 · 2.4 GHz)</td></tr>
+        <tr class="rec"><th>검토 의견</th><td>하드웨어 단순 — 라디오 2개 모듈 확보 시 유효</td><td class="ac">소프트웨어 · ⑧ 단순 — 우선 시험 권고</td></tr>
+      </tbody>
+    </table>
+    <div class="kw" style="margin-top:12px">
+      <p><span class="k">논의 사항</span>① 업로드 중 폰 조작(⑧) 필요 여부 · ② SBC 기종과 Wi-Fi 내장 여부 · ③ 모듈 후보 (라디오 2개 · OpenWrt) · ④ 안테나 배치</p>
+      <p><span class="k">실기 시험</span>핫스팟 ON 후 자동 접속 시간 (iPhone · Android) · 접속 중 셀 AP 유지 (A안) · smartdock.local 접근 (⑧) · 업로드 속도</p>
+      <p><span class="k">공통</span>코치 조작 · 사용자 플로우 동일 (6쪽) · 핫스팟 정보 저장 위치만 다름 (A안 모듈 · B안 SBC) · 2.4 GHz 전용이면 iPhone '호환성 최대화' 필요</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>5-C</span></footer>
+</section>
+</div>
+
+<!-- 6. 스마트폰 사용자 플로우 -->
+<div class="frame">
+<section class="slide" id="s4u">
+  <header class="hd"><h1><span class="no">6.</span>스마트폰 사용자 플로우 (개선 B · 코치 기준)</h1></header>
+  <p class="msg">접속 정보는 최초 1회만 등록하고, 매 경기 코치 조작은 화면 열기 · START · 핫스팟 켜기 · 끄기 4회로 한정함</p>
+  <div class="body" style="margin-top:14px">
+    <p class="sec">최초 1회<span class="note">(설치일 · 폰 교체 · 핫스팟 비밀번호 변경 시)</span></p>
+    <svg class="dg" width="1168" height="170" viewBox="0 0 1168 170" role="img" aria-label="최초 1회 등록 3단계와 접속 정보 2가지">
+<defs><marker id="uf-a" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+<rect x="0" y="0" width="22" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="11" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">가</text>
+<text class="tb" x="30" y="9" text-anchor="start" dominant-baseline="central" style="font-size:11.5px">Dock Wi-Fi 접속</text>
+<g transform="translate(0,24)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px">연결 전</text>
+<text class="tb" x="9" y="40" text-anchor="start" dominant-baseline="central" style="font-size:8.5px">Wi-Fi</text>
+<rect x="8" y="48" width="60" height="13" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/><text class="tac" x="12" y="54.5" text-anchor="start" dominant-baseline="central" style="font-size:7px">SmartDock-01  ✓</text>
+<text class="ts" x="9" y="69" text-anchor="start" dominant-baseline="central" style="font-size:7px">Office</text>
+<text class="ts" x="9" y="82" text-anchor="start" dominant-baseline="central" style="font-size:7px">Guest</text>
+<line x1="9" y1="75.5" x2="67" y2="75.5" stroke="var(--line)"/>
+<text class="ts" x="9" y="98" text-anchor="start" dominant-baseline="central" style="font-size:7px">비밀번호</text>
+<rect x="8" y="104" width="60" height="13" rx="2" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text x="12" y="110.5" text-anchor="start" dominant-baseline="central" style="font-size:7px">••••••••</text>
+<rect x="8" y="123" width="60" height="12" rx="3" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="38" y="129" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">연결</text>
+</g>
+<text class="ts" x="85" y="40" text-anchor="start" dominant-baseline="central" style="font-size:9px">설정 > Wi-Fi</text>
+<text class="ts" x="85" y="53" text-anchor="start" dominant-baseline="central" style="font-size:9px">SmartDock-01 선택</text>
+<text class="ts" x="85" y="66" text-anchor="start" dominant-baseline="central" style="font-size:9px">비밀번호 입력</text>
+<text class="ts" x="85" y="79" text-anchor="start" dominant-baseline="central" style="font-size:9px">(Dock 라벨 표기)</text>
+<text class="tac" x="85" y="97" text-anchor="start" dominant-baseline="central" style="font-size:9px">확인: 폰이 기억</text>
+<text class="ts" x="85" y="116" text-anchor="start" dominant-baseline="central" style="font-size:8.5px">Android: '인터넷 없음'</text>
+<text class="ts" x="85" y="128" text-anchor="start" dominant-baseline="central" style="font-size:8.5px">→ '연결 유지' 선택</text>
+<rect x="85" y="150" width="80.0" height="16" rx="3" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="tb" x="91" y="158" text-anchor="start" dominant-baseline="central" style="font-size:9px">폰 기본 설정 화면</text>
+<path class="ln" d="M184,128 H203" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect x="206" y="0" width="22" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="217" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">나</text>
+<text class="tb" x="236" y="9" text-anchor="start" dominant-baseline="central" style="font-size:11.5px">Dock 화면 열기</text>
+<g transform="translate(206,24)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--box)" stroke="var(--accent-line)" stroke-width="1"/>
+<text x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px;fill:var(--accent)">Dock Wi-Fi 연결</text>
+<rect x="8" y="33" width="60" height="11" rx="5.5" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="ts" x="38" y="38.5" text-anchor="middle" dominant-baseline="central" style="font-size:6.5px">smartdock.local</text>
+<text class="tb" x="9" y="55" text-anchor="start" dominant-baseline="central" style="font-size:8.5px">Smart Dock</text>
+<use href="#cell-x-sm" class="cx" x="9.5" y="63" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="63" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="63" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="63" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="63" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="63" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="78" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="78" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="78" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="78" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="78" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="78" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="93" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="93" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="93" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="93" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="93" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="93" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="108" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="108" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="108" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="108" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="108" width="7.6" height="12.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="108" width="7.6" height="12.6"/>
+<rect x="8" y="125" width="60" height="12" rx="3" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="38" y="131" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">홈 화면에 추가</text>
+</g>
+<text class="ts" x="291" y="40" text-anchor="start" dominant-baseline="central" style="font-size:9px">브라우저 주소창에</text>
+<text class="ts" x="291" y="53" text-anchor="start" dominant-baseline="central" style="font-size:9px">smartdock.local 입력</text>
+<text class="ts" x="291" y="66" text-anchor="start" dominant-baseline="central" style="font-size:9px">홈 화면에 추가</text>
+<text class="tac" x="291" y="84" text-anchor="start" dominant-baseline="central" style="font-size:9px">확인: Dock 아이콘 생김</text>
+<text class="ts" x="291" y="103" text-anchor="start" dominant-baseline="central" style="font-size:8.5px">앱 설치 없음</text>
+<text class="ts" x="291" y="115" text-anchor="start" dominant-baseline="central" style="font-size:8.5px">(북마크 아이콘)</text>
+<rect x="291" y="150" width="90.6" height="16" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/><text class="tac" x="297" y="158" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 웹 화면 (SBC)</text>
+<path class="ln" d="M390,128 H409" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect x="412" y="0" width="22" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="423" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">다</text>
+<text class="tb" x="442" y="9" text-anchor="start" dominant-baseline="central" style="font-size:11.5px">핫스팟 정보 등록</text>
+<g transform="translate(412,24)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--box)" stroke="var(--accent-line)" stroke-width="1"/>
+<text x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px;fill:var(--accent)">Dock Wi-Fi 연결</text>
+<rect x="8" y="33" width="60" height="11" rx="5.5" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="ts" x="38" y="38.5" text-anchor="middle" dominant-baseline="central" style="font-size:6.5px">smartdock.local</text>
+<text class="tb" x="9" y="55" text-anchor="start" dominant-baseline="central" style="font-size:8px">핫스팟 등록</text>
+<text class="ts" x="9" y="67" text-anchor="start" dominant-baseline="central" style="font-size:7px">이름</text>
+<rect x="8" y="72" width="60" height="13" rx="2" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text x="12" y="78.5" text-anchor="start" dominant-baseline="central" style="font-size:7px">김코치의 iPhone</text>
+<text class="ts" x="9" y="93" text-anchor="start" dominant-baseline="central" style="font-size:7px">비밀번호</text>
+<rect x="8" y="98" width="60" height="13" rx="2" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text x="12" y="104.5" text-anchor="start" dominant-baseline="central" style="font-size:7px">••••••</text>
+<rect x="8" y="121" width="60" height="12" rx="3" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="38" y="127" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">저장</text>
+</g>
+<text class="ts" x="497" y="40" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 메뉴 > 핫스팟</text>
+<text class="ts" x="497" y="53" text-anchor="start" dominant-baseline="central" style="font-size:9px">폰 핫스팟 이름·</text>
+<text class="ts" x="497" y="66" text-anchor="start" dominant-baseline="central" style="font-size:9px">비밀번호 입력 · 저장</text>
+<text class="tac" x="497" y="84" text-anchor="start" dominant-baseline="central" style="font-size:9px">확인: Dock이 기억</text>
+<rect x="497" y="150" width="90.6" height="16" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/><text class="tac" x="503" y="158" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 웹 화면 (SBC)</text>
+<line x1="612" y1="4" x2="612" y2="166" stroke="var(--line)" stroke-width="1"/>
+<text class="tb" x="626" y="9" text-anchor="start" dominant-baseline="central" style="font-size:11.5px">접속 정보 2가지 = 이름 + 비밀번호 한 쌍</text>
+<text class="ts" x="628" y="32" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">접속 정보</text>
+<text class="ts" x="790" y="32" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">정하는 쪽</text>
+<text class="ts" x="918" y="32" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">저장하는 쪽</text>
+<text class="ts" x="1080" y="32" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">쓰는 단계</text>
+<line x1="626" y1="41" x2="1168" y2="41" stroke="var(--line)" stroke-width="1"/>
+<rect class="bx ac" x="626" y="50" width="150" height="44" rx="3"/>
+<text class="tac" x="701" y="65" text-anchor="middle" dominant-baseline="central" style="font-size:11px">Dock Wi-Fi 정보</text>
+<text class="ts" x="701" y="81" text-anchor="middle" dominant-baseline="central" style="font-size:9px">예: SmartDock-01</text>
+<path class="ln" d="M778,72 H786" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect class="bx" x="788" y="50" width="104" height="44" rx="3"/>
+<text class="tb" x="840" y="65" text-anchor="middle" dominant-baseline="central" style="font-size:11px">Dock</text>
+<text class="ts" x="840" y="81" text-anchor="middle" dominant-baseline="central" style="font-size:9px">(라벨 표기)</text>
+<path class="ln" d="M894,72 H914" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect class="bx" x="916" y="50" width="150" height="44" rx="3"/>
+<text class="tb" x="991" y="65" text-anchor="middle" dominant-baseline="central" style="font-size:10.5px">코치 폰 (가)</text>
+<text class="ts" x="991" y="81" text-anchor="middle" dominant-baseline="central" style="font-size:9px">셀 24개 (USB · E1·E2)</text>
+<text class="tac" x="1080" y="72" text-anchor="start" dominant-baseline="central" style="font-size:11px">① ② ⑥</text>
+<rect class="bx ac" x="626" y="108" width="150" height="44" rx="3"/>
+<text class="tac" x="701" y="123" text-anchor="middle" dominant-baseline="central" style="font-size:11px">핫스팟 정보</text>
+<text class="ts" x="701" y="139" text-anchor="middle" dominant-baseline="central" style="font-size:9px">예: 김코치의 iPhone</text>
+<path class="ln" d="M778,130 H786" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect class="bx" x="788" y="108" width="104" height="44" rx="3"/>
+<text class="tb" x="840" y="123" text-anchor="middle" dominant-baseline="central" style="font-size:11px">코치</text>
+<text class="ts" x="840" y="139" text-anchor="middle" dominant-baseline="central" style="font-size:9px">(폰 핫스팟 설정)</text>
+<path class="ln" d="M894,130 H914" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect class="bx" x="916" y="108" width="150" height="44" rx="3"/>
+<text class="tb" x="991" y="130" text-anchor="middle" dominant-baseline="central" style="font-size:11px">Dock (다)</text>
+<text class="tac" x="1080" y="130" text-anchor="start" dominant-baseline="central" style="font-size:11px">④ ⑤</text>
+<text class="ts" x="626" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">폰은 Dock Wi-Fi의 손님 · 핫스팟의 주인 → 둘을 동시에 못 함 (③ 전환의 이유)</text>
+</svg>
+    <p class="sec" style="margin-top:12px">매 경기<span class="note">(5-A · 5-B쪽 ①~⑥ · 조작 4회 · 대기 2회 · 두 안 동일)</span></p>
+    <svg class="dg" width="1168" height="176" viewBox="0 0 1168 176" role="img" aria-label="매 경기 6단계 스마트폰 화면과 코치 조작">
+<defs><marker id="uf-a" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+<rect x="0.0" y="0" width="54" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="27" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">① 준비</text>
+<rect x="60.0" y="1" width="34" height="16" rx="8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="77" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:9px">조작</text>
+<g transform="translate(0,26)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--box)" stroke="var(--accent-line)" stroke-width="1"/>
+<text x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px;fill:var(--accent)">Dock Wi-Fi 연결</text>
+<rect x="8" y="33" width="60" height="11" rx="5.5" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="ts" x="38" y="38.5" text-anchor="middle" dominant-baseline="central" style="font-size:6.5px">smartdock.local</text>
+<text class="tb" x="9" y="55" text-anchor="start" dominant-baseline="central" style="font-size:8.5px">Smart Dock</text>
+<use href="#cell-x-sm" class="cx" x="9.5" y="65" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="65" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="65" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="65" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="65" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="65" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="79" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="79" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="79" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="79" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="79" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="79" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="93" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="93" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="93" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="93" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="93" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="93" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="107" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="107" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="107" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="107" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="107" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="107" width="7" height="11.6"/>
+<rect x="8" y="125" width="60" height="12" rx="3" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="38" y="131" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">START</text>
+</g>
+<text class="tb" x="84" y="38" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">Dock 아이콘 누름</text>
+<text class="ts" x="84" y="55" text-anchor="start" dominant-baseline="central" style="font-size:9px">Wi-Fi 자동 연결</text>
+<text class="ts" x="84" y="68" text-anchor="start" dominant-baseline="central" style="font-size:9px">(가에서 기억)</text>
+<text class="tac" x="84" y="85" text-anchor="start" dominant-baseline="central" style="font-size:9px">확인: 24칸 거치</text>
+<rect x="84.0" y="154" width="90.6" height="16" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/><text class="tac" x="90" y="162" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 웹 화면 (SBC)</text>
+<path class="ln" d="M181,99 H195" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect x="197.0" y="0" width="54" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="224" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">② 추출</text>
+<rect x="257.0" y="1" width="34" height="16" rx="8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="274" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:9px">조작</text>
+<g transform="translate(197,26)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--box)" stroke="var(--accent-line)" stroke-width="1"/>
+<text x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px;fill:var(--accent)">Dock Wi-Fi 연결</text>
+<rect x="8" y="33" width="60" height="11" rx="5.5" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="ts" x="38" y="38.5" text-anchor="middle" dominant-baseline="central" style="font-size:6.5px">smartdock.local</text>
+<text class="tb" x="9" y="55" text-anchor="start" dominant-baseline="central" style="font-size:8.5px">추출 18 / 24</text>
+<rect x="9" y="62" width="58" height="4" rx="2" fill="var(--line)"/>
+<rect x="9" y="62" width="43.5" height="4" rx="2" fill="var(--accent-line)"/>
+<use href="#cell-x-sm" class="cx" x="9.5" y="70" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="70" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="70" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="70" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="70" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="70" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="83.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="83.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="83.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="83.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="83.5" width="7" height="11.6"/><text class="tb" x="50.6" y="89.3" text-anchor="middle" dominant-baseline="central" style="font-size:7px">✕</text><use href="#cell-x-sm" class="cx" x="56.5" y="83.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="97" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="97" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="28.3" y="97" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="97" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="97" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="97" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="9.5" y="110.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="18.9" y="110.5" width="7" height="11.6"/><text class="tb" x="22.4" y="116.3" text-anchor="middle" dominant-baseline="central" style="font-size:7px">✕</text><use href="#cell-x-sm" class="cx" x="28.3" y="110.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="37.7" y="110.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="47.1" y="110.5" width="7" height="11.6"/><use href="#cell-x-sm" class="cx" x="56.5" y="110.5" width="7" height="11.6"/>
+<text class="ts" x="9" y="130" text-anchor="start" dominant-baseline="central" style="font-size:7px">자동 업로드</text><rect x="52" y="125.5" width="15" height="9" rx="4.5" fill="var(--accent-line)"/><circle cx="62.5" cy="130" r="3.2" fill="var(--box)"/>
+</g>
+<text class="tb" x="281" y="38" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">START 누름</text>
+<text class="ts" x="281" y="55" text-anchor="start" dominant-baseline="central" style="font-size:9px">약 10분 수신</text>
+<text class="ts" x="281" y="68" text-anchor="start" dominant-baseline="central" style="font-size:9px">결과 화면 (7쪽)</text>
+<text class="tac" x="281" y="85" text-anchor="start" dominant-baseline="central" style="font-size:9px">확인: 자동 업로드 ON</text>
+<rect x="281.0" y="154" width="90.6" height="16" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/><text class="tac" x="287" y="162" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 웹 화면 (SBC)</text>
+<path class="ln" d="M378,99 H392" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect x="394.0" y="0" width="54" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="421" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">③ 전환</text>
+<rect x="454.0" y="1" width="34" height="16" rx="8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="471" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:9px">조작</text>
+<g transform="translate(394,26)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.3"/>
+<text class="tac" x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px">핫스팟 켜짐</text>
+<text class="tb" x="9" y="41" text-anchor="start" dominant-baseline="central" style="font-size:8px">개인용 핫스팟</text>
+<text class="ts" x="9" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7px">연결 허용</text><rect x="52" y="51.5" width="15" height="9" rx="4.5" fill="var(--accent-line)"/><circle cx="62.5" cy="56" r="3.2" fill="var(--box)"/>
+<text class="ts" x="9" y="70" text-anchor="start" dominant-baseline="central" style="font-size:7px">Wi-Fi 암호 ••••</text>
+<rect x="8" y="82" width="60" height="15" rx="2" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text x="12" y="89.5" text-anchor="start" dominant-baseline="central" style="font-size:7px">연결된 기기 0</text>
+</g>
+<text class="tb" x="478" y="38" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">핫스팟 켬</text>
+<text class="ts" x="478" y="55" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 웹 화면 멈춤 = 정상</text>
+<text class="ts" x="478" y="68" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 접속까지</text>
+<text class="ts" x="478" y="81" text-anchor="start" dominant-baseline="central" style="font-size:9px">이 설정 화면 유지</text>
+<rect x="478.0" y="154" width="80.0" height="16" rx="3" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="tb" x="484" y="162" text-anchor="start" dominant-baseline="central" style="font-size:9px">폰 기본 설정 화면</text>
+<path class="ln" d="M575,99 H589" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect x="591.0" y="0" width="54" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="618" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">④ 접속</text>
+<rect x="651.0" y="1" width="34" height="16" rx="8" fill="none" stroke="var(--faint)" stroke-width="1" stroke-dasharray="3 2"/><text class="ts" x="668" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:9px">대기</text>
+<g transform="translate(591,26)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.3"/>
+<text class="tac" x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px">핫스팟 · 기기 1</text>
+<text class="tb" x="9" y="41" text-anchor="start" dominant-baseline="central" style="font-size:8px">개인용 핫스팟</text>
+<text class="ts" x="9" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7px">연결 허용</text><rect x="52" y="51.5" width="15" height="9" rx="4.5" fill="var(--accent-line)"/><circle cx="62.5" cy="56" r="3.2" fill="var(--box)"/>
+<text class="ts" x="9" y="70" text-anchor="start" dominant-baseline="central" style="font-size:7px">Wi-Fi 암호 ••••</text>
+<rect x="8" y="82" width="60" height="15" rx="2" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/><text class="tac" x="12" y="89.5" text-anchor="start" dominant-baseline="central" style="font-size:7px">연결된 기기 1</text>
+</g>
+<text class="tb" x="675" y="38" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">조작 없음</text>
+<text class="ts" x="675" y="55" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock이 저장된</text>
+<text class="ts" x="675" y="68" text-anchor="start" dominant-baseline="central" style="font-size:9px">핫스팟 정보로 접속</text>
+<text class="tac" x="675" y="85" text-anchor="start" dominant-baseline="central" style="font-size:9px">확인: 연결된 기기 1</text>
+<rect x="675.0" y="154" width="80.0" height="16" rx="3" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="tb" x="681" y="162" text-anchor="start" dominant-baseline="central" style="font-size:9px">폰 기본 설정 화면</text>
+<path class="ln" d="M772,99 H786" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect x="788.0" y="0" width="62" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="819" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">⑤ 업로드</text>
+<rect x="856.0" y="1" width="34" height="16" rx="8" fill="none" stroke="var(--faint)" stroke-width="1" stroke-dasharray="3 2"/><text class="ts" x="873" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:9px">대기</text>
+<g transform="translate(788,26)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.3"/>
+<text class="tac" x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px">핫스팟 · 기기 1</text>
+<rect x="7" y="34" width="62" height="72" rx="3" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 2"/>
+<rect x="10" y="38" width="56" height="10" rx="5" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="38" y="43" text-anchor="middle" dominant-baseline="central" style="font-size:6px">smartdock.local</text>
+<text class="tac" x="38" y="58" text-anchor="middle" dominant-baseline="central" style="font-size:7px">업로드 12 / 24</text>
+<rect x="12" y="66" width="52" height="4" rx="2" fill="var(--line)"/>
+<rect x="12" y="66" width="26" height="4" rx="2" fill="var(--accent-line)"/>
+<text class="ts" x="38" y="82" text-anchor="middle" dominant-baseline="central" style="font-size:7px">⑧ 되면 보임</text>
+<text class="ts" x="38" y="94" text-anchor="middle" dominant-baseline="central" style="font-size:7px">(확인 필요)</text>
+<text class="ts" x="38" y="120" text-anchor="middle" dominant-baseline="central" style="font-size:7px">안 되면 화면 없음</text>
+</g>
+<text class="tb" x="872" y="38" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">폰을 Dock 옆에</text>
+<text class="ts" x="872" y="55" text-anchor="start" dominant-baseline="central" style="font-size:9px">핫스팟 유지 · 약 20분</text>
+<text class="ts" x="872" y="68" text-anchor="start" dominant-baseline="central" style="font-size:9px">셀룰러 약 3 GB</text>
+<text class="tac" x="872" y="85" text-anchor="start" dominant-baseline="central" style="font-size:9px">확인: 표시등 업로드 중</text>
+<rect x="872.0" y="154" width="90.2" height="16" rx="3" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="tb" x="878" y="162" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 표시등 (본체)</text>
+<path class="ln" d="M969,99 H983" stroke-width="1.4" marker-end="url(#uf-a)"/>
+<rect x="985.0" y="0" width="54" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/><text class="tac" x="1012" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:11px">⑥ 완료</text>
+<rect x="1045.0" y="1" width="34" height="16" rx="8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="1062" y="9" text-anchor="middle" dominant-baseline="central" style="font-size:9px">조작</text>
+<g transform="translate(985,26)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px">핫스팟 꺼짐</text>
+<text class="tb" x="9" y="41" text-anchor="start" dominant-baseline="central" style="font-size:8px">개인용 핫스팟</text>
+<text class="ts" x="9" y="56" text-anchor="start" dominant-baseline="central" style="font-size:7px">연결 허용</text><rect x="52" y="51.5" width="15" height="9" rx="4.5" fill="var(--line)"/><circle cx="56.5" cy="56" r="3.2" fill="var(--box)"/>
+<rect x="8" y="72" width="60" height="15" rx="2" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text x="12" y="79.5" text-anchor="start" dominant-baseline="central" style="font-size:7px">연결된 기기 0</text>
+</g>
+<text class="tb" x="1069" y="38" text-anchor="start" dominant-baseline="central" style="font-size:10.5px">핫스팟 끔</text>
+<text class="ts" x="1069" y="55" text-anchor="start" dominant-baseline="central" style="font-size:9px">결과 확인 (7쪽)</text>
+<text class="ts" x="1069" y="68" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock은 충전 대기</text>
+<text class="tac" x="1069" y="85" text-anchor="start" dominant-baseline="central" style="font-size:9px">확인: 연결된 기기 0</text>
+<rect x="1069.0" y="154" width="80.0" height="16" rx="3" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="tb" x="1075" y="162" text-anchor="start" dominant-baseline="central" style="font-size:9px">폰 기본 설정 화면</text>
+</svg>
+    <div class="kw" style="margin-top:6px">
+      <p><span class="k">보는 곳</span>Dock 웹 = SBC가 만든 페이지를 폰 브라우저가 표시 (같은 망 + 주소 · 앱 없음) · 폰 기본 설정 = 폰이 직접 표시 · Dock 표시등 = 본체 불빛</p>
+      <p><span class="k">어긋나면</span>④에서 '연결된 기기 0' 유지 (폰 이름·핫스팟 비밀번호 변경, 폰 교체) → 핫스팟 끄고 Dock Wi-Fi 재접속 → 다. 재등록</p>
+      <p><span class="k">요구 · 주의</span>결과 알림 방식 (7쪽 · 팀 논의) · 핫스팟 켠 뒤 설정 화면 유지 (Apple 권고) · 셀룰러 약 3 GB/일 (실측 전)</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>6</span></footer>
+</section>
+</div>
+
+<!-- 7. 결과 확인 방안 -->
+<div class="frame">
+<section class="slide" id="s4r">
+  <header class="hd"><h1><span class="no">7.</span>결과 확인 방안 (추출 · 업로드 완료/실패 · 팀 논의용)</h1></header>
+  <p class="msg">추출 결과는 Dock 웹 화면으로 확정하고, 업로드 결과 알림은 4개 안의 조합을 팀 논의로 결정함</p>
+  <div class="body" style="margin-top:14px">
+    <svg class="dg" width="1168" height="318" viewBox="0 0 1168 318" role="img" aria-label="추출 결과 화면과 업로드 결과 알림 4개 안">
+<text class="tb" x="0" y="9" text-anchor="start" dominant-baseline="central" style="font-size:12.5px">추출 결과 — Dock 웹 화면으로 확정</text>
+<text class="ts" x="0" y="28" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">② 끝 · 폰이 아직 Dock Wi-Fi에 연결 · 두 경로 공통</text>
+<g transform="translate(0,44) scale(1.4)"><g transform="translate(0,0)">
+<rect x="0" y="0" width="76" height="146" rx="12" fill="var(--frame)" stroke="var(--ink)" stroke-width="1.3"/>
+<rect x="28" y="4" width="20" height="4" rx="2" fill="var(--faint)"/>
+<rect x="4" y="12" width="68" height="128" rx="5" fill="var(--box)" stroke="var(--line)" stroke-width="1"/>
+<rect x="8" y="16" width="60" height="13" rx="6.5" fill="var(--box)" stroke="var(--accent-line)" stroke-width="1"/>
+<text x="38" y="22.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px;fill:var(--accent)">Dock Wi-Fi 연결</text>
+<rect x="8" y="33" width="60" height="11" rx="5.5" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text class="ts" x="38" y="38.5" text-anchor="middle" dominant-baseline="central" style="font-size:6.5px">smartdock.local</text>
+<text class="tb" x="9" y="54" text-anchor="start" dominant-baseline="central" style="font-size:8px">추출 완료</text>
+<text class="tb" x="38" y="69" text-anchor="middle" dominant-baseline="central" style="font-size:11px">22 / 24</text>
+<text class="tac" x="38" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:7px">✕ 5번 · 17번 칸</text>
+<rect x="8" y="91" width="60" height="11" rx="3" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1.2"/><text class="tac" x="38" y="96.5" text-anchor="middle" dominant-baseline="central" style="font-size:7.5px">실패 칸 다시</text>
+<rect x="8" y="105" width="60" height="11" rx="3" fill="var(--frame)" stroke="var(--line)" stroke-width="1"/><text x="38" y="110.5" text-anchor="middle" dominant-baseline="central" style="font-size:7px">이대로 진행</text>
+<line x1="9" y1="122" x2="67" y2="122" stroke="var(--line)"/>
+<text class="tac" x="38" y="130" text-anchor="middle" dominant-baseline="central" style="font-size:7px">다음: 핫스팟 켜기</text>
+</g></g>
+<text class="tb" x="118" y="62" text-anchor="start" dominant-baseline="central" style="font-size:11px">화면이 저절로 결과로 바뀜</text>
+<text class="ts" x="118" y="78" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">몇 초마다 SBC에 상태를 물음</text>
+<text class="tb" x="118" y="95" text-anchor="start" dominant-baseline="central" style="font-size:11px">완료 칸 수 · 실패 칸 번호</text>
+<text class="ts" x="118" y="111" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">22 / 24 · ✕ 5번 · 17번</text>
+<text class="tb" x="118" y="128" text-anchor="start" dominant-baseline="central" style="font-size:11px">그 자리에서 다시 시도</text>
+<text class="ts" x="118" y="144" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">실패 칸 다시 / 이대로 진행</text>
+<text class="tb" x="118" y="161" text-anchor="start" dominant-baseline="central" style="font-size:11px">다음 할 일을 안내</text>
+<text class="ts" x="118" y="177" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">"핫스팟을 켜세요"</text>
+<text class="ts" x="118" y="194" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">→ ③ 시점 판단 불필요</text>
+<rect x="118" y="215" width="90.6" height="16" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1"/><text class="tac" x="124" y="223" text-anchor="start" dominant-baseline="central" style="font-size:9px">Dock 웹 화면 (SBC)</text>
+<line x1="330" y1="4" x2="330" y2="314" stroke="var(--line)" stroke-width="1"/>
+<text class="tb" x="348" y="9" text-anchor="start" dominant-baseline="central" style="font-size:12.5px">업로드 결과 — 알림 방식 4개 안 (팀 논의)</text>
+<text class="ts" x="348" y="28" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">⑤ ⑥ · 폰은 핫스팟의 주인 → Dock 웹 화면을 못 볼 수 있음 · 조합해서 선택</text>
+<rect x="348" y="42" width="404" height="132" rx="5" fill="var(--box)" stroke="var(--ink)" stroke-width="1.1"/>
+<rect x="358" y="50" width="40" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="378" y="59" text-anchor="middle" dominant-baseline="central" style="font-size:11px">안 1</text>
+<text class="tb" x="406" y="59" text-anchor="start" dominant-baseline="central" style="font-size:11.5px">Dock 표시등 (본체 불빛 · 소리)</text>
+<rect x="680.8" y="51" width="61.2" height="16" rx="8" fill="none" stroke="var(--faint)" stroke-width="1"/>
+<text class="ts" x="711.4" y="59" text-anchor="middle" dominant-baseline="central" style="font-size:9px">두 경로 공통</text>
+<text class="ts" x="360" y="82" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">보는 곳</text>
+<text x="424" y="82" text-anchor="start" dominant-baseline="central" style="font-size:10px">Dock 본체</text>
+<text class="ts" x="360" y="97" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">알 수 있음</text>
+<text x="424" y="97" text-anchor="start" dominant-baseline="central" style="font-size:10px">업로드 중 · 완료 · 실패</text>
+<text class="ts" x="360" y="112" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">장점</text>
+<text x="424" y="112" text-anchor="start" dominant-baseline="central" style="font-size:10px">항상 동작 · 폰 조작 없음</text>
+<text class="ts" x="360" y="127" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">한계</text>
+<text x="424" y="127" text-anchor="start" dominant-baseline="central" style="font-size:10px">본체를 봐야 함 · 실패 원인은 모름</text>
+<text class="ts" x="360" y="142" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">필요</text>
+<text x="424" y="142" text-anchor="start" dominant-baseline="central" style="font-size:10px">LED·부저 설계 · 상태 표시 로직</text>
+<line x1="358" y1="154" x2="742" y2="154" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="360" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">확실성</text>
+<text class="tac" x="389.2" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">상</text>
+<text class="ts" x="455" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">상세</text>
+<text class="tac" x="475.8" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">하</text>
+<text class="ts" x="550" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">코치 수고</text>
+<text class="tac" x="590.1" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">적음</text>
+<text class="ts" x="645" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">개발</text>
+<text class="tac" x="665.8" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">적음</text>
+<rect x="764" y="42" width="404" height="132" rx="5" fill="var(--box)" stroke="var(--ink)" stroke-width="1.1"/>
+<rect x="774" y="50" width="40" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="794" y="59" text-anchor="middle" dominant-baseline="central" style="font-size:11px">안 2</text>
+<text class="tb" x="822" y="59" text-anchor="start" dominant-baseline="central" style="font-size:11.5px">핫스팟 망에서 Dock 웹 화면 (⑧)</text>
+<rect x="1111.8" y="51" width="46.2" height="16" rx="8" fill="var(--accent-tint)" stroke="var(--accent)" stroke-width="1"/>
+<text class="tac" x="1134.9" y="59" text-anchor="middle" dominant-baseline="central" style="font-size:9px">B안 유리</text>
+<text class="ts" x="776" y="82" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">보는 곳</text>
+<text x="840" y="82" text-anchor="start" dominant-baseline="central" style="font-size:10px">폰 브라우저 (핫스팟 켠 채)</text>
+<text class="ts" x="776" y="97" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">알 수 있음</text>
+<text x="840" y="97" text-anchor="start" dominant-baseline="central" style="font-size:10px">실시간 진행 · 결과 · 원인</text>
+<text class="ts" x="776" y="112" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">장점</text>
+<text x="840" y="112" text-anchor="start" dominant-baseline="central" style="font-size:10px">업로드 중에도 폰에서 확인 · 다시 시도</text>
+<text class="ts" x="776" y="127" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">한계</text>
+<text x="840" y="127" text-anchor="start" dominant-baseline="central" style="font-size:10px">실측 전 · A안은 모듈 뒤라 어려움</text>
+<text class="ts" x="776" y="142" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">필요</text>
+<text x="840" y="142" text-anchor="start" dominant-baseline="central" style="font-size:10px">⑧ 실기 확인 · (A안) 포트 전달·이름 중계</text>
+<line x1="774" y1="154" x2="1158" y2="154" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="776" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">확실성</text>
+<text class="tac" x="805.2" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">실측 전</text>
+<text class="ts" x="871" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">상세</text>
+<text class="tac" x="891.8" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">상</text>
+<text class="ts" x="966" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">코치 수고</text>
+<text class="tac" x="1006.1" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">중</text>
+<text class="ts" x="1061" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9px">개발</text>
+<text class="tac" x="1081.8" y="164" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">중</text>
+<rect x="348" y="184" width="404" height="132" rx="5" fill="var(--box)" stroke="var(--ink)" stroke-width="1.1"/>
+<rect x="358" y="192" width="40" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="378" y="201" text-anchor="middle" dominant-baseline="central" style="font-size:11px">안 3</text>
+<text class="tb" x="406" y="201" text-anchor="start" dominant-baseline="central" style="font-size:11.5px">핫스팟 끈 뒤 재접속 결과 화면</text>
+<rect x="680.8" y="193" width="61.2" height="16" rx="8" fill="none" stroke="var(--faint)" stroke-width="1"/>
+<text class="ts" x="711.4" y="201" text-anchor="middle" dominant-baseline="central" style="font-size:9px">두 경로 공통</text>
+<text class="ts" x="360" y="224" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">보는 곳</text>
+<text x="424" y="224" text-anchor="start" dominant-baseline="central" style="font-size:10px">Dock Wi-Fi 재접속 → Dock 아이콘</text>
+<text class="ts" x="360" y="239" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">알 수 있음</text>
+<text x="424" y="239" text-anchor="start" dominant-baseline="central" style="font-size:10px">최종 결과 · 실패 원인 · 다시 시도</text>
+<text class="ts" x="360" y="254" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">장점</text>
+<text x="424" y="254" text-anchor="start" dominant-baseline="central" style="font-size:10px">⑧ 없이 상세 결과 · SBC가 결과 보관</text>
+<text class="ts" x="360" y="269" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">한계</text>
+<text x="424" y="269" text-anchor="start" dominant-baseline="central" style="font-size:10px">자동 재접속 보장 안 됨 · 아이콘 한 번 더</text>
+<text class="ts" x="360" y="284" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">필요</text>
+<text x="424" y="284" text-anchor="start" dominant-baseline="central" style="font-size:10px">결과 저장·표시 화면 · (선택) 자동 창</text>
+<line x1="358" y1="296" x2="742" y2="296" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="360" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9px">확실성</text>
+<text class="tac" x="389.2" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">중</text>
+<text class="ts" x="455" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9px">상세</text>
+<text class="tac" x="475.8" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">상</text>
+<text class="ts" x="550" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9px">코치 수고</text>
+<text class="tac" x="590.1" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">중</text>
+<text class="ts" x="645" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9px">개발</text>
+<text class="tac" x="665.8" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">적음</text>
+<rect x="764" y="184" width="404" height="132" rx="5" fill="var(--box)" stroke="var(--ink)" stroke-width="1.1"/>
+<rect x="774" y="192" width="40" height="18" rx="3" fill="var(--accent-tint)" stroke="var(--accent-line)" stroke-width="1.2"/>
+<text class="tac" x="794" y="201" text-anchor="middle" dominant-baseline="central" style="font-size:11px">안 4</text>
+<text class="tb" x="822" y="201" text-anchor="start" dominant-baseline="central" style="font-size:11.5px">서버 알림 (문자 · 메일 · 플랫폼)</text>
+<rect x="1096.8" y="193" width="61.2" height="16" rx="8" fill="none" stroke="var(--faint)" stroke-width="1"/>
+<text class="ts" x="1127.4" y="201" text-anchor="middle" dominant-baseline="central" style="font-size:9px">두 경로 공통</text>
+<text class="ts" x="776" y="224" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">보는 곳</text>
+<text x="840" y="224" text-anchor="start" dominant-baseline="central" style="font-size:10px">폰 문자·메일 · 플랫폼 세션 목록</text>
+<text class="ts" x="776" y="239" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">알 수 있음</text>
+<text x="840" y="239" text-anchor="start" dominant-baseline="central" style="font-size:10px">서버 도착 (최종 확인)</text>
+<text class="ts" x="776" y="254" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">장점</text>
+<text x="840" y="254" text-anchor="start" dominant-baseline="central" style="font-size:10px">가장 확실 · 앱 없이 폰 알림</text>
+<text class="ts" x="776" y="269" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">한계</text>
+<text x="840" y="269" text-anchor="start" dominant-baseline="central" style="font-size:10px">실패는 '무소식'으로만 드러남</text>
+<text class="ts" x="776" y="284" text-anchor="start" dominant-baseline="central" style="font-size:9.5px;font-weight:700">필요</text>
+<text x="840" y="284" text-anchor="start" dominant-baseline="central" style="font-size:10px">서버 알림 기능 · 코치 연락처 등록</text>
+<line x1="774" y1="296" x2="1158" y2="296" stroke="var(--line)" stroke-width="1"/>
+<text class="ts" x="776" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9px">확실성</text>
+<text class="tac" x="805.2" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">상</text>
+<text class="ts" x="871" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9px">상세</text>
+<text class="tac" x="891.8" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">중</text>
+<text class="ts" x="966" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9px">코치 수고</text>
+<text class="tac" x="1006.1" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">적음</text>
+<text class="ts" x="1061" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9px">개발</text>
+<text class="tac" x="1081.8" y="306" text-anchor="start" dominant-baseline="central" style="font-size:9.5px">많음</text>
+</svg>
+    <div class="kw" style="margin-top:12px">
+      <p><span class="k">조합 예시</span>최소 = 안 1 + 안 3 · B안 선택 시 + 안 2 · 서비스 확장 시 + 안 4</p>
+      <p><span class="k">실패 시</span>파일은 SBC에 보관 → 다음 핫스팟에서 자동 이어 올림 · 원인 3종 (핫스팟 접속 실패 · 업로드 중단 · 서버 거부)</p>
+      <p><span class="k">논의 사항</span>① 본체 LED·부저 추가 여부 · ② 코치가 업로드 끝까지 폰을 두고 기다려야 하나 · ③ 결과를 누가 알아야 하나 (코치 · 분석 담당)</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>7</span></footer>
+</section>
+</div>
+
+<!-- 6. 동작 시나리오 -->
+<div class="frame">
+<section class="slide" id="s4s">
+  <header class="hd"><h1><span class="no">8.</span>동작 시나리오 (개선 B · 핫스팟 업로드 · A안 기준)</h1></header>
+  <p class="msg">스마트폰은 추출 단계에 Dock Wi-Fi로 조작하고, 추출 종료 후 핫스팟으로 전환하여 Dock이 접속·업로드하는 순서로 기술적으로 성립함</p>
+  <div class="body" style="margin-top:14px">
+    <table class="t sm">
+      <colgroup><col style="width:96px"><col><col><col><col><col></colgroup>
+      <thead><tr><th>구분</th><th>1. 준비</th><th>2. 추출 (Dock Wi-Fi)</th><th>3. 전환</th><th>4. 업로드 (핫스팟)</th><th>5. 종료</th></tr></thead>
+      <tbody>
+        <tr><th>스마트폰</th><td>Dock Wi-Fi 접속 → smartdock.local 열기 (⑤)</td><td>START · 진행·실패 칸 확인 (⑤)</td><td>Dock Wi-Fi 해제 → 핫스팟 켜기 (조작 화면 끊김, 의도된 동작)</td><td>호스트로서 SBC 진행 확인 (⑧, 확인 필요) 또는 무인</td><td>핫스팟 끄기</td></tr>
+        <tr><th>Wi-Fi 모듈</th><td>2.4 + 5 GHz AP 송출 · 인터넷 미연결</td><td>셀 24대 수용 (①) · SBC로 전달 (②)</td><td>5 GHz 라디오로 핫스팟 접속 (⑥) · 2.4 GHz 셀 AP 유지</td><td>SBC ↔ 핫스팟 중계 (⑥)</td><td>핫스팟 연결 해제</td></tr>
+        <tr><th>SBC</th><td>웹·FTP 서버 기동 · MCU 슬롯 상태 수신</td><td>TCP 명령 → FTP 수신 · 저장 (②)</td><td>인터넷 연결 감지 → 업로드 대기열 준비</td><td>HTTPS 업로드 (⑦) · 서버 확인 후 셀 원본 삭제 명령</td><td>완료 표시 · 무동작 시 자동 종료</td></tr>
+        <tr><th>셀</th><td>켜진 채 Dock 거치 (버튼 ON) · 충전</td><td>Dock AP 접속 · 파일 전송 (자체 배터리)</td><td>대기 · 충전</td><td>서버 확인 후 원본 삭제</td><td>충전 계속 (어댑터)</td></tr>
+        <tr><th>MCU</th><td>슬롯 전원 · 6개 단위 충전</td><td>충전 · 온도 감시</td><td>충전</td><td>충전</td><td>전원 정리</td></tr>
+      </tbody>
+    </table>
+    <div class="kw" style="margin-top:22px">
+      <p><span class="k">성립 조건</span>① 셀은 켜진 채 반납 · ② 모듈은 듀얼밴드 + Wi-Fi 클라이언트(STA) 지원 · ③ 핫스팟 이름·비밀번호를 Dock에 사전 저장 · ④ 업로드 중 조작(⑧)은 실기 확인 후 화면 설계 확정</p>
+      <p><span class="k">B안</span>3·4단계의 핫스팟 접속·업로드를 SBC 자체 Wi-Fi가 수행 · 모듈은 셀·폰 AP만 유지 (5-B쪽)</p>
+      <p><span class="k">개선 A</span>iPad가 ⑤ 역할(Dock Wi-Fi 유지), 핫스팟은 별도 스마트폰 → 기기 2대로 ⑤·⑥ 동시 성립 · 전환 단계 없음</p>
+      <p><span class="k">1안 실내</span>3·4단계의 핫스팟을 클럽하우스 Wi-Fi로 대체 · 웹 로그인 방식 Wi-Fi는 접속 불가 → 핫스팟 우회</p>
+      <p><span class="k">검증 계획</span>iPhone·Android 실기로 ⑤→⑥ 전환, ⑧ 접근, ⑦ 소요 시간 측정 · 파일 크기 실측 (M2)</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>8</span></footer>
+</section>
+</div>
+
+<!-- 5. 전원 설계 -->
+<div class="frame">
+<section class="slide" id="s5">
+  <header class="hd"><h1><span class="no">9.</span>전원 설계</h1></header>
+  <p class="msg">배터리는 제어부 비상 전원으로, 셀 충전은 어댑터 연결 시 6개 단위로 수행하여 배터리 1/8 이하·충전기 45 W 이하로 축소함</p>
+  <div class="body">
+    <p class="sec">전원 경로</p>
+    <svg class="dg" width="1168" height="112" viewBox="0 0 1168 112" role="img" aria-label="전원 경로">
+      <defs><marker id="a5" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <rect class="bx" x="0" y="0" width="220" height="40"/>
+      <text x="110" y="20" text-anchor="middle" dominant-baseline="central">어댑터 (USB-C PD)</text>
+      <rect class="bx ac" x="0" y="72" width="220" height="40"/>
+      <text class="tac" x="110" y="92" text-anchor="middle" dominant-baseline="central">내장 배터리</text>
+      <rect class="bx" x="560" y="0" width="300" height="40"/>
+      <text x="710" y="20" text-anchor="middle" dominant-baseline="central">셀 충전 (6개 단위 순차)</text>
+      <rect class="bx" x="560" y="72" width="300" height="40"/>
+      <text x="710" y="92" text-anchor="middle" dominant-baseline="central">제어부 (MCU·SBC·Wi-Fi 모듈)</text>
+      <line class="ln" x1="220" y1="20" x2="558" y2="20" marker-end="url(#a5)"/>
+      <line class="ln" x1="380" y1="20" x2="380" y2="92"/>
+      <line class="ln" x1="220" y1="92" x2="558" y2="92" marker-end="url(#a5)"/>
+      <circle cx="380" cy="20" r="3" class="ah"/>
+      <circle cx="380" cy="92" r="3" class="ah"/>
+      <text class="ts" x="300" y="84" text-anchor="middle">어댑터 분리 시</text>
+      <text class="ts" x="470" y="12" text-anchor="middle">어댑터 연결 시</text>
+      <text class="ts" x="388" y="56" text-anchor="start" dominant-baseline="central">어댑터 직결 — 배터리 없이 제어부 구동 (신규 · 현행은 배터리 경유 추정)</text>
+    </svg>
+
+    <p class="sec" style="margin-top:18px">용량 비교</p>
+    <table class="t">
+      <colgroup><col style="width:150px"><col style="width:339px"><col style="width:339px"><col></colgroup>
+      <thead><tr><th>구분</th><th>현행</th><th>1안 클럽하우스</th><th>2안 야외</th></tr></thead>
+      <tbody>
+        <tr><th>용도</th><td>야외 셀 24대 충전</td><td>정상 종료 (약 30초)</td><td>추출 1회</td></tr>
+        <tr><th>용량</th><td>약 100 Wh (11.1 V, 9,000 mAh)</td><td>최소 (약 0.1 Wh)</td><td>약 12 Wh (18650 셀 1개)</td></tr>
+        <tr><th>현행 대비</th><td>100%</td><td>사실상 제거</td><td class="ac">약 1/8</td></tr>
+      </tbody>
+    </table>
+
+    <div class="kw" style="margin-top:14px">
+      <p><span class="k">산정 (2안)</span>50분 × 9 W ÷ 0.8 (수명) ÷ 0.8 (저온) ≈ 12 Wh · 50분 = 추출 최대 20분 + 준비 10분 + 재시도 20분</p>
+      <p><span class="k">9 W (추정)</span>MCU 계통 0.5 W (칩 0.1~0.2 W + 주변 칩) + SBC 3 W + 모듈 5 W = 8.5 W → 여유 포함 9 W · 모듈 사양 따라 최대 1.5배</p>
+      <p><span class="k">충전 전력</span>6개 × 2~3 W + 제어부 9 W ≈ 21~27 W → 시판 USB-C 충전기 (45 W 이하)</p>
+      <p><span class="k">충전 시간</span>6개 단위 4회 · 그룹당 약 1.5~2시간 → 전체 약 6~8시간 (추정, 야간 충전)</p>
+      <p><span class="k">2안 대안</span>시판 USB-C PD 보조배터리 구동 (고객 지참)</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>9</span></footer>
+</section>
+</div>
+
+<!-- 7. 배터리 선정 검토 -->
+<div class="frame">
+<section class="slide" id="s5b">
+  <header class="hd"><h1><span class="no">10.</span>배터리 선정 검토</h1></header>
+  <p class="msg">맞춤 배터리 팩은 MOQ로 제외하고, 1셀 상용 원통형(18650)을 기본안으로 셀 배터리 공용안과 비교하여 사용 환경(1·2안) 결정 시 확정함</p>
+  <div class="body" style="margin-top:16px">
+    <p class="sec">필요 조건</p>
+    <div class="kw">
+      <p><span class="k">1안</span>정상 종료 — 9 W × 30초 ≈ 0.1 Wh</p>
+      <p><span class="k">2안</span>추출 1회 — 약 12 Wh (모듈 전력 1.5배 시 약 18 Wh)</p>
+      <p><span class="k">공통</span>순간 전류 약 2.5 A (9 W ÷ 3.7 V, 1셀 기준)</p>
+    </div>
+    <p class="sec" style="margin-top:14px">후보 비교</p>
+    <table class="t sm tight xt">
+      <colgroup><col style="width:130px"><col><col><col></colgroup>
+      <thead><tr><th>구분</th><th>셀 배터리 공용</th><th class="ac-h">원통형 18650 (권고)</th><th>원통형 21700 (참고)</th></tr></thead>
+      <tbody>
+        <tr><th>규격</th><td>GRP753427 (셀 Y) · 750 mAh · 2.89 Wh</td><td>3,000~3,500 mAh · 약 11~12.6 Wh</td><td>4,000~5,000 mAh · 약 14~18 Wh</td></tr>
+        <tr><th>크기·무게</th><td>약 7.5 × 34 × 27 mm (형번 기준 추정)</td><td>ø18 × 65 mm · 약 47 g</td><td>ø21 × 70 mm · 약 70 g</td></tr>
+        <tr><th>1안 정상 종료</th><td>에너지 충족 · 방전 전류 확인 필요 (약 3.3C)</td><td>충족</td><td>충족</td></tr>
+        <tr><th>2안 약 12 Wh</th><td>4~5개 필요 → 다셀 팩 제작 (MOQ 재발)</td><td>3,500 mAh급 충족 · 1.5배 시 부족</td><td>1.5배 (약 18 Wh)까지 충족</td></tr>
+        <tr><th>조달</th><td>기존 부품·공급사</td><td>상용 표준품 (다수 제조사)</td><td>상용 표준품</td></tr>
+        <tr><th>공용화</th><td>셀과 동일 배터리·충전 회로</td><td>1셀 충전 회로 공용</td><td>1셀 충전 회로 공용</td></tr>
+        <tr class="rec"><th>판단</th><td>1안 한정 시 대안</td><td class="ac">권고 (1·2안 공통)</td><td>모듈 전력 확정 후 선택</td></tr>
+      </tbody>
+    </table>
+    <div class="kw" style="margin-top:12px">
+      <p><span class="k">크기 참고</span>현행 11.1 V · 9,000 mAh 팩 = 18650 (3,000 mAh) 9개 구성과 수치 일치 (추정) → 18650 1개 ≈ 현행의 1/9</p>
+      <p><span class="k">설계 영향</span>1셀 3.0~4.2 V → SBC 5 V · 모듈 입력용 승압 회로 필요</p>
+      <p><span class="k">확인 필요</span>GRP753427 허용 방전 전류 · 셀 X6 배터리 GRP693027은 500 mAh (CLBX-6B 지도) — 공용 대상 형번 확정</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>10</span></footer>
+</section>
+</div>
+
+<!-- 6. 웹 화면 개발 계획 -->
+<div class="frame">
+<section class="slide" id="s6">
+  <header class="hd"><h1><span class="no">11.</span>웹 화면 개발 계획</h1></header>
+  <p class="msg">개선 B의 웹 화면은 5단계로 병행 개발하며, 셀 연동(P3) 전 통신 규격 문서 확보가 선결 과제임</p>
+  <div class="body">
+    <p class="sec">개발 단계</p>
+    <table class="t">
+      <colgroup><col style="width:170px"><col style="width:390px"><col style="width:270px"><col></colgroup>
+      <thead><tr><th>단계</th><th>내용</th><th>결과물</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><th>P0 화면 시안</th><td>가상 데이터 화면</td><td>조작 시안</td><td class="c ac">진행 중</td></tr>
+        <tr><th>P1 SBC 탑재</th><td>개발보드 웹 서버 구동</td><td>휴대폰 접속</td><td class="c">내부 수행</td></tr>
+        <tr><th>P2 Dock 연동</th><td>MCU 상태 수신 (DataManager 방식)</td><td>슬롯·충전 상태 표시</td><td class="c">내부 수행</td></tr>
+        <tr><th>P3 셀 연동</th><td>셀 데이터 수신 (LiveApp 방식)</td><td>iPad 없는 추출</td><td class="c">규격 문서 필요</td></tr>
+        <tr><th>P4 제품화</th><td>자동 기동·전원 차단 대응·업데이트·보안</td><td>양산 SBC 소프트웨어</td><td class="c">외부 검토 권고</td></tr>
+      </tbody>
+    </table>
+
+    <div class="kw" style="margin-top:26px">
+      <p><span class="k">화면 구성</span>DataManager 메뉴 계승 (Upload / HR ID / SSID / Update) + Dock 설정</p>
+      <p><span class="k">선결 과제</span>DataManager 소스, LiveApp–셀 통신 규격 문서 확보</p>
+      <p><span class="k">참고</span>1단계 성공 기준 (개선 A, iPad 무선 추출)은 SBC 불필요, 웹 화면은 병행</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>11</span></footer>
+</section>
+</div>
+
+<!-- 7. 의사결정 요청 및 향후 계획 -->
+<div class="frame">
+<section class="slide" id="s7">
+  <header class="hd"><h1><span class="no">12.</span>의사결정 요청 및 향후 계획</h1></header>
+  <p class="msg">사용 환경 범위·Dock Wi-Fi 이름 체계·배터리 방식 결정 후, 성공 기준 v3를 확정하여 모듈 선정과 네트워크 실기 검증에 착수함</p>
+  <div class="body">
+    <p class="sec">의사결정 요청</p>
+    <table class="t sm">
+      <colgroup><col style="width:52px"><col style="width:170px"><col style="width:250px"><col><col style="width:116px"></colgroup>
+      <thead><tr><th>No</th><th>안건</th><th>선택지</th><th>영향</th><th>현황</th></tr></thead>
+      <tbody>
+        <tr><td class="c">1</td><th>사용 환경 범위</th><td>1안 실내 한정<br>2안 야외 포함</td><td>배터리 용량 (최소 / 약 12 Wh), 외장 설계</td><td class="c">PM 검토 중</td></tr>
+        <tr><td class="c">2</td><th>Dock Wi-Fi 이름 체계</th><td>전 Dock 공통<br>Dock별 고유</td><td>공통: 기존 셀 무설정 접속, 오접속 위험<br>고유: 혼선 없음, 셀별 1회 설정</td><td class="c">추후 논의</td></tr>
+        <tr><td class="c">3</td><th>배터리 방식</th><td>원통형 18650 (권고)<br>셀 배터리 공용</td><td>크기·조달, 2안 가능 여부 (10쪽)</td><td class="c">1번과 연동</td></tr>
+        <tr><td class="c">4</td><th>성공 기준 v3</th><td>2.4 / 5 GHz 동시, 핫스팟 한정<br>배터리 역할 변경</td><td>개발 착수 기준</td><td class="c ac">승인 요청</td></tr>
+      </tbody>
+    </table>
+
+    <p class="sec" style="margin-top:16px">확인 필요 사항</p>
+    <ul class="d" style="display:grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 24px;">
+      <li>DataManager 소스·통신 규격 문서</li>
+      <li>Wi-Fi 모듈 WISP 지원</li>
+      <li>안테나 배치·외장 재질</li>
+      <li>Wi-Fi 모듈 소비 전력</li>
+      <li>Kinexon의 LiveHub 활용 방식</li>
+      <li>업로드 경로 A·B안 · 결과 알림 (5-A~7쪽)</li>
+      <li>셀 켜짐 조건 (Dock은 셀을 켤 수 없음)</li>
+      <li>현행 Dock 무배터리 동작</li>
+      <li>파일 크기 실측 (M2)</li>
+    </ul>
+
+    <p class="sec" style="margin-top:16px">향후 계획</p>
+    <svg class="dg" width="1168" height="44" viewBox="0 0 1168 44" role="img" aria-label="향후 계획 순서">
+      <defs><marker id="a7" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <rect class="bx" x="0" y="1" width="172" height="42"/>
+      <rect class="bx" x="199.2" y="1" width="172" height="42"/>
+      <rect class="bx" x="398.4" y="1" width="172" height="42"/>
+      <rect class="bx" x="597.6" y="1" width="172" height="42"/>
+      <rect class="bx" x="796.8" y="1" width="172" height="42"/>
+      <rect class="bx" x="996" y="1" width="172" height="42"/>
+      <text class="tb" x="86" y="22" text-anchor="middle" dominant-baseline="central">의사결정</text>
+      <text x="285.2" y="22" text-anchor="middle" dominant-baseline="central">성공 기준 v3 확정</text>
+      <text x="484.4" y="22" text-anchor="middle" dominant-baseline="central">모듈 선정·네트워크 실기</text>
+      <text x="683.6" y="22" text-anchor="middle" dominant-baseline="central">배터리·전원 확정</text>
+      <text x="882.8" y="22" text-anchor="middle" dominant-baseline="central">웹 화면 P1–P3</text>
+      <text x="1082" y="22" text-anchor="middle" dominant-baseline="central">제품화 P4</text>
+      <line class="ln" x1="172" y1="22" x2="197.2" y2="22" marker-end="url(#a7)"/>
+      <line class="ln" x1="371.2" y1="22" x2="396.4" y2="22" marker-end="url(#a7)"/>
+      <line class="ln" x1="570.4" y1="22" x2="595.6" y2="22" marker-end="url(#a7)"/>
+      <line class="ln" x1="769.6" y1="22" x2="794.8" y2="22" marker-end="url(#a7)"/>
+      <line class="ln" x1="968.8" y1="22" x2="994" y2="22" marker-end="url(#a7)"/>
+    </svg>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>12</span></footer>
+</section>
+</div>
+
+<!-- 참고. 예외 상황 대응 방향 -->
+<div class="frame">
+<section class="slide" id="s8">
+  <header class="hd"><h1><span class="no">참고.</span>예외 상황 대응 방향</h1></header>
+  <p class="msg">예외 상황 12건 중 7건은 설계에 반영하고, 3건은 화면 안내로 대응하며, 2건은 의사결정이 필요함</p>
+  <div class="body" style="margin-top:16px">
+    <table class="t sm tight ex">
+      <colgroup><col style="width:120px"><col style="width:60px"><col style="width:400px"><col></colgroup>
+      <thead><tr><th>구분</th><th>No</th><th>상황</th><th>대응 방향</th></tr></thead>
+      <tbody>
+        <tr class="gs"><th rowspan="2" class="c ac">결정 필요<br><span class="m" style="font-weight:400">2건</span></th><td class="c">E1</td><td>기존 셀 최초 접속 (Dock 정보 없음)</td><td>LiveHub 이름 사용 / USB 설정 입력</td></tr>
+        <tr><td class="c">E2</td><td>타 팀 Dock 오접속 (대회·합동훈련)</td><td>Dock별 고유 이름 (E1과 상충)</td></tr>
+        <tr class="gs"><th rowspan="7" class="c">설계 반영<br><span class="m" style="font-weight:400">7건</span></th><td class="c">E3</td><td>어댑터 미지참</td><td>USB-C PD 보조배터리 구동</td></tr>
+        <tr><td class="c">E6</td><td>무선 혼잡 (야외·대회)</td><td>신규 셀 5 GHz, 채널 자동 선택</td></tr>
+        <tr><td class="c">E8</td><td>추출 중 연결 끊김</td><td>셀 원본 보존·이어받기, 불완전 파일 실패 처리</td></tr>
+        <tr><td class="c">E9</td><td>인터넷 없음</td><td>Dock·iPad 보관 후 업로드</td></tr>
+        <tr><td class="c">E10</td><td>셀 원본 삭제 시점</td><td>서버 도착 확인 후 삭제</td></tr>
+        <tr><td class="c">E11</td><td>Dock 전원 미차단</td><td>무동작 시 자동 종료 (현행 2시간 타이머)</td></tr>
+        <tr><td class="c">E12</td><td>펌웨어 변경 중 전원 차단</td><td>어댑터 연결 시만 변경 허용</td></tr>
+        <tr class="gs"><th rowspan="3" class="c">현장 대응<br><span class="m" style="font-weight:400">3건</span></th><td class="c">E4</td><td>선수 24명 초과</td><td>Dock 2대 순차 추출 (시간 2배)</td></tr>
+        <tr><td class="c">E5</td><td>일부 셀 접속 실패</td><td>실패 슬롯 표시, 재시작 후 재추출</td></tr>
+        <tr><td class="c">E7</td><td>셀 배터리 방전</td><td>셀 보호 종료, 충전 후 추출</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>13</span></footer>
+</section>
+</div>
+
+</div>
+
+<script>
+(function () {
+  function fit() {
+    var f = document.querySelector('.frame');
+    if (!f) return;
+    document.documentElement.style.setProperty('--s', (f.clientWidth / 1280).toFixed(5));
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(document.querySelector('.deck'));
+})();
+</script>

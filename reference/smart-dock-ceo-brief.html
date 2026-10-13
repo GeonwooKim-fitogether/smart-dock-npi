@@ -1,0 +1,320 @@
+<title>Smart Dock 개발 브리프</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg:#F4F5F2; --surface:#FFFFFF; --ink:#23282B; --ink-soft:#4A5256; --muted:#7A8388;
+    --line:#DDDFD8; --accent:#0E9F6E; --accent-soft:#E6F5EE; --accent-ink:#0A7A55;
+    --warn:#B7791F; --warn-soft:#FBF3E4; --shadow:0 1px 2px rgba(35,40,43,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#171B1D; --surface:#22282B; --ink:#E8EAE6; --ink-soft:#B9C0BC; --muted:#8A9490;
+      --line:#343B3E; --accent:#34D399; --accent-soft:#1B3A30; --accent-ink:#6EE7B7;
+      --warn:#E0A94E; --warn-soft:#3A2F1A; --shadow:none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#171B1D; --surface:#22282B; --ink:#E8EAE6; --ink-soft:#B9C0BC; --muted:#8A9490;
+    --line:#343B3E; --accent:#34D399; --accent-soft:#1B3A30; --accent-ink:#6EE7B7;
+    --warn:#E0A94E; --warn-soft:#3A2F1A; --shadow:none;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    font-size:15.5px; line-height:1.75; -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:900px; margin:0 auto; padding:40px 20px 96px; }
+  h1,h2,h3 { font-family:"IBM Plex Sans KR","Noto Sans KR",sans-serif; font-weight:700; text-wrap:balance; }
+  h1 { font-size:clamp(28px,4.6vw,38px); line-height:1.25; margin:0 0 10px; }
+  h2 { font-size:clamp(20px,3vw,25px); line-height:1.35; margin:0 0 14px; }
+  h3 { font-size:16px; margin:24px 0 8px; }
+  p { max-width:74ch; margin:0 0 14px; }
+  ul,ol { max-width:74ch; margin:0 0 14px; padding-left:22px; }
+  li { margin-bottom:6px; }
+  strong { font-weight:700; }
+  em { font-style:normal; background:linear-gradient(transparent 60%, var(--accent-soft) 60%); }
+  code { font-family:"JetBrains Mono",monospace; font-size:.85em; background:var(--accent-soft); border-radius:3px; padding:1px 5px; }
+  a { color:var(--accent-ink); }
+
+  .eyebrow { font-family:"JetBrains Mono",monospace; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); margin:0 0 10px; }
+  .cover { padding:8px 0 28px; border-bottom:1px solid var(--line); margin-bottom:28px; }
+  .cover .sub { color:var(--ink-soft); font-size:14px; max-width:74ch; }
+  .cover .links { font-size:13px; color:var(--muted); margin-top:12px; }
+  .cover .links a { margin-right:14px; }
+
+  .chapter {
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    box-shadow:var(--shadow); padding:30px 32px; margin:0 0 26px;
+  }
+  .chapter .no { font-family:"JetBrains Mono",monospace; font-size:11.5px; letter-spacing:.14em; color:var(--accent-ink); margin:0 0 8px; }
+  .chapter .why { color:var(--ink-soft); font-size:12px; letter-spacing:.08em; font-family:"JetBrains Mono",monospace; margin:22px 0 6px; }
+
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; }
+  .chip { font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.06em; padding:3px 10px; border-radius:999px; background:var(--accent-soft); color:var(--accent-ink); }
+  .chip.warn { background:var(--warn-soft); color:var(--warn); }
+  .chip.plain { background:var(--bg); color:var(--ink-soft); border:1px solid var(--line); }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:18px 0 0; }
+  .card { border:1px solid var(--line); border-radius:9px; padding:14px 16px; background:var(--bg); }
+  .card .k { font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.12em; color:var(--accent-ink); margin:0 0 6px; }
+  .card .t { font-weight:700; font-size:14.5px; line-height:1.45; margin:0 0 6px; }
+  .card .d { font-size:13px; color:var(--ink-soft); line-height:1.6; margin:0; }
+
+  .fig { margin:18px 0 8px; overflow-x:auto; }
+  .fig svg { width:100%; height:auto; display:block; color:var(--ink); font-family:"Noto Sans KR",sans-serif; }
+  .fig .legend { display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--ink-soft); margin-top:10px; }
+  .fig .legend span::before { content:""; display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; border:1.5px solid currentColor; }
+  .fig .legend .new::before { background:var(--accent-soft); border-color:var(--accent); }
+  .fig .legend .fail::before { background:var(--warn-soft); border-color:var(--warn); }
+  .fig .legend .same::before { background:var(--surface); border-color:var(--line); }
+
+  .tablewrap { overflow-x:auto; margin:14px 0 6px; border:1px solid var(--line); border-radius:9px; background:var(--surface); }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; line-height:1.55; }
+  th,td { text-align:left; vertical-align:top; padding:9px 12px; border-bottom:1px solid var(--line); }
+  th { font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.08em; color:var(--muted); background:var(--bg); white-space:nowrap; }
+  tr:last-child td { border-bottom:none; }
+  td.id { font-family:"JetBrains Mono",monospace; color:var(--accent-ink); white-space:nowrap; }
+  td.warn { color:var(--warn); font-weight:700; }
+  td.ok { color:var(--accent-ink); font-weight:700; }
+
+  .decision { border:1px solid var(--line); border-left:5px solid var(--accent); border-radius:9px; padding:18px 22px; background:var(--bg); margin:14px 0 0; }
+  .decision dt { font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.12em; color:var(--muted); margin:14px 0 3px; }
+  .decision dt:first-child { margin-top:0; }
+  .decision dd { margin:0; max-width:74ch; }
+  .decision .rec { color:var(--accent-ink); font-weight:700; }
+  .foot { margin-top:34px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+  .foot p { max-width:none; }
+
+  @media print {
+    body { background:#fff; }
+    .chapter { break-before:page; box-shadow:none; }
+    .chapter:first-of-type { break-before:auto; }
+    .cover { break-after:page; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; } }
+</style>
+
+<div class="wrap">
+
+  <!-- ─────────── 표지 ─────────── -->
+  <div class="cover">
+    <p class="eyebrow">CEO 브리프 · NPI Concept 게이트 · 2026-09-29</p>
+    <h1>Smart Dock — 왜 만들고, 무엇이 되면 끝인가</h1>
+    <p class="sub">DKPX-2 · DKPY-2 개발의 배경, 오늘 시스템의 문제, 무엇이 어떻게 바뀌는지, 그리고 그 결과로 확정한 개발 목표와 성공 기준. 각 장의 헤드라인만 이어 읽어도 결론이 서도록 썼다.</p>
+    <p class="links">원문(부록) —
+      <a href="https://claude.ai/artifact/1zTaApC4HMDNa6f7iQcREq">개발 목표·성공 기준 v2 (게이트 증거 문서)</a>
+      <a href="https://claude.ai/artifact/XZD6ZF6exwiZSzNne7Vjgc">KEE 엔지니어링 감수 카드 16장</a>
+      <a href="https://claude.ai/artifact/NgCfcXdeibCjGEQic1ngUE">설계 논의 기록 v3</a>
+    </p>
+  </div>
+
+  <!-- ─────────── 제1장 총괄 결론 ─────────── -->
+  <section class="chapter">
+    <p class="no">제1장 · 총괄 결론</p>
+    <h2>LiveHub를 사지 않는 팀의 데이터 추출에서 PC를 없앤다 — LiveHub를 Dock 안에 넣어서.</h2>
+    <p>오늘 LiveHub가 있는 팀은 셀을 Dock에 꽂고 iPad 앱으로 10분 안에 24대를 무선으로 뽑는다. LiveHub가 없는 팀은 PC와 케이블로 뽑고, 그 경로의 실패 원인은 전부 우리 손 밖에 있다. <strong>이 개발은 그 두 번째 팀에게 첫 번째 팀의 경험을, 새 앱도 새 소프트웨어도 없이 주는 것</strong>이다 — LiveHub의 알맹이를 Dock 케이스 안에 넣는 하드웨어 통합으로.</p>
+    <div class="cards">
+      <div class="card"><p class="k">제2장 · 왜</p><p class="t">유선 추출의 실패 원인이 전부 우리 통제 밖에 있다</p><p class="d">케이블·Pogo·오염·접점·PC 호환성. 어느 하나가 아니라 그 집합이 문제다.</p></div>
+      <div class="card"><p class="k">제3장 · 무엇이 바뀌나</p><p class="t">Dock이 LiveHub를 품는다. 셀·앱·서버는 그대로</p><p class="d">To-Be는 "LiveHub 보유 팀의 오늘"에서 LiveHub 상자를 Dock 안으로 옮긴 그림이다.</p></div>
+      <div class="card"><p class="k">제4장 · 성공</p><p class="t">24대 · 10분 · PC 0회, iPad LiveApp에서</p><p class="d">성공을 숫자로 못 박았고, 아직 모르는 숫자는 Planning의 측정 태스크로 넘겼다.</p></div>
+      <div class="card"><p class="k">제5장 · 결정</p><p class="t">LiveHub 원가를 Dock에 얹는 방향의 승인</p><p class="d">되돌리기 어려운 구조 선택 하나가 남았다. 같은 구조가 한 번 멈춘 이력이 있다.</p></div>
+    </div>
+    <div class="chips">
+      <span class="chip plain">NPI-A · 게이트 5개</span>
+      <span class="chip plain">Concept 게이트 진행 중</span>
+      <span class="chip">성공 기준 문서 v2 작업완료</span>
+      <span class="chip warn">결정 필요 1건</span>
+    </div>
+  </section>
+
+  <!-- ─────────── 제2장 왜 ─────────── -->
+  <section class="chapter">
+    <p class="no">제2장 · 배경과 문제</p>
+    <h2>유선 추출은 실패 원인이 전부 우리 손 밖에 있다 — 그래서 경로에서 뺀다.</h2>
+
+    <p>셀(선수가 착용하는 GPS 트래커)의 데이터를 꺼내는 길이 오늘 둘 있다. <strong>LiveHub</strong>(현장용 무선 허브)를 가진 팀은 셀을 Dock(충전기)에 꽂고 iPad의 LiveApp으로 Wi-Fi 추출한다 — 보통 10분 안에 끝나고, 같은 앱에서 심박 기기 매칭·펌웨어 변경 같은 장비 관리까지 한다. <strong>LiveHub가 없는 팀</strong>(이 제품의 고객)은 사무실 PC에 DataManager를 깔고 케이블로 뽑는 것이 유일한 길이다.</p>
+
+    <div class="tablewrap"><table>
+      <tr><th>실패 원인</th><th>어디서</th><th>누가 통제하나</th><th>무선화로</th></tr>
+      <tr><td>케이블 오사용 · 규격 미달</td><td>Dock ↔ PC</td><td class="warn">고객</td><td class="ok">사라진다</td></tr>
+      <tr><td>PC의 OS · 드라이버 호환성</td><td>PC</td><td class="warn">고객 · OS 제조사</td><td class="ok">사라진다</td></tr>
+      <tr><td>Pogo 핀 오염 · 마모</td><td>셀 ↔ Dock 접점</td><td class="warn">현장 환경</td><td>남는다 — 충전은 여전히 접점을 거친다. 다만 피해가 <em>데이터 손실</em>에서 <em>충전 재시도</em>로 바뀐다</td></tr>
+      <tr><td>접점 미세 결합 불량</td><td>셀 ↔ Dock 접점</td><td class="warn">기구 공차</td><td>남는다 — 위와 같음</td></tr>
+    </table></div>
+
+    <p class="why">왜 그런가</p>
+    <p>PM이 원인별 빈도를 묻는 질문에 준 답은 "셋 중 무엇이 가장 잦은가"가 아니라 <em>"전부 섞여 있고, 전부 우리가 컨트롤할 수 없는 영역"</em>이었다. 문제의 정의가 특정 결함이 아니라 <strong>통제 불가 변수의 집합</strong>이므로, 해법도 결함 하나를 고치는 것이 아니라 <strong>그 변수들이 사는 경로(유선·PC)를 데이터 흐름에서 빼는 것</strong>이 된다. 위 표가 정직하게 보여 주듯 접점 문제는 무선화로도 남는다 — 이 개발은 그것을 없애는 것이 아니라, 접점이 나빠도 데이터는 살아 나오게 만드는 것이다.</p>
+  </section>
+
+  <!-- ─────────── 제3장 As-Is / To-Be ─────────── -->
+  <section class="chapter">
+    <p class="no">제3장 · 무엇이 어떻게 바뀌나</p>
+    <h2>Dock이 LiveHub를 품는다 — 셀·앱·서버는 한 글자도 바꾸지 않는다.</h2>
+
+    <div class="fig">
+      <svg viewBox="0 0 840 424" role="img" aria-label="As-Is 두 경로와 To-Be 경로의 비교 플로차트">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+          <marker id="arrw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--warn)"/></marker>
+          <marker id="arra" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--accent)"/></marker>
+        </defs>
+
+        <!-- ── Row 1 · AS-IS 미보유 팀 (y0=16) ── -->
+        <text x="40" y="26" font-size="11" letter-spacing="1.5" font-weight="700" style="fill:var(--warn)">AS-IS · LiveHub가 없는 팀 — 이 제품의 고객</text>
+        <g stroke="currentColor" stroke-width="1.4" fill="none" style="fill:var(--surface)">
+          <rect x="40" y="38" width="140" height="52" rx="7"/>
+          <rect x="250" y="38" width="140" height="52" rx="7"/>
+          <rect x="460" y="38" width="140" height="52" rx="7" style="fill:var(--warn-soft);stroke:var(--warn)"/>
+          <rect x="670" y="38" width="140" height="52" rx="7"/>
+        </g>
+        <g font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">
+          <text x="110" y="69">Cell ×24</text>
+          <text x="320" y="69">Dock</text>
+          <text x="530" y="61">PC</text><text x="530" y="78" font-size="11.5" font-weight="500">DataManager</text>
+          <text x="740" y="69">서버</text>
+        </g>
+        <g stroke-width="1.6" fill="none">
+          <line x1="186" y1="64" x2="244" y2="64" style="stroke:var(--warn)" marker-end="url(#arrw)"/>
+          <line x1="396" y1="64" x2="454" y2="64" style="stroke:var(--warn)" marker-end="url(#arrw)"/>
+          <line x1="606" y1="64" x2="664" y2="64" stroke="currentColor" marker-end="url(#arr)"/>
+        </g>
+        <g font-size="11" text-anchor="middle">
+          <text x="215" y="54" style="fill:var(--warn)" font-weight="700">Pogo 접점</text>
+          <text x="425" y="54" style="fill:var(--warn)" font-weight="700">USB 케이블</text>
+          <text x="635" y="54" fill="currentColor" opacity=".75">인터넷</text>
+          <text x="215" y="108" style="fill:var(--warn)">오염 · 마모 · 결합 불량</text>
+          <text x="425" y="108" style="fill:var(--warn)">오사용 · 규격 미달</text>
+          <text x="555" y="108" style="fill:var(--warn)">OS · 드라이버 호환성</text>
+        </g>
+        <text x="40" y="128" font-size="11.5" font-weight="700" style="fill:var(--warn)">실패 지점 3곳 — 전부 우리 통제 밖 · PC 필수</text>
+
+        <!-- ── Row 2 · AS-IS 보유 팀 (y0=156) ── -->
+        <text x="40" y="166" font-size="11" letter-spacing="1.5" font-weight="700" fill="currentColor" opacity=".6">AS-IS · LiveHub가 있는 팀 — 참고: 이미 되는 것</text>
+        <g stroke="currentColor" stroke-width="1.4" style="fill:var(--surface)">
+          <rect x="40" y="178" width="140" height="52" rx="7"/>
+          <rect x="250" y="178" width="140" height="52" rx="7"/>
+          <rect x="460" y="178" width="140" height="52" rx="7"/>
+          <rect x="670" y="178" width="140" height="52" rx="7"/>
+        </g>
+        <g font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">
+          <text x="110" y="201">Cell ×24</text><text x="110" y="218" font-size="11" font-weight="500" opacity=".8">Dock에서 충전 중</text>
+          <text x="320" y="209">LiveHub</text>
+          <text x="530" y="201">iPad</text><text x="530" y="218" font-size="11.5" font-weight="500">LiveApp</text>
+          <text x="740" y="209">서버</text>
+        </g>
+        <g stroke="currentColor" stroke-width="1.6" fill="none">
+          <line x1="186" y1="204" x2="244" y2="204" marker-end="url(#arr)"/>
+          <line x1="396" y1="204" x2="454" y2="204" marker-end="url(#arr)"/>
+          <line x1="606" y1="204" x2="664" y2="204" marker-end="url(#arr)"/>
+        </g>
+        <g font-size="11" text-anchor="middle" fill="currentColor" opacity=".75">
+          <text x="215" y="194">Wi-Fi</text>
+          <text x="425" y="194">Wi-Fi</text>
+          <text x="635" y="194">인터넷</text>
+        </g>
+        <text x="40" y="268" font-size="11.5" fill="currentColor" opacity=".7">보통 10분 이내 · PC 없음 · 장비 관리(심박 매칭·펌웨어)까지 같은 앱에서</text>
+
+        <!-- ── Row 3 · TO-BE (y0=296) ── -->
+        <text x="40" y="306" font-size="11" letter-spacing="1.5" font-weight="700" style="fill:var(--accent-ink)">TO-BE · DKPX-2 / DKPY-2</text>
+        <g stroke="currentColor" stroke-width="1.4" style="fill:var(--surface)">
+          <rect x="40" y="318" width="140" height="52" rx="7"/>
+          <rect x="250" y="318" width="140" height="52" rx="7" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.2"/>
+          <rect x="460" y="318" width="140" height="52" rx="7"/>
+          <rect x="670" y="318" width="140" height="52" rx="7"/>
+        </g>
+        <g font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">
+          <text x="110" y="341">Cell ×24</text><text x="110" y="358" font-size="11" font-weight="500" opacity=".8">Dock에서 충전 중</text>
+          <text x="320" y="341" style="fill:var(--accent-ink)">Dock 안의</text><text x="320" y="358" style="fill:var(--accent-ink)">LiveHub</text>
+          <text x="530" y="341">iPad</text><text x="530" y="358" font-size="11.5" font-weight="500">LiveApp</text>
+          <text x="740" y="349">서버</text>
+        </g>
+        <g stroke-width="1.6" fill="none">
+          <line x1="186" y1="344" x2="244" y2="344" style="stroke:var(--accent)" marker-end="url(#arra)"/>
+          <line x1="396" y1="344" x2="454" y2="344" style="stroke:var(--accent)" marker-end="url(#arra)"/>
+          <line x1="606" y1="344" x2="664" y2="344" stroke="currentColor" marker-end="url(#arr)"/>
+        </g>
+        <g font-size="11" text-anchor="middle">
+          <text x="215" y="334" style="fill:var(--accent-ink)" font-weight="700">Wi-Fi</text>
+          <text x="425" y="334" style="fill:var(--accent-ink)" font-weight="700">Wi-Fi</text>
+          <text x="635" y="334" fill="currentColor" opacity=".75">인터넷</text>
+          <text x="110" y="388" fill="currentColor" opacity=".7">Pogo = 충전 전용 · 데이터 경로 밖</text>
+          <text x="320" y="388" style="fill:var(--accent-ink)" font-weight="700">새로 들어감</text>
+          <text x="530" y="388" fill="currentColor" opacity=".7">그대로</text>
+          <text x="740" y="388" fill="currentColor" opacity=".7">그대로</text>
+        </g>
+        <text x="40" y="412" font-size="11.5" font-weight="700" style="fill:var(--accent-ink)">새로 생기는 것은 초록 상자 하나 — 나머지는 "LiveHub가 있는 팀의 오늘" 그대로</text>
+      </svg>
+      <div class="legend"><span class="new">이번에 새로 생김</span><span class="fail">실패 지점 · 우리 통제 밖</span><span class="same">오늘 그대로</span></div>
+    </div>
+
+    <p class="why">왜 이 그림인가</p>
+    <p>To-Be는 새 그림이 아니다. <strong>가운데 줄(LiveHub 보유 팀의 오늘)에서 LiveHub 상자를 Dock 안으로 옮긴 것</strong>이 아래 줄이다. 셀의 펌웨어, iPad의 LiveApp, 서버 — 셋 다 오늘 그대로다. 위 줄의 실패 지점 셋 중 둘(케이블·PC)은 데이터 경로에서 사라지고, Pogo 접점은 충전 전용으로 남는다.</p>
+    <p>"무선망만 띄우면 되지 않나"는 길을 먼저 검토했고, PM 확인으로 닫혔다 — <em>iPad LiveApp이 LiveHub를 "장비"로 인식한다.</em> 그래서 Dock은 무선망이 아니라 LiveHub 장비로 보여야 하고, 그것을 만드는 가장 깨끗한 길은 LiveHub의 보드와 펌웨어를 그대로 넣는 것이다. 이 길에서 <strong>새로 짜는 소프트웨어가 0</strong>이라는 점이 결정적이다 — 지금 팀에 펌웨어·앱 개발 인력이 없기 때문이다. 이 개발은 "무선 기능 개발"이 아니라 <strong>"LiveHub를 Dock에 통합하는 기구·전원·인증 프로젝트"</strong>다.</p>
+    <p>그리고 이 그림은 이미 한 번 그려졌었다. 현행 Dock 기판(DKP2-1C)에 Wi-Fi 라우터 모듈과 연산 모듈 자리가 "for SMART DOCK"라는 이력과 함께 배선돼 있고, 실장되지 않은 채 멈춰 있다. <strong>그때 왜 멈췄는지</strong>가 제5장의 결정에 걸려 있다.</p>
+  </section>
+
+  <!-- ─────────── 제4장 목표·성공 기준 ─────────── -->
+  <section class="chapter">
+    <p class="no">제4장 · 개발 목표와 성공 기준</p>
+    <h2>성공은 숫자로 정한다 — 24대 · 10분 · PC 0회, iPad LiveApp에서.</h2>
+
+    <p><strong>개발 목표.</strong> LiveHub를 갖추지 않은 팀이, 훈련이 끝난 뒤 셀 24대를 Dock에 꽂고 iPad LiveApp을 열면, PC를 한 번도 연결하지 않고 10분 안에 전 선수의 데이터를 추출·업로드하고 장비 관리까지 할 수 있게 한다.</p>
+
+    <div class="tablewrap"><table>
+      <tr><th>번호</th><th>성공 기준</th><th>문턱</th><th>누가 판정하나</th></tr>
+      <tr><td class="id">S1</td><td><strong>시간</strong> — 24대 전량이 iPad LiveApp에 추출 완료</td><td>10분 이내 · 3회 반복 최악값</td><td>Development · Release 게이트</td></tr>
+      <tr><td class="id">S2</td><td><strong>완결</strong> — 24대 전부 성공</td><td>24 / 24 — 한 선수의 데이터가 빠진 날을 성공으로 부르지 않는다</td><td>같음</td></tr>
+      <tr><td class="id">S3</td><td><strong>무결성</strong> — 원본과 같고, 끊긴 파일이 정상으로 취급되지 않는다</td><td>불일치 0 · 오분류 0</td><td>Development</td></tr>
+      <tr><td class="id">S4</td><td><strong>장비 관리</strong> — 심박 매칭·펌웨어 변경이 이 경로로 된다</td><td>LiveHub 경로와 같은 결과</td><td>Development</td></tr>
+      <tr><td class="id">S5</td><td><strong>실패 가시성</strong> — 한 대라도 실패하면 앱에서 안다</td><td>구분된다</td><td>Development</td></tr>
+      <tr><td class="id">S6</td><td><strong>PC 0회</strong> — 개봉부터 추출까지 PC를 연결하지 않는다</td><td>0회</td><td>Release</td></tr>
+    </table></div>
+
+    <p class="why">어떻게 이 숫자에 닿았나</p>
+    <p>첫 초안은 "무선으로 된다", "펌웨어를 안 고친다", "충전을 안 망가뜨린다"였다. 엔지니어링 감수(KEE)가 그것을 <em>"성공 기준이 아니라 기능 명세"</em>라고 부쉈다 — 여섯 줄 중 참인지 거짓인지 판정할 수 있는 것이 하나도 없었기 때문이다. 판정하려면 무엇을 재는가·얼마면 되는가·누가 판정하는가가 있어야 한다.</p>
+    <p>막혔던 지점은 "숫자를 아직 모른다"였는데, 감수가 그것을 둘로 갈랐다. <strong>요구 숫자</strong>(현장이 견디는 시간)는 재는 것이 아니라 묻는 것이라 PM 인터뷰로 그날 확정됐다 — 10분. <strong>능력 숫자</strong>(실제로 걸리는 시간)는 성공 기준이 아니라 그 기준을 만족하는지 재는 측정값이라, 문서에 번호를 달아 Planning의 측정 태스크로 넘겼다(세션 파일 크기 · LiveHub 대조군 시간 · 셀 1대 전송 속도 · 전원·발열 · 혼잡 환경 저하율).</p>
+    <p>확정된 전제와 아직 열린 전제를 갈라 둔다. <strong>확정:</strong> 셀은 Dock에 꽂힌 채 무선 추출한다(오늘 현장에서 매일 그렇게 한다). <strong>미확인:</strong> LiveHub의 보드·펌웨어를 그대로 Dock에 쓸 수 있는가 · LiveApp이 LiveHub에게 요구하는 범위 · 셀이 Dock 무선망을 PC 없이 고르는가 · 전파 인증 리드타임. 넷 다 Planning 게이트 전에 닫는다. 상세는 원문 v2의 §5·§6.</p>
+  </section>
+
+  <!-- ─────────── 제5장 결정 ─────────── -->
+  <section class="chapter">
+    <p class="no">제5장 · 남은 결정</p>
+    <h2>남은 결정은 하나 — LiveHub 원가를 Dock에 얹어 그 팀들을 고객으로 만들 것인가.</h2>
+
+    <div class="decision">
+      <dl>
+        <dt>트리거</dt>
+        <dd>에스컬레이션 규칙 §2-3 · 되돌리기 어려운 구조 선택</dd>
+        <dt>무엇이 걸려 있나</dt>
+        <dd>이 방향을 승인하면 Smart Dock의 원가에 LiveHub의 알맹이(무선 보드와 펌웨어)가 더해진다 — 저가 세그먼트에서 이 제품이 팔리는지는 그 원가에 달려 있다. 무선 송신기가 없던 제품에 송신기가 생기므로 판매 지역마다 전파 인증을 새로 받아야 하고, 그 리드타임이 출시 일정을 좌우한다. 같은 구조가 현행 기판에 설계됐다가 실장되지 않은 이력이 있어, 그 이유를 모르고 가면 같은 벽을 만날 수 있다. 시제품 전에는 되돌리기 쉽고, 양산에 들어가면 어렵다.</dd>
+        <dt>결정 질문</dt>
+        <dd><strong>LiveHub를 사지 않는 팀에게, LiveHub 원가의 일부를 Dock 값에 얹어 "PC 없는 추출"을 파는 것이 사업으로 성립하는가?</strong></dd>
+        <dt>옵션 비교</dt>
+        <dd>
+          <div class="tablewrap"><table>
+            <tr><th>옵션</th><th>비용 (돈·공수)</th><th>시간</th><th>위험</th><th>되돌리기</th></tr>
+            <tr><td><strong>A. LiveHub를 Dock에 통합</strong></td><td>LiveHub 코어 원가 + 기구·전원·인증. <strong>새 소프트웨어 0</strong></td><td>전파 인증 리드타임이 지배</td><td>1C에서 멈춘 사유 미확인 · 보드가 Dock에 들어가는지 미확인</td><td>시제품 전 쉬움</td></tr>
+            <tr><td>B. 새 소프트웨어로 LiveHub 흉내</td><td>부품은 싸나 개발 인력 없음</td><td>역공학 기간 예측 불가</td><td>LiveApp이 바뀌면 같이 깨짐 · 유지보수 주체 없음</td><td>쉬움</td></tr>
+            <tr><td>C. LiveApp을 고쳐 LiveHub 없이 동작</td><td>앱 개발 인력</td><td>앱 릴리스 주기</td><td>LiveHub 보유 고객의 앱에도 영향</td><td>앱 롤백으로 가능</td></tr>
+            <tr><td>D. 하지 않는다 — 저가 세그먼트는 유선 유지</td><td>0</td><td>—</td><td>유선 품질 문제 지속 · 무선 일원화 정책 미달</td><td>—</td></tr>
+          </table></div>
+        </dd>
+        <dt>추천</dt>
+        <dd><span class="rec">A.</span> 검증된 부품(LiveHub)과 검증된 클라이언트(LiveApp)를 그대로 쓰는 유일한 안이고, 지금 팀 자원(펌웨어·앱 인력 없음)으로 감당 가능한 유일한 안이다. · <strong>전문 검증:</strong> KEE 엔지니어링 감수 2회 — LiveApp의 LiveHub 인식은 PM 확인, 꽂힌 채 무선 추출은 현장 사실, 1C 기판의 동일 구조 배선은 회로 지도 실측.</dd>
+        <dt>무응답 시 기본 행동</dt>
+        <dd>A를 전제로 Planning 게이트에 착수한다. 단 첫 태스크를 <strong>"1C에서 라우터 모듈을 실장하지 않은 사유 확인"</strong>으로 두고, 그 답이 기술적 실패였다면 즉시 이 카드를 다시 올린다. 2주 내 이견 없으면 승인으로 간주.</dd>
+        <dt>시각 자료</dt>
+        <dd>제3장의 As-Is / To-Be 플로차트.</dd>
+        <dt>용어 각주</dt>
+        <dd><strong>LiveHub</strong> — 현장에서 셀과 iPad를 무선으로 잇는 우리 제품. 데이터를 저장하지 않고 중계만 한다. · <strong>LiveApp</strong> — iPad에서 추출·업로드·장비 관리를 하는 우리 앱. · <strong>DataManager</strong> — PC에서 케이블로 추출하는 우리 프로그램. · <strong>Pogo 접점</strong> — 셀을 Dock에 꽂을 때 닿는 스프링 핀. · <strong>1C 기판</strong> — 현행 Dock의 회로 기판 리비전. · <strong>NPI / Concept 게이트</strong> — 신제품 개발 관리 절차와 그 첫 관문. · <strong>전파 인증</strong> — 무선 송신 제품을 팔기 위해 국가별로 받는 인증(KC·CE·FCC).</dd>
+      </dl>
+    </div>
+  </section>
+
+  <div class="foot">
+    <p><strong>진행 상태.</strong> 개발 목표·성공 기준 문서 v2 — <strong>작업완료</strong>(아티팩트 게시 · PDF 전달). Concept 게이트의 해당 조건 저장 — 사람 조작 대기. 확인된 전제 1건(꽂힌 채 무선 추출), 미확인 전제 4건은 Planning 태스크로 접어 원문 v2 §5에 남겼다. KEE 감수 카드 16장 중 이 구조로 해소된 것 4장, 완화 4장, 기각 1장(유선 대안 — 목표 클라이언트가 iPad라 무선 필수), 나머지는 원문의 처분 시트에 있다.</p>
+    <p><strong>이 브리프에서 접은 것.</strong> 성공 기준의 판정 프로토콜 전문, 제약·비퇴행 요구, 측정 태스크 M1~M7, 전제별 "거짓이면 무엇이 무너지나" — 전부 <a href="https://claude.ai/artifact/1zTaApC4HMDNa6f7iQcREq">원문 v2</a>에 있다. 어디에도 없는 것은 없다.</p>
+  </div>
+</div>

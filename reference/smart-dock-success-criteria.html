@@ -1,0 +1,285 @@
+<title>Smart Dock 개발 목표·성공 기준</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #f5f8f7; --card: #ffffff; --ink: #17282a; --ink-soft: #48605f;
+    --line: #d8e2e0; --accent: #0e7c7b; --accent-soft: #e2f0ef;
+    --warn: #a8731c; --warn-soft: #f6ecd9; --danger: #a8483e; --danger-soft: #f7e6e3;
+    --shadow: 0 1px 3px rgba(23, 40, 42, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101b1c; --card: #17282a; --ink: #e4edec; --ink-soft: #9db4b2;
+      --line: #2b4143; --accent: #4cc2b8; --accent-soft: #1b3a3a;
+      --warn: #d9a959; --warn-soft: #3a2f1a; --danger: #d98a80; --danger-soft: #3a2320;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #101b1c; --card: #17282a; --ink: #e4edec; --ink-soft: #9db4b2;
+    --line: #2b4143; --accent: #4cc2b8; --accent-soft: #1b3a3a;
+    --warn: #d9a959; --warn-soft: #3a2f1a; --danger: #d98a80; --danger-soft: #3a2320;
+    --shadow: none;
+  }
+  body {
+    background: var(--ground); color: var(--ink);
+    font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    font-size: 15.5px; line-height: 1.75; margin: 0; -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 12px;
+  }
+  h1 {
+    font-family: "Noto Serif KR", serif; font-weight: 700;
+    font-size: clamp(26px, 4.5vw, 36px); line-height: 1.3; margin: 0 0 8px; text-wrap: balance;
+  }
+  .meta { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 36px; }
+  .verdict {
+    background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 6px; box-shadow: var(--shadow); padding: 22px 26px; margin: 0 0 40px;
+  }
+  .verdict .label {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .14em;
+    color: var(--accent); margin: 0 0 8px;
+  }
+  .verdict p { margin: 0 0 10px; } .verdict p:last-child { margin: 0; }
+  .decision {
+    background: var(--warn-soft); border: 1px solid var(--line); border-left: 4px solid var(--warn);
+    border-radius: 6px; padding: 18px 24px; margin: 0 0 32px;
+  }
+  .decision .label {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .12em;
+    color: var(--warn); margin: 0 0 8px;
+  }
+  .decision p { margin: 0 0 8px; max-width: 76ch; } .decision p:last-child { margin: 0; }
+  h2 {
+    font-family: "Noto Serif KR", serif; font-weight: 700; font-size: 21px; line-height: 1.4;
+    margin: 56px 0 8px; text-wrap: balance;
+  }
+  h2 .no {
+    font-family: "IBM Plex Mono", monospace; font-weight: 500; font-size: 14px;
+    color: var(--accent); margin-right: 10px; vertical-align: 2px;
+  }
+  .lede { color: var(--ink-soft); margin: 0 0 20px; font-size: 14.5px; max-width: 76ch; }
+  h3 { font-size: 16.5px; font-weight: 700; margin: 28px 0 10px; }
+  p { max-width: 76ch; margin: 0 0 14px; }
+  ul, ol { max-width: 76ch; margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  strong { font-weight: 700; }
+  em { font-style: normal; background: linear-gradient(transparent 62%, var(--accent-soft) 62%); }
+  code {
+    font-family: "IBM Plex Mono", monospace; font-size: .85em; background: var(--accent-soft);
+    border-radius: 3px; padding: 1px 5px; word-break: break-all;
+  }
+  .tablewrap {
+    overflow-x: auto; margin: 0 0 24px; border: 1px solid var(--line);
+    border-radius: 6px; background: var(--card); box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; font-size: 13.8px; line-height: 1.6; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  th {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .08em;
+    color: var(--ink-soft); background: color-mix(in srgb, var(--card) 60%, var(--ground)); white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.id { font-family: "IBM Plex Mono", monospace; font-weight: 500; color: var(--accent); white-space: nowrap; }
+  .tag {
+    display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 10.5px;
+    letter-spacing: .06em; border-radius: 3px; padding: 1px 7px; white-space: nowrap;
+  }
+  .tag.fixed { color: var(--accent); background: var(--accent-soft); }
+  .tag.open { color: var(--warn); background: var(--warn-soft); }
+  .tag.crit { color: var(--danger); background: var(--danger-soft); }
+  .foot {
+    margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--line);
+    color: var(--ink-soft); font-size: 13px;
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <p class="eyebrow">NPI · Smart Dock 개발 · Concept 게이트 증거 · v2</p>
+  <h1>DKPX-2 · DKPY-2 개발 목표·성공 기준</h1>
+  <p class="meta">확정일 2026-09-29 · 확정자 PM(geonwoo.kim) · 근거: PM 인터뷰 2회(현장 시간 창·성공 정의 · LiveApp↔LiveHub 관계·꽂힌 채 추출) + KEE 토론 2회 · 이 문서는 <strong>1단계의 성공</strong>을 정의한다 · <strong>v2 변경:</strong> P3 확정, P1 답변 반영, 구조 결정 수정, S2 문턱 24/24 확정</p>
+
+  <div class="verdict">
+    <p class="label">한 문단으로</p>
+    <p>LiveHub를 갖추지 않은 팀이, 훈련이 끝난 뒤 셀 24대를 Dock에 꽂고 iPad LiveApp을 열면, <strong>PC를 한 번도 연결하지 않고 10분 안에 전 선수의 데이터를 추출하고 업로드까지 마칠 수 있게 한다.</strong> 오늘 LiveHub 보유 팀이 하는 일을, LiveHub 없이 Dock만으로 같은 앱에서 같은 시간 안에 하는 것이 이 개발의 성공이다.</p>
+  </div>
+
+  <div class="decision">
+    <p class="label">구조 결정 — 이 문서가 전제하는 것 (v2에서 수정)</p>
+    <p><strong>Dock이 LiveHub를 품는다. 창고는 iPad이고, 클라이언트는 기존 iPad LiveApp 그대로이며, Dock은 데이터를 저장하지 않는다.</strong> Dock에 새로 들어가는 것은 LiveHub가 하던 역할이다 — 셀과 iPad가 함께 붙는 무선망을 띄우고, <em>LiveApp이 "LiveHub 장비"로 인식하는 상대가 되는 것</em>.</p>
+    <p><strong>v2 수정의 이유.</strong> v1은 "무선망만 띄우면 된다"를 전제했으나, PM 확인(2026-09-29)으로 <em>iPad LiveApp이 LiveHub를 장비로 안다</em>는 사실이 확정됐다. 그러므로 Dock은 무선망만이 아니라 LiveHub 장비로 보여야 한다. 그것을 만드는 길이 셋인데(§5 P1 참조), <strong>가장 깨끗한 길은 LiveHub 자체 — 보드(또는 축소판)와 펌웨어 — 를 그대로 Dock에 넣는 것</strong>이다. 이 길에서는 새 소프트웨어가 0이고, LiveApp·Cell·LiveHub 펌웨어가 전부 무수정이다. 이 개발은 "무선 기능 개발"이 아니라 <strong>"LiveHub를 Dock에 통합하는 기구·전원·인증 프로젝트"</strong>가 된다.</p>
+    <p>이 길은 새 발상이 아니다. 현행 기판 DKP2-1C에 Wi-Fi AP 라우터 모듈(BL-M7628AR4)과 BPI-M4 자리가 "for SMART DOCK"라는 이력과 함께 그려져 있고, 실장되지 않은 채 멈춰 있다. <strong>그때 왜 실장하지 않았는지가 이 구조 결정을 확정하는 선행 질문이다</strong>(P1a).</p>
+    <p>앞선 논의("AP + 라즈베리파이, 창고는 Dock 안")를 뒤집은 근거는 v1과 같다 — PM이 정의한 성공이 <em>"iPad LiveApp으로 추출"</em>이고, 오늘 10분 안에 24대를 끝내는 검증된 클라이언트가 있는데 새 창고와 새 앱을 만들 이유가 없다. 기존 Dock 고객용 소형 공유기(§8)도 같은 설계(LiveHub 축소판)라 하나를 만들면 둘을 얻는다.</p>
+  </div>
+
+  <h2><span class="no">01</span>목표</h2>
+  <p class="lede">왜 하는가. 판정 대상이 아니라 방향이 흔들릴 때 되돌아보는 곳이다.</p>
+  <p>오늘 LiveHub가 없는 팀의 유일한 추출 경로는 DataManager(PC 유선)이고, 그 경로에는 우리가 통제할 수 없는 변수가 너무 많다 — 케이블, Pogo 핀, 오염, 접점, 사용자 컴퓨터의 호환성. 문제는 그중 무엇이 가장 자주 터지느냐가 아니라 <strong>전부 우리 손 밖에 있다는 것</strong>이다. 그래서 유선을 경로에서 배제한다.</p>
+  <p>대신 LiveHub 보유 팀이 이미 쓰는 경로 — 셀을 Dock에 꽂고, iPad LiveApp으로 Wi-Fi 추출하고, 인터넷이 되는 곳에서 업로드 — 를 <strong>LiveHub 없이도 쓸 수 있게 한다.</strong> 이 경로는 오늘 보통 10분 안에 끝나고, 추출뿐 아니라 HR 기기 매칭·펌웨어 변경 같은 장비 관리까지 같은 앱에서 된다.</p>
+
+  <h2><span class="no">02</span>성공 기준</h2>
+  <p class="lede">참·거짓이 갈리는 줄. 재는 법과 문턱과 판정 게이트가 있다. Development·Release 게이트가 이 표를 읽는다.</p>
+
+  <div class="tablewrap"><table>
+    <tr><th>번호</th><th>기준</th><th>무엇을 재나 (판정 프로토콜)</th><th>문턱</th><th>판정 게이트</th></tr>
+    <tr>
+      <td class="id">S1</td>
+      <td><strong>시간</strong> — 24대 전량의 세션 데이터가 iPad LiveApp에 추출 완료된다</td>
+      <td>시작 = 마지막 셀을 꽂고 LiveApp에서 추출을 시작한 시각. 끝 = 24번째 세션이 LiveApp에서 추출 완료로 표시된 시각. 24칸 전량 실장, 세션 크기는 M2의 상위값, 환경은 비혼잡·혼잡 두 가지(M7). 3회 반복, <strong>최악값</strong>으로 판정</td>
+      <td><strong>10분 이내</strong> <span class="tag fixed">확정 · M1</span></td>
+      <td>Development(엔지니어링 표본) · Release(양산 표본)</td>
+    </tr>
+    <tr>
+      <td class="id">S2</td>
+      <td><strong>완결</strong> — 24대 전부가 성공한다</td>
+      <td>S1과 같은 실행에서 성공한 칸 수</td>
+      <td><strong>24 / 24</strong> <span class="tag fixed">확정 · PM 2026-09-29</span> — 한 선수의 데이터가 빠진 채 끝나는 날을 성공으로 부르지 않는다. S6("PC 없이")과 앞뒤가 맞는 선택</td>
+      <td>같음</td>
+    </tr>
+    <tr>
+      <td class="id">S3</td>
+      <td><strong>무결성</strong> — 도착한 데이터가 원본과 같고, 끊긴 부분 파일이 정상으로 취급되지 않는다</td>
+      <td>LiveApp 도착 파일과 셀 원본 대조. 전송을 일부러 끊고 무엇이 남는지 확인</td>
+      <td>불일치 0건, 부분 파일 오분류 0건</td>
+      <td>Development</td>
+    </tr>
+    <tr>
+      <td class="id">S4</td>
+      <td><strong>장비 관리</strong> — LiveApp의 HR 기기 매칭과 셀 펌웨어 변경이 이 경로로 동작한다</td>
+      <td>LiveHub 없이 Dock 무선망만으로 HR 매칭 1회, 펌웨어 변경 1회를 끝까지 수행</td>
+      <td>두 기능 모두 LiveHub 경로와 같은 결과</td>
+      <td>Development</td>
+    </tr>
+    <tr>
+      <td class="id">S5</td>
+      <td><strong>실패 가시성</strong> — 24대 중 하나라도 실패하면 사람이 LiveApp에서 그것을 안다</td>
+      <td>한 칸을 일부러 실패시키고(무선 차단), LiveApp에서 성공 칸과 구분되는지 확인</td>
+      <td>구분된다</td>
+      <td>Development</td>
+    </tr>
+    <tr>
+      <td class="id">S6</td>
+      <td><strong>PC 0회</strong> — 고객이 개봉부터 S1·S4까지 PC를 한 번도 연결하지 않는다</td>
+      <td>초기 설정을 포함해 전 과정을 처음부터 수행 — Dock 무선망 설정, 셀의 접속, iPad 연결까지</td>
+      <td>PC 연결 <strong>0회</strong></td>
+      <td>Release</td>
+    </tr>
+  </table></div>
+
+  <p><strong>S1과 S2를 가른 이유.</strong> 23대가 8분에 끝나는 것과 24대가 15분에 끝나는 것은 전혀 다른 실패이고, 한 줄에 묶으면 어느 쪽으로 실패했는지 판정에서 사라진다.</p>
+  <p><strong>S6이 목표를 직접 판정하는 유일한 줄이다.</strong> 나머지는 성능이고, S6만이 "PC 없이"를 묻는다. 그리고 이 줄이 가장 약하다 — 셀의 Wi-Fi 접속 설정을 오늘 PC가 USB로 넣기 때문이다(전제 P2).</p>
+
+  <h2><span class="no">03</span>제약</h2>
+  <p class="lede">설계 자유도를 좁히는 것. 우리가 지킨다. 설계 검토(DRBFM)의 입력이다.</p>
+  <ul>
+    <li><strong>C1</strong> 품번은 DKPX-2·DKPY-2, 등급 NPI-A. 두 품번의 차이는 상단 케이스 색(BK/WH)과 그에 딸린 라벨뿐이며, 성공 기준은 두 품번에 동일하게 적용한다.</li>
+    <li><strong>C2</strong> 셀 칸 수는 24를 유지한다.</li>
+    <li><strong>C3</strong> 기존 유선 추출 경로의 하드웨어 인터페이스를 제거하지 않는다.</li>
+    <li><strong>C4</strong> 셀 펌웨어를 수정하지 않는다 — 펌웨어 개발 인력이 없고, 정식 출하 빌드에 원격 갱신 경로가 포함돼 있지 않아(코드는 소스에 존재하나 빌드에서 제외) 잘못 나가면 물리 재작업이 된다.</li>
+    <li><strong>C5</strong> iPad LiveApp을 수정하지 않는다. 필요하다면 그것은 별도 결정이다.</li>
+    <li><strong>C6</strong> Dock의 무선망은 <strong>2.4GHz에서 LiveHub와 같은 급의 처리량</strong>을 낸다 — 셀이 2.4GHz 단일 스트림이라, S1의 10분은 이 조건에서만 성립한다.</li>
+  </ul>
+
+  <h2><span class="no">04</span>비퇴행 요구</h2>
+  <p class="lede">깨뜨리면 안 되는 것. 시험 세트의 회귀 항목이 된다.</p>
+  <p><strong>기준선 리비전: <span class="tag crit">미정 — ECO 정리 선행 필요</span></strong> 현행 Dock은 Released인 Rev A·B·C가 `PCBA1-0013` 구성이고, 이해 지도가 설명하는 `PCBA1-0035`와 펌웨어 v1.3이 든 것은 Working인 Rev D 하나뿐이다. `ECO-000090`·`ECO-000106`이 Complete인데 어떤 리비전도 발효시키지 않았다. 이것을 정리하는 것은 ECO의 일이고 NPI가 할 수 없으므로, 기준선 칸을 비워 둔다.</p>
+  <ul>
+    <li><strong>N1</strong> 기존 유선 추출(Dock → PC → 서버)이 기준선과 같이 동작한다.</li>
+    <li><strong>N2</strong> 충전 성능과 안전 동작이 기준선 대비 저하되지 않는다. 재는 것은 24칸 만충 시간, 최고 온도, 온도·시간 알람 동작. 허용 편차는 M6으로 채운다.</li>
+    <li><strong>N3</strong> Dock이 무선망이 된 뒤에도, LiveHub를 보유한 고객의 실시간 경로가 Dock에 빼앗기지 않는다. 대상 고객(LiveHub 없음)에게는 해당 없으나, 사무실·QA실은 둘 다 있으므로 시험 환경으로서 확인한다.</li>
+  </ul>
+
+  <h2><span class="no">05</span>전제</h2>
+  <p class="lede">아직 참으로 확인되지 않은 것. 미검증은 허용하되 침묵은 허용하지 않는다 — 거짓이면 무엇이 무너지는지를 적는다. Planning 게이트의 태스크가 된다.</p>
+
+  <div class="tablewrap"><table>
+    <tr><th>번호</th><th>전제</th><th>검증 방법</th><th>기한</th><th>거짓이면</th></tr>
+    <tr>
+      <td class="id">P1</td>
+      <td><strong>iPad LiveApp이 LiveHub를 "장비"로 안다</strong> <span class="tag fixed">확인됨 · PM 2026-09-29</span> — v1의 전제("순수 무선망")는 거짓으로 판정됐고, 그 결과로 구조 결정이 수정됐다(맨 위). 남는 전제는 아래 둘로 갈린다</td>
+      <td>—</td>
+      <td>—</td>
+      <td>(이미 일어났다) Dock이 LiveHub 장비로 보여야 한다. 가장 깨끗한 길은 LiveHub 자체를 넣는 것</td>
+    </tr>
+    <tr>
+      <td class="id">P1a</td>
+      <td><strong>LiveHub의 보드와 펌웨어를 그대로 Dock 안에서 쓸 수 있다</strong> <span class="tag crit">가장 중요</span> — 크기·전력·열이 Dock에 들어가고, 펌웨어를 옮겨 쓸 권한과 능력이 있다</td>
+      <td>① <strong>DKP2-1C에서 라우터 모듈·BPI-M4 자리를 왜 실장하지 않았는지</strong>를 당시 결정자에게 확인(KEE 카드 04) — 답이 "기술적 실패"면 벽이 이미 사내에 있다. ② LiveHub 펌웨어가 사내 개발인지 외주인지, 소스·빌드 환경이 있는지 확인. ③ LiveHub 보드(또는 코어 모듈) 크기·소비 전력을 Dock 내부 공간·전원 예산과 대조</td>
+      <td>Planning 게이트 전</td>
+      <td>갈래 B(LiveHub 흉내를 새로 짠다 — 새 소프트웨어, 역공학, 깨지기 쉬움) 또는 C(LiveApp 수정 — C5 위반, 앱 인력 필요)로 간다. <strong>둘 다 지금 팀 자원으로는 위험하다.</strong> 구조 결정을 다시 연다</td>
+    </tr>
+    <tr>
+      <td class="id">P1b</td>
+      <td>LiveApp이 LiveHub에게 요구하는 것의 <strong>범위</strong>가 확인돼 있다 — presence 확인만인지, 상태·설정 API인지, 셀 데이터·펌웨어의 중계인지</td>
+      <td>LiveApp 담당자에게 확인. LiveHub 축소판을 만들 때 무엇을 남기고 무엇을 뺄 수 있는지가 여기서 갈린다</td>
+      <td>Planning 게이트 전</td>
+      <td>축소판이 성립하지 않고 LiveHub 보드를 통째로 넣어야 한다. 비용이 오르지만 갈래 A 자체는 살아 있다</td>
+    </tr>
+    <tr>
+      <td class="id">P2</td>
+      <td>셀이 Dock의 무선망을 <strong>PC 없이</strong> 고르게 된다</td>
+      <td>셀의 접속점 선택 규칙(저장된 이름만 고르는가)과 설정 주입 통로를 펌웨어 소스에서 확인. Dock이 LiveHub와 같은 이름을 쓰면 되는지 판정</td>
+      <td>Planning 게이트 전</td>
+      <td>S6이 깨진다. "PC 없이"를 초기 1회 예외로 완화할지, 신규 셀은 공장 출하 설정으로 해결할지 결정해야 한다</td>
+    </tr>
+    <tr>
+      <td class="id">P3</td>
+      <td>셀이 Dock에 꽂힌 충전 상태에서 무선을 켜고 접속을 유지한다 <span class="tag fixed">확정 · PM 2026-09-29</span></td>
+      <td><strong>닫혔다.</strong> PM 확인 — 오늘 LiveHub 추출은 보통 셀이 Dock에 꽂힌 채로 하며, 꽂힘 여부가 동작에 영향을 주지 않는다. 현장에서 매일 증명되는 사실이므로 별도 시험이 필요 없다. KEE 카드 01 해소</td>
+      <td>—</td>
+      <td>(해당 없음)</td>
+    </tr>
+    <tr>
+      <td class="id">P4</td>
+      <td>Dock 안 무선 모듈이 Dock의 전원·발열 예산 안에 든다</td>
+      <td>현행 Dock의 PD 협상값(<code>read_PDContract_TPS25750</code> — 함수가 이미 있다)과 24대 충전 시 입력 전력을 실측, 모듈 소비와 대조(M6)</td>
+      <td>Development 중</td>
+      <td>보조 전원 설계가 필요하다. AP만이면 5~12W라 여유가 있을 가능성이 높다</td>
+    </tr>
+    <tr>
+      <td class="id">P5</td>
+      <td>무선 모듈 실장에 따르는 전파 인증이 일정 안에 끝난다</td>
+      <td>인증 담당에게 범위·리드타임·비용 확인. 인증 완료 모듈을 쓰되 완제품 단위 의무가 남는다</td>
+      <td>Planning 게이트 전</td>
+      <td>출시가 인증에 종속된다. 리드타임이 가장 긴 항목일 가능성이 높다</td>
+    </tr>
+  </table></div>
+
+  <h2><span class="no">06</span>채워야 할 숫자 — Planning 태스크가 된다</h2>
+  <div class="tablewrap"><table>
+    <tr><th>번호</th><th>무엇</th><th>어떻게</th><th>언제</th><th>상태</th></tr>
+    <tr><td class="id">M1</td><td>현장 시간 창</td><td>PM 인터뷰 — 오늘 LiveHub 경로가 보통 10분 이내</td><td>Concept</td><td><span class="tag fixed">10분 확정</span></td></tr>
+    <tr><td class="id">M2</td><td>세션 파일 크기 분포</td><td>현행 고객 데이터에서 실측. 지금 쓰는 129~140MB는 미검증 값</td><td>Planning</td><td><span class="tag open">미측정</span></td></tr>
+    <tr><td class="id">M3</td><td>LiveHub 경로 24대 실측 시간</td><td>현행 LiveHub + iPad로 그대로 한 번. <strong>대조군 — 기준이 아니라 근거</strong></td><td>Planning</td><td><span class="tag open">미측정</span></td></tr>
+    <tr><td class="id">M4</td><td>셀 1대 무선 전송 실효 속도</td><td>기존 LiveHub 경로로 <strong>오늘 잴 수 있다.</strong> 새 하드웨어 불필요</td><td>Planning</td><td><span class="tag open">미측정</span></td></tr>
+    <tr><td class="id">M5</td><td>Dock 무선망으로 24대 총 소요 시간</td><td>시작품으로. 후보 AP 모듈이 LiveHub급인지가 여기서 갈린다</td><td>Development</td><td><span class="tag open">미측정</span></td></tr>
+    <tr><td class="id">M6</td><td>무선 모듈 실장 시 전원·발열, 충전 성능 저하</td><td>기준선 리비전과 나란히</td><td>Development</td><td><span class="tag open">미측정</span></td></tr>
+    <tr><td class="id">M7</td><td>2.4GHz 혼잡 환경 저하율</td><td>접속점 여러 대 띄운 환경에서 M5 반복</td><td>Development</td><td><span class="tag open">미측정</span></td></tr>
+  </table></div>
+
+  <h2><span class="no">07</span>범위 밖 — 명시한다</h2>
+  <ul>
+    <li>추출된 데이터로 하는 분석의 품질.</li>
+    <li>서버·DataManager 쪽 구현 — 오늘과 같은 경로(iPad 업로드)를 쓰므로 새 등록이 필요 없다.</li>
+    <li>셀의 하드웨어·펌웨어 변경(C4). iPad LiveApp 변경(C5).</li>
+    <li>이 문서는 <strong>1단계의 성공</strong>을 정의한다. 2단계의 범위는 여기서 정하지 않는다.</li>
+  </ul>
+
+  <h2><span class="no">08</span>함께 발견한 것 — 요청 밖, 지시 없이 착수하지 않는다</h2>
+  <ul>
+    <li><strong>KEE 카드 04가 Concept 수준의 질문으로 격상됐다.</strong> v1에서는 "후퇴 사유를 알면 좋다"였으나, P1의 답으로 갈래 A(LiveHub를 Dock에 넣는다)가 주경로가 되면서 <em>1C에서 같은 구조를 왜 실장하지 않았는지</em>가 구조 결정의 선행 조건이 됐다(P1a ①). 답을 받으면 <code>docs/kee-incidents.md</code>에 사례 02로 남길 가치가 있다 — 장부가 1건에서 2건이 된다.</li>
+    <li><strong>기존 DKPX-1·DKPY-1 고객용 소형 공유기.</strong> PM이 별개 과제로 고민 중인 안인데, 이 문서의 구조 결정("LiveHub인 척하는 무선망")과 <em>같은 설계</em>다. Dock 내장형과 외장형의 차이는 케이스 안이냐 옆이냐뿐이라, AP 모듈 하나를 고르면 두 제품이 나온다. 별개 프로젝트로 두더라도 모듈 선정을 공유할 가치가 있다.</li>
+    <li><strong>KEE 카드 13(유선 대안 — 1C 기판의 USB 점퍼·버퍼).</strong> 이 문서의 목표가 "iPad LiveApp 경로"라 무선이 필수이므로 이 대안은 이 프로젝트에서 기각된다. 기각 사유: 목표 클라이언트가 iPad이고 iPad는 Dock에 USB로 붙지 않는다.</li>
+    <li><strong>KEE 카드 16(Dock USB 명찰이 ST 예제 기본값).</strong> 유선을 배제하는 것이 목표라 이 프로젝트의 우선순위는 낮다. 다만 N1(유선 비퇴행)이 사는 한 남는 항목이다.</li>
+  </ul>
+
+  <div class="foot">
+    <p><strong>확정 기록(화면 텍스트 칸에 넣을 문장):</strong> 2026-09-29 PM 인터뷰로 현장 시간 창 10분과 성공 정의(iPad LiveApp 무선 추출 24대, PC 0회, 장비 관리 기능 포함) 확정. LiveApp이 LiveHub를 장비로 인식함을 확인해 구조를 "Dock이 LiveHub를 품는다, 창고는 iPad"로 결정. 꽂힌 채 무선 추출은 현장 사실로 확정. KEE 토론 2회 반영. 이 문서 v2 첨부.</p>
+    <p>이 문서의 판단 근거는 PM 인터뷰(2026-09-29)와 Hardware-Team-System·Fitstack 저장소의 이해 지도·마이그레이션 기록이다. KEE의 발언 효력은 자문이며, 채택·기각은 PM이 했다. 라이브 데이터베이스는 조회하지 않았다.</p>
+  </div>
+</div>

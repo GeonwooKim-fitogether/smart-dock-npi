@@ -1,0 +1,851 @@
+<title>Smart Dock 기획 보고</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root {
+  --page: #E4E8EA;
+  --paper: #FFFFFF;
+  --ink: #1A2C34;
+  --text: #24343B;
+  --muted: #5B686E;
+  --faint: #8A959A;
+  --rule: #1A2C34;
+  --line: #CBD2D5;
+  --line-soft: #E2E6E8;
+  --band: #EEF1F2;
+  --th: #E6EAEC;
+  --label: #F5F7F8;
+  --frame: #F5F7F8;
+  --box: #FFFFFF;
+  --bar: #B4BDC1;
+  --accent: #1F7A84;
+  --accent-line: #51B0BB;
+  --accent-tint: #EAF5F6;
+  --logo-filter: none;
+  --s: 1;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0A1115;
+    --paper: #13212A;
+    --ink: #E5EBED;
+    --text: #D2DADD;
+    --muted: #9AA7AC;
+    --faint: #6F7E85;
+    --rule: #C4CFD3;
+    --line: #34464E;
+    --line-soft: #26363E;
+    --band: #1B2C34;
+    --th: #1E3038;
+    --label: #182730;
+    --frame: #172730;
+    --box: #13212A;
+    --bar: #53646C;
+    --accent: #7FCDD6;
+    --accent-line: #51B0BB;
+    --accent-tint: #173A42;
+    --logo-filter: invert(1);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0A1115;
+  --paper: #13212A;
+  --ink: #E5EBED;
+  --text: #D2DADD;
+  --muted: #9AA7AC;
+  --faint: #6F7E85;
+  --rule: #C4CFD3;
+  --line: #34464E;
+  --line-soft: #26363E;
+  --band: #1B2C34;
+  --th: #1E3038;
+  --label: #182730;
+  --frame: #172730;
+  --box: #13212A;
+  --bar: #53646C;
+  --accent: #7FCDD6;
+  --accent-line: #51B0BB;
+  --accent-tint: #173A42;
+  --logo-filter: invert(1);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--page);
+  color: var(--text);
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "WenQuanYi Zen Hei", sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.deck {
+  max-width: 1312px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--line-soft);
+}
+.slide {
+  position: absolute;
+  left: 0; top: 0;
+  width: 1280px; height: 720px;
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+  background: var(--paper);
+  padding: 34px 56px 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* 머리글: 쪽 제목 + 괘선 */
+.hd {
+  height: 50px;
+  border-bottom: 2px solid var(--rule);
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 9px;
+}
+.hd h1 {
+  margin: 0;
+  font-size: 27px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.2px;
+}
+.hd h1 .no { color: var(--muted); margin-right: 10px; }
+
+/* 헤드메시지 */
+.msg {
+  margin: 16px 0 0;
+  background: var(--band);
+  padding: 13px 20px;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.2px;
+}
+
+.body { margin-top: 22px; }
+
+/* 바닥글 */
+.ft {
+  position: absolute;
+  left: 56px; right: 56px; bottom: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* 소제목·개조식 */
+.sec {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--ink);
+}
+.sec::before { content: "\25A1"; font-weight: 400; margin-right: 7px; }
+.sec .note { font-size: 13px; font-weight: 400; color: var(--muted); margin-left: 8px; }
+ul.d { list-style: none; margin: 0; padding: 0; }
+ul.d > li { position: relative; padding-left: 15px; line-height: 1.6; }
+ul.d > li::before { content: "-"; position: absolute; left: 2px; top: 0; color: var(--muted); }
+.k { font-weight: 700; color: var(--ink); margin-right: 10px; }
+ul.d.al .k { display: inline-block; min-width: 74px; }
+.t.roomy th, .t.roomy td { padding-top: 10px; padding-bottom: 10px; }
+.sub { color: var(--muted); }
+.memo { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+.lines p { margin: 0; line-height: 1.7; }
+
+/* 표 */
+table.t {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+}
+.t th, .t td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 400;
+}
+.t th + th, .t th + td, .t td + td, .t td + th { border-left: 1px solid var(--line-soft); }
+.t thead th {
+  background: var(--th);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 13.5px;
+  text-align: center;
+  border-top: 2px solid var(--rule);
+  border-bottom: 1px solid var(--faint);
+}
+.t tbody th { background: var(--label); color: var(--ink); font-weight: 700; }
+.t tbody tr:last-child > * { border-bottom: 1px solid var(--rule); }
+.t .c { text-align: center; }
+.t .m { color: var(--muted); }
+.t tr.rec > td, .t tr.rec > th { background: var(--accent-tint); }
+.ac { color: var(--accent) !important; font-weight: 700; }
+.t.tight th, .t.tight td { padding-top: 5px; padding-bottom: 5px; }
+.t.sm { font-size: 13.5px; }
+.t.ex tr.gs > * { border-top: 1px solid var(--faint); }
+.t.ex tbody th { border-bottom: 1px solid var(--faint); }
+.t.ex td:first-child { border-left: 1px solid var(--line-soft); }
+.kv th { width: 150px; padding: 10px 16px; }
+.kv td { padding: 10px 16px; }
+
+.row { display: flex; gap: 36px; }
+.row > .col { min-width: 0; }
+
+/* 도식 */
+svg.dg { display: block; overflow: visible; }
+.dg text { font-family: inherit; fill: var(--text); font-size: 14px; }
+.dg .bx { fill: var(--box); stroke: var(--ink); stroke-width: 1.2; }
+.dg .bx.ac { fill: var(--accent-tint); stroke: var(--accent-line); stroke-width: 1.8; }
+.dg .fr { fill: var(--frame); stroke: var(--faint); stroke-width: 1.2; }
+.dg .ln { stroke: var(--ink); stroke-width: 1.2; fill: none; }
+.dg .ah { fill: var(--ink); }
+.dg .tb { font-weight: 700; fill: var(--ink); }
+.dg .ts { font-size: 12px; fill: var(--muted); }
+.dg .tac { font-weight: 700; fill: var(--accent); }
+.dg .bar { fill: var(--bar); }
+.dg .bar.ac { fill: var(--accent-line); }
+.dg .cx { color: var(--ink); }
+.dg .ln.ex { stroke-width: 1.8; }
+.dg .ln.up { stroke-width: 1.5; stroke-dasharray: 5 3.5; }
+.dg .ln.sub { stroke: var(--muted); stroke-width: 1; }
+.dg .ah.m { fill: var(--muted); }
+.dg .hdr { font-size: 13px; font-weight: 700; fill: var(--muted); }
+.dg .hl { stroke: var(--line); stroke-width: 1; }
+.t.xt th, .t.xt td { padding-top: 3.5px; padding-bottom: 3.5px; }
+.t .dt { font-size: 10px; color: var(--ink); }
+.dg .ts.tl { font-size: 8px; }
+
+/* 키워드 줄 */
+.kw p { margin: 0; line-height: 1.75; }
+.kw .k { display: inline-block; min-width: 92px; }
+
+/* 프로젝트 개요 */
+.ov { display: grid; grid-template-columns: 318px 40px 262px 40px 1fr; align-items: stretch; }
+.ov .arr { display: flex; align-items: center; justify-content: center; padding-top: 38px; }
+.ov .arr svg { display: block; }
+.ov .arr .ln { stroke: var(--ink); stroke-width: 1.2; fill: none; }
+.ov .arr .ah { fill: var(--ink); }
+.ovh {
+  background: var(--th); border-top: 2px solid var(--rule); border-bottom: 1px solid var(--faint);
+  text-align: center; font-weight: 700; font-size: 14.5px; line-height: 1.4; color: var(--ink);
+  padding: 7px 8px; margin-bottom: 10px;
+}
+.ovh span { font-weight: 400; color: var(--muted); font-size: 13px; margin-left: 4px; }
+.it { border: 1px solid var(--line); padding: 11px 14px; background: var(--paper); }
+.it + .it { margin-top: 12px; }
+.ov .t thead th { border-top: 1px solid var(--faint); }
+.ov .t td, .ov .t th { padding-top: 9px; padding-bottom: 9px; }
+.it .h { font-weight: 700; color: var(--ink); font-size: 14.5px; line-height: 1.45; }
+.it .s { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.it.goal { border: 1.8px solid var(--accent-line); background: var(--accent-tint); text-align: center; padding: 22px 14px; }
+.it.goal .h { color: var(--accent); font-size: 16px; line-height: 1.5; }
+.ovsub { margin: 16px 0 8px; font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.scope { margin-top: 34px; }
+.scope th { width: 110px; }
+
+/* 표지 */
+.cover { padding: 0; }
+.cover .logo {
+  position: absolute; left: 72px; top: 60px;
+  height: 30px; width: auto;
+  filter: var(--logo-filter);
+}
+.cover .tblock { position: absolute; left: 72px; right: 72px; top: 262px; }
+.cover .ttl {
+  margin: 0;
+  font-size: 40px; line-height: 1.3; font-weight: 700;
+  color: var(--ink); letter-spacing: -0.5px;
+}
+.cover .subt { margin: 14px 0 0; font-size: 20px; line-height: 1.4; color: var(--muted); font-weight: 500; }
+.cover .crule { margin-top: 34px; border-top: 2px solid var(--rule); }
+.cover .meta {
+  margin-top: 16px; display: flex; justify-content: flex-end; gap: 28px;
+  font-size: 17px; line-height: 1.4; color: var(--ink); font-weight: 500;
+}
+.cover .cls { position: absolute; left: 72px; bottom: 44px; font-size: 12px; color: var(--muted); }
+</style>
+
+<!-- Cell X 외곽선 (제품 사진 기준 60×100). 28px 미만으로 그릴 때는 cell-x-sm 을 쓴다 -->
+<svg class="defs" aria-hidden="true" focusable="false">
+  <symbol id="cell-x" viewBox="-1 -1 62 102">
+    <path class="cx-body" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M21.2 0H38.8C45 0 50.5 .9 52.6 2.2C53.6 2.9 53.9 3.8 54.2 5C56 12 59.66 30 59.66 50C59.66 70 56 88 54.2 95C53.9 96.2 53.6 97.1 52.6 97.8C50.5 99.1 45 100 38.8 100H21.2C15 100 9.5 99.1 7.4 97.8C6.4 97.1 6.1 96.2 5.8 95C4 88 .34 70 .34 50C.34 30 4 12 5.8 5C6.1 3.8 6.4 2.9 7.4 2.2C9.5 .9 15 0 21.2 0Z"/>
+    <path class="cx-window" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M15.5 5H44.5Q48.8 5 48.8 9.5V31C48.8 37.5 46 40.2 40.5 40.2H19.5C14 40.2 11.2 37.5 11.2 31V9.5Q11.2 5 15.5 5Z"/>
+    <path class="cx-mark" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M20 42.9H40L30 45.6Z"/>
+  </symbol>
+  <symbol id="cell-x-sm" viewBox="-1 -1 62 102">
+    <path class="cx-body" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" vector-effect="non-scaling-stroke" d="M21.2 0H38.8C45 0 50.5 .9 52.6 2.2C53.6 2.9 53.9 3.8 54.2 5C56 12 59.66 30 59.66 50C59.66 70 56 88 54.2 95C53.9 96.2 53.6 97.1 52.6 97.8C50.5 99.1 45 100 38.8 100H21.2C15 100 9.5 99.1 7.4 97.8C6.4 97.1 6.1 96.2 5.8 95C4 88 .34 70 .34 50C.34 30 4 12 5.8 5C6.1 3.8 6.4 2.9 7.4 2.2C9.5 .9 15 0 21.2 0Z"/>
+  </symbol>
+</svg>
+
+<div class="deck">
+
+<!-- 표지 -->
+<div class="frame">
+<section class="slide cover" id="s0">
+  <img class="logo" alt="FITOGETHER" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALIAAAA3CAYAAACo9xADAAAFV0lEQVR42u1dLa8UMRRdSQJyQT1TCAaBIEhM0c8gwdWBRYAufwASNCG5CoMFPwn8AbCYYuEPEJJlxW4yTNq5H73tvLdzxVEz787O7Wnnnva0b7M9u7kxGC47LAkGI7LBYEQ2GIzIBoMR2WBENhiMyAaDEdlg6E1kvwfskfbYKSCNYqcM4oobMJePMHN/Lr9gRP4fbo9BibxjxFH8uetrAzcfJ50/zWAtSDxOdChc9yslcmTm46Tz1zqpGvDIMzZG5GwZRm0jq5EntdpupgaLhxFBgrkRP62YyLl8DMz7kxEZr73S4ZrWj7X6uC4fJ50/jSChQ5JM6NHyEdaav5b1sVtQ2KxV6K02f61qtbSwsDGht7L8tarVhg7CZs1ETib0dIncq/ay+rgu5yefv5a1qyPgGOdOBncJDZeLlWv4OBmVjsu5wGzQuVgDM9YxTul3+RkLADXnmDAMo2fuJu/hhPnYCfLhDr8FDhhGCEsSmeOhuFK4/ojxjFi5ZI5NFQaGdwTzf3ByBhV/HyvbKM10Jnf4bdQ4AfHlUBbEmhK5Zln6mOgHhetnjIbwxFGLak6iTC9KSACCWEGY86A02DhiacPNLTVOl9JCw0PxPHPtJ7PhaklcGgE1Y8VtvfuPk3MtD0yYkC8pxKH+rtSDyG6r46H4kLn2kfEMSkOnSU0dibMtc7E8EisxY/kZkjhmzhPxfijUuCUCwsygFJB8AKFTp4mdwfcgcpx5KU/AMc6PTIyXSENoOLwwr0JtrCSIhS10eGY+HGN6FAhETsQ6HrsPtKcDe64u5XC9EOOh8BkDwzgOSANzYmFEps77Yu+rtaInGQQ4Hbu7r3zpRYrzwktdE/ZczlI5IETlJDsJYgXGqCjNOSd/GOmB2CkwH4hvYSfVro9BYVT/Llw1DMwEJYGJPwgWHAKjg0k6BCituoLgqwKMdnAtl8tr9uVpfB4+ZWK8F36CYMtbtpVMWTlGwwXmSOaROK23NmGkp3aiQfBVGZYispab6lcmxjOhsOHUtNioAYzRPQpiDQwCOOFWJU7+nPCrEojPlJZszYkMCnXOrUKM+0JhwykFsN+fKkXjjjjtdkSqmLLSEHpeKPRg9A4DYarVbRvZSTUXQrh1zuNMjL9CYeOYQk9LnGGxaufaa7Z6DR2EHndBJ7QQelIia02fvM7E+CoUNkFx9A7MTiGJxVn51NzapDl9KFnibuaLXlLofcnEeNNB6HnF+lhaa3NNNksIPewLhb3DUKljmhNZS+j9ycR4IhQ2SXH05sy9SmrtYVIfx8kSr8aZFKGD0IPCO/glfNGajjdOjHuFGLcVicwReiDcfYHdq3VEFXdfZA+h55RKUr8UkTWE3tNMjN9EHwd1ISEKdx8nop1xEH6Sh62ur8UtJPT8tr+lQY3IWkLvXSbGZ6Ll8Vh/AaFzeaIlk0LQNNrBQJlpcMg7wAyoZiJOPqJQ6EXhO1BsrGkpImudYfEtE+MV0wccid5WTHF7BSN96ZMrVfuSjQJRUehFhXwAocPEpYisIfSuFmKcM43XUcEAzxE/XEN7DQm4x5JJD3ukkF5qpoeeG2CXcLyVSHejIMxSpZeXu49sgxjE50Z5jjVTsiuCkg9N62bNkcGhl9CTEDlXB3F71Ys93maAkT+MpnkA2RRZEmwYgUvPHb+rF8xIuNGuh4ggEHTKOB+QWcrG6tXp5k/KveP3iAS4yXNy99i/XiAKU7dtcywU1+ZpsP8hcmmOdN1ZXozIFwGUs5rjzPQbWA6NyBf1vOHaGRCDEbn7aGwkNiKf7HnDNcdKGYzIBoMR2WBENhiMyAaDEdlgMCIbVo9//2e7rKF/65wAAAAASUVORK5CYII=">
+  <div class="tblock">
+    <h1 class="ttl">Smart Dock 무선 데이터 추출 체계 개발 기획</h1>
+    <p class="subt">DKPX-2 / DKPY-2 · NPI 기획 단계 보고</p>
+    <div class="crule"></div>
+    <div class="meta"><span>2026. 09. 30</span><span>하드웨어팀</span></div>
+  </div>
+  <div class="cls">사내 한정</div>
+</section>
+</div>
+
+<!-- 1. 프로젝트 개요 -->
+<div class="frame">
+<section class="slide" id="s1">
+  <header class="hd"><h1><span class="no">1.</span>프로젝트 개요</h1></header>
+  <p class="msg">LiveHub 미보유 고객을 위해 Dock 단독 무선 추출 체계를 구축하여, 추출 10분 이내·PC 제거·배터리 1/8 축소를 달성함</p>
+  <div class="body">
+    <div class="ov">
+      <div>
+        <div class="ovh">추진 배경<span>(Why)</span></div>
+        <div class="it"><div class="h">유선 추출 의존</div><div class="s">LiveHub 미보유 고객<br>PC·DataManager·USB 케이블</div></div>
+        <div class="it"><div class="h">통제 밖 실패 요인</div><div class="s">접점·케이블·PC 호환성</div></div>
+        <div class="it"><div class="h">과잉 배터리</div><div class="s">약 100 Wh, 야외 충전 수요 낮음<br>부피·무게 부담</div></div>
+      </div>
+      <div class="arr"><svg width="30" height="14" viewBox="0 0 30 14" aria-hidden="true"><line class="ln" x1="0" y1="7" x2="24" y2="7"/><path class="ah" d="M22,2 L30,7 L22,12 z"/></svg></div>
+      <div>
+        <div class="ovh">목적<span>(What)</span></div>
+        <div class="it goal"><div class="h">LiveHub 없이<br>Dock 단독 무선 추출·업로드</div></div>
+        <p class="ovsub">구성</p>
+        <div class="it"><div class="h">개선 A</div><div class="s">iPad·LiveApp 유지 (보급형)</div></div>
+        <div class="it"><div class="h">개선 B</div><div class="s">SBC 내장 (iPad 미사용)</div></div>
+      </div>
+      <div class="arr"><svg width="30" height="14" viewBox="0 0 30 14" aria-hidden="true"><line class="ln" x1="0" y1="7" x2="24" y2="7"/><path class="ah" d="M22,2 L30,7 L22,12 z"/></svg></div>
+      <div>
+        <div class="ovh">달성 목표<span>(Goal)</span></div>
+        <table class="t sm">
+          <colgroup><col style="width:128px"><col style="width:150px"><col></colgroup>
+          <thead><tr><th>항목</th><th>현행</th><th>목표</th></tr></thead>
+          <tbody>
+            <tr><th>추출 시간<br><span class="m" style="font-weight:400">셀 24대</span></th><td>유선 추출</td><td><b class="k" style="margin:0">10분 이내</b><br><span class="m">LiveHub 5분 수준</span></td></tr>
+            <tr><th>필요 장비</th><td>Dock + PC + 케이블</td><td><b class="k" style="margin:0">Dock + iPad 또는 휴대폰</b></td></tr>
+            <tr><th>실패 요인</th><td>3개</td><td><b class="k" style="margin:0">1개</b></td></tr>
+            <tr><th>내장 배터리</th><td>약 100 Wh</td><td><b class="k" style="margin:0">12 Wh 이하</b></td></tr>
+            <tr><th>셀·앱·서버 변경</th><td class="c">-</td><td><b class="k" style="margin:0">없음</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <table class="t scope sm">
+      <colgroup><col style="width:110px"><col><col style="width:110px"><col style="width:330px"></colgroup>
+      <tbody>
+        <tr><th>범위</th><td>DKPX-2 / DKPY-2 Dock 하드웨어, Dock 웹 화면 (개선 B)</td><th style="border-left:1px solid var(--line)">제외</th><td>셀 펌웨어 변경, LTE·유선 LAN</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>1</span></footer>
+</section>
+</div>
+
+<!-- 2. 현황 및 개선 방향 -->
+<div class="frame">
+<section class="slide" id="s2">
+  <header class="hd"><h1><span class="no">2.</span>현황 및 개선 방향</h1></header>
+  <p class="msg">Dock 내장 Wi-Fi 모듈로 PC와 케이블을 제거하며, iPad 사용 여부에 따라 2개 구성(개선 A: iPad 유지, 개선 B: SBC 내장)으로 운영함</p>
+  <div class="body" style="margin-top:18px">
+    <svg class="dg" width="1168" height="226" viewBox="0 0 1168 226" role="img" aria-label="현행, 개선 A, 개선 B의 추출 경로와 업로드 경로. 개선 B는 사용자 스마트폰이 SBC의 웹 화면으로 조작">
+      <defs><marker id="p2a" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p2as" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p2m" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah m" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p2ms" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah m" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <text class="hdr" x="446" y="7" text-anchor="middle" dominant-baseline="central">추출</text>
+      <line class="hl" x1="112" y1="17" x2="772" y2="17"/>
+      <text class="hdr" x="974" y="7" text-anchor="middle" dominant-baseline="central">업로드 (추출 종료 후)</text>
+      <line class="hl" x1="788" y1="17" x2="1168" y2="17"/>
+      <text class="tb" x="0" y="46" dominant-baseline="central">현행</text>
+      <use href="#cell-x" class="cx" x="112" y="27" width="23" height="38"/>
+      <text x="146" y="46" dominant-baseline="central">셀</text>
+      <line class="ln ex" x1="168" y1="46" x2="218" y2="46" marker-end="url(#p2a)"/>
+      <rect class="bx" x="220" y="26" width="250" height="40"/>
+      <text x="345" y="46" text-anchor="middle" dominant-baseline="central">Pogo 접점 · USB 케이블</text>
+      <line class="ln ex" x1="470" y1="46" x2="528" y2="46" marker-end="url(#p2a)"/>
+      <rect class="bx" x="530" y="26" width="250" height="40"/>
+      <text x="655" y="46" text-anchor="middle" dominant-baseline="central">PC (DataManager)</text>
+      <line class="ln up" x1="780" y1="46" x2="918" y2="46" marker-end="url(#p2a)"/>
+      <text class="ts" x="849" y="36" text-anchor="middle" dominant-baseline="central">PC 인터넷</text>
+      <rect class="bx" x="920" y="26" width="248" height="40"/>
+      <text x="1044" y="46" text-anchor="middle" dominant-baseline="central">서버</text>
+      <text class="tb" x="0" y="96" dominant-baseline="central">개선 A</text>
+      <use href="#cell-x" class="cx" x="112" y="77" width="23" height="38"/>
+      <text x="146" y="96" dominant-baseline="central">셀</text>
+      <line class="ln ex" x1="168" y1="96" x2="218" y2="96" marker-end="url(#p2a)"/>
+      <text class="ts" x="193" y="87" text-anchor="middle" dominant-baseline="central">Wi-Fi</text>
+      <rect class="bx ac" x="220" y="76" width="250" height="40"/>
+      <text class="tac" x="345" y="96" text-anchor="middle" dominant-baseline="central">Dock 내장 Wi-Fi 모듈</text>
+      <line class="ln ex" x1="470" y1="96" x2="528" y2="96" marker-end="url(#p2a)"/>
+      <rect class="bx" x="530" y="76" width="250" height="40"/>
+      <text x="655" y="96" text-anchor="middle" dominant-baseline="central">iPad (LiveApp)</text>
+      <line class="ln up" x1="780" y1="96" x2="918" y2="96" marker-end="url(#p2a)"/>
+      <text class="ts" x="849" y="86" text-anchor="middle" dominant-baseline="central">Dock 모듈 · 핫스팟</text>
+      <rect class="bx" x="920" y="76" width="248" height="40"/>
+      <text x="1044" y="96" text-anchor="middle" dominant-baseline="central">서버</text>
+      <text class="tb" x="0" y="146" dominant-baseline="central">개선 B</text>
+      <use href="#cell-x" class="cx" x="112" y="127" width="23" height="38"/>
+      <text x="146" y="146" dominant-baseline="central">셀</text>
+      <line class="ln ex" x1="168" y1="146" x2="218" y2="146" marker-end="url(#p2a)"/>
+      <text class="ts" x="193" y="137" text-anchor="middle" dominant-baseline="central">Wi-Fi</text>
+      <rect class="bx ac" x="220" y="126" width="250" height="40"/>
+      <text class="tac" x="345" y="146" text-anchor="middle" dominant-baseline="central">Dock 내장 Wi-Fi 모듈</text>
+      <line class="ln ex" x1="470" y1="146" x2="528" y2="146" marker-end="url(#p2a)"/>
+      <rect class="bx ac" x="530" y="126" width="250" height="40"/>
+      <text class="tac" x="655" y="146" text-anchor="middle" dominant-baseline="central">Dock 내장 SBC</text>
+      <line class="ln up" x1="780" y1="146" x2="918" y2="146" marker-end="url(#p2a)"/>
+      <text class="ts" x="849" y="136" text-anchor="middle" dominant-baseline="central">Dock 모듈 · 핫스팟</text>
+      <rect class="bx" x="920" y="126" width="248" height="40"/>
+      <text x="1044" y="146" text-anchor="middle" dominant-baseline="central">서버</text>
+      <line class="ln sub" x1="655" y1="168" x2="655" y2="188" marker-start="url(#p2ms)" marker-end="url(#p2m)"/>
+      <text class="ts" x="667" y="178" text-anchor="start" dominant-baseline="central">조작 (Wi-Fi · 웹 화면)</text>
+      <rect class="bx" x="530" y="190" width="250" height="36"/>
+      <text x="655" y="208" text-anchor="middle" dominant-baseline="central">사용자 스마트폰 · 노트북</text>
+      <text class="ts" x="220" y="208" text-anchor="start" dominant-baseline="central">※ 개선 B = 개선 A + SBC (개선 A 무선 추출이 전제)</text>
+      </svg>
+
+    <table class="t sm tight xt" style="margin-top:12px">
+      <colgroup><col style="width:140px"><col><col><col></colgroup>
+      <thead><tr><th>구분</th><th>현행</th><th>개선 A (iPad 유지)</th><th>개선 B (SBC 내장)</th></tr></thead>
+      <tbody>
+        <tr><th>추출 경로</th><td>셀 → Pogo → USB 케이블 → PC</td><td>셀 → Wi-Fi → Dock 모듈 → iPad</td><td>셀 → Wi-Fi → Dock 모듈 → SBC</td></tr>
+        <tr><th>업로드 경로</th><td>PC → 인터넷 → 서버</td><td>iPad → Dock 모듈 → 핫스팟·현장 Wi-Fi → 서버</td><td>SBC → Dock 모듈 → 핫스팟·현장 Wi-Fi → 서버</td></tr>
+        <tr><th>업로드 주체</th><td>PC DataManager</td><td>iPad LiveApp (완료까지 iPad 대기)</td><td>Dock 자동 (인터넷 연결 시, 단말 불필요)</td></tr>
+        <tr><th>조작 수단</th><td>PC DataManager</td><td>iPad LiveApp</td><td>사용자 스마트폰·노트북 브라우저</td></tr>
+        <tr><th>필요 장비</th><td>Dock, PC, USB 케이블</td><td>Dock, iPad</td><td>Dock, 스마트폰 또는 노트북</td></tr>
+        <tr><th>Pogo 접점 용도</th><td>충전 + 데이터</td><td>충전 + 설정</td><td>충전 + 설정</td></tr>
+        <tr><th>실패 요인</th><td>접점·케이블·PC 호환성 (3개)</td><td>무선 환경 (1개)</td><td>무선 환경 (1개)</td></tr>
+        <tr><th>개발 범위</th><td class="m">해당 없음</td><td>Dock 하드웨어</td><td>Dock 하드웨어 + SBC 소프트웨어</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>2</span></footer>
+</section>
+</div>
+
+<!-- 3. 사용자 시나리오 -->
+<div class="frame">
+<section class="slide" id="s3">
+  <header class="hd"><h1><span class="no">3.</span>사용자 시나리오</h1></header>
+  <p class="msg">일 1회 전체 일정 종료 후 일괄 추출하며, 추출 장소에 따라 2개 안으로 구분함</p>
+  <div class="body">
+    <p class="sec">운영 절차<span class="note">(음영: 변경 단계 · 추출과 업로드는 별도 단계)</span></p>
+    <svg class="dg" width="1168" height="72" viewBox="0 0 1168 72" role="img" aria-label="운영 절차 7단계">
+      <defs><marker id="a3" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <rect class="bx" x="0" y="2" width="142" height="44"/>
+      <rect class="bx" x="171" y="2" width="142" height="44"/>
+      <rect class="bx" x="342" y="2" width="142" height="44"/>
+      <rect class="bx ac" x="513" y="2" width="142" height="44"/>
+      <rect class="bx" x="684" y="2" width="142" height="44"/>
+      <rect class="bx ac" x="855" y="2" width="142" height="44"/>
+      <rect class="bx" x="1026" y="2" width="142" height="44"/>
+      <text x="71" y="24" text-anchor="middle" dominant-baseline="central">충전</text>
+      <text x="242" y="24" text-anchor="middle" dominant-baseline="central">훈련·경기</text>
+      <text x="413" y="24" text-anchor="middle" dominant-baseline="central">반납 (Dock 거치)</text>
+      <text class="tac" x="584" y="24" text-anchor="middle" dominant-baseline="central">무선 추출</text>
+      <text x="755" y="24" text-anchor="middle" dominant-baseline="central">결과 확인</text>
+      <text class="tac" x="926" y="24" text-anchor="middle" dominant-baseline="central">업로드</text>
+      <text x="1097" y="24" text-anchor="middle" dominant-baseline="central">충전</text>
+      <line class="ln" x1="142" y1="24" x2="169" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="313" y1="24" x2="340" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="484" y1="24" x2="511" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="655" y1="24" x2="682" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="826" y1="24" x2="853" y2="24" marker-end="url(#a3)"/>
+      <line class="ln" x1="997" y1="24" x2="1024" y2="24" marker-end="url(#a3)"/>
+      <text class="ts" x="584" y="62" text-anchor="middle" dominant-baseline="central">A: iPad 수신 · B: SBC 수신</text>
+      <text class="ts" x="926" y="62" text-anchor="middle" dominant-baseline="central">A: iPad · B: Dock 자동</text>
+    </svg>
+
+    <div class="row" style="margin-top:22px">
+      <div class="col" style="width:400px">
+        <p class="sec">전제 조건<span class="note">(PM 확인, 2026-09-29)</span></p>
+        <ul class="d al">
+          <li><span class="k">추출 빈도</span>일 1회 (전 일정 종료 후)</li>
+          <li><span class="k">셀 잔량</span>통상 30% 이상</li>
+          <li><span class="k">목표 시간</span>10분 이내</li>
+          <li><span class="k">초과 시</span>고객 불만 (야외 심화)</li>
+          <li><span class="k">비교 기준</span>LiveHub 대부분 5분 이내</li>
+        </ul>
+        <p class="memo" style="margin-top:22px">※ 셀 잔량 30% 이상: Dock 충전 없이 추출 가능</p>
+      </div>
+      <div class="col" style="flex:1">
+        <p class="sec">추출 장소별 안 비교</p>
+        <table class="t roomy">
+          <colgroup><col style="width:150px"><col><col></colgroup>
+          <thead><tr><th>구분</th><th>1안 클럽하우스 (기본)</th><th>2안 야외 (검토 중)</th></tr></thead>
+          <tbody>
+            <tr><th>전원</th><td>어댑터 연결</td><td>내장 배터리</td></tr>
+            <tr><th>추출·충전</th><td>동시 진행</td><td>추출만 (충전은 실내)</td></tr>
+            <tr><th>업로드 (추출 종료 후)</th><td>실내 Wi-Fi</td><td>핫스팟 또는 실내 복귀 후</td></tr>
+            <tr><th>배터리 필요 용량</th><td>정상 종료용 (최소)</td><td>추출 1회분 (약 12 Wh)</td></tr>
+            <tr><th>10분 초과 시 영향</th><td>낮음</td><td>높음</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>3</span></footer>
+</section>
+</div>
+
+<!-- 4. 시스템 구성 및 조작 방식 -->
+<div class="frame">
+<section class="slide" id="s4">
+  <header class="hd"><h1><span class="no">4.</span>시스템 구성 및 조작 방식</h1></header>
+  <p class="msg">추출은 Dock 모듈을 거쳐 iPad(개선 A) 또는 SBC(개선 B)가 받고, 업로드는 추출 종료 후 모듈의 인터넷 연결로 수행함</p>
+  <div class="body" style="margin-top:18px">
+    <svg class="dg" width="1168" height="236" viewBox="0 0 1168 236" role="img" aria-label="개선 A와 개선 B의 시스템 구성. 실선은 추출, 점선은 업로드, 가는 선은 조작과 내부 연결">
+      <defs><marker id="p4a" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p4as" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p4m" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah m" d="M0,0 L8,4 L0,8 z"/></marker><marker id="p4ms" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="ah m" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <text class="tb" x="0" y="8" text-anchor="start" dominant-baseline="central" style="font-size:14px">개선 A · iPad·LiveApp 유지 (SBC 미탑재)</text>
+      <rect class="fr" x="0" y="22" width="300" height="184" rx="8"/>
+      <text class="tb" x="286" y="194" text-anchor="end" dominant-baseline="central" style="font-size:12.5px">Dock</text>
+      <use href="#cell-x" class="cx" x="14" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="35" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="56" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="77" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="98" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="119" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="14" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="35" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="56" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="77" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="98" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="119" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="14" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="35" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="56" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="77" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="98" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="119" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="14" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="35" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="56" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="77" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="98" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="119" y="146" width="16.8" height="28"/>
+      <text class="tb" x="74.9" y="192" text-anchor="middle" dominant-baseline="central" style="font-size:12.5px">셀 ×24</text>
+      <line class="ln ex" x1="139" y1="54" x2="178" y2="54" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="158" y="45" text-anchor="middle" dominant-baseline="central">추출</text>
+      <text class="ts tl" x="158" y="64" text-anchor="middle" dominant-baseline="central">Wi-Fi</text>
+      <rect class="bx ac" x="180" y="40" width="110" height="28"/>
+      <text class="tac" x="235" y="54" text-anchor="middle" dominant-baseline="central">Wi-Fi 모듈</text>
+      <line class="ln sub" x1="139" y1="160" x2="178" y2="160"/>
+      <text class="ts tl" x="158" y="151" text-anchor="middle" dominant-baseline="central">Pogo</text>
+      <rect class="bx" x="180" y="146" width="110" height="28"/>
+      <text x="235" y="160" text-anchor="middle" dominant-baseline="central">MCU</text>
+      <rect class="bx" x="400" y="100" width="170" height="28"/>
+      <text x="485" y="114" text-anchor="middle" dominant-baseline="central">핫스팟 · 현장 Wi-Fi</text>
+      <rect class="bx" x="400" y="150" width="170" height="28"/>
+      <text x="485" y="164" text-anchor="middle" dominant-baseline="central">서버</text>
+      <line class="ln up" x1="485" y1="128" x2="485" y2="148" marker-end="url(#p4a)"/>
+      <text class="ts" x="493" y="138" text-anchor="start" dominant-baseline="central">인터넷</text>
+      <rect class="bx" x="400" y="34" width="170" height="40"/>
+      <text x="485" y="47" text-anchor="middle" dominant-baseline="central">iPad (LiveApp)</text>
+      <text class="ts" x="485" y="64" text-anchor="middle" dominant-baseline="central">수신 · 조작 · 업로드</text>
+      <line class="ln ex" x1="290" y1="48" x2="398" y2="48" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="344" y="39" text-anchor="middle" dominant-baseline="central">추출</text>
+      <line class="ln up" x1="398" y1="61" x2="292" y2="61" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="344" y="72" text-anchor="middle" dominant-baseline="central">업로드</text>
+      <path class="ln up" d="M270,68 V114 H398" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="349" y="125" text-anchor="middle" dominant-baseline="central">업로드</text>
+      <text class="ts" x="228" y="113" text-anchor="middle" dominant-baseline="central">SBC 없음</text>
+      <text class="tb" x="598" y="8" text-anchor="start" dominant-baseline="central" style="font-size:14px">개선 B · SBC 내장</text>
+      <rect class="fr" x="598" y="22" width="300" height="184" rx="8"/>
+      <text class="tb" x="884" y="194" text-anchor="end" dominant-baseline="central" style="font-size:12.5px">Dock</text>
+      <use href="#cell-x" class="cx" x="612" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="633" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="654" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="675" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="696" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="717" y="44" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="612" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="633" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="654" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="675" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="696" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="717" y="78" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="612" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="633" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="654" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="675" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="696" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="717" y="112" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="612" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="633" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="654" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="675" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="696" y="146" width="16.8" height="28"/>
+      <use href="#cell-x" class="cx" x="717" y="146" width="16.8" height="28"/>
+      <text class="tb" x="672.9" y="192" text-anchor="middle" dominant-baseline="central" style="font-size:12.5px">셀 ×24</text>
+      <line class="ln ex" x1="737" y1="54" x2="776" y2="54" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="756" y="45" text-anchor="middle" dominant-baseline="central">추출</text>
+      <text class="ts tl" x="756" y="64" text-anchor="middle" dominant-baseline="central">Wi-Fi</text>
+      <rect class="bx ac" x="778" y="40" width="110" height="28"/>
+      <text class="tac" x="833" y="54" text-anchor="middle" dominant-baseline="central">Wi-Fi 모듈</text>
+      <line class="ln sub" x1="737" y1="160" x2="776" y2="160"/>
+      <text class="ts tl" x="756" y="151" text-anchor="middle" dominant-baseline="central">Pogo</text>
+      <rect class="bx" x="778" y="146" width="110" height="28"/>
+      <text x="833" y="160" text-anchor="middle" dominant-baseline="central">MCU</text>
+      <rect class="bx" x="998" y="100" width="170" height="28"/>
+      <text x="1083" y="114" text-anchor="middle" dominant-baseline="central">핫스팟 · 현장 Wi-Fi</text>
+      <rect class="bx" x="998" y="150" width="170" height="28"/>
+      <text x="1083" y="164" text-anchor="middle" dominant-baseline="central">서버</text>
+      <line class="ln up" x1="1083" y1="128" x2="1083" y2="148" marker-end="url(#p4a)"/>
+      <text class="ts" x="1091" y="138" text-anchor="start" dominant-baseline="central">인터넷</text>
+      <rect class="bx" x="998" y="34" width="170" height="40"/>
+      <text x="1083" y="47" text-anchor="middle" dominant-baseline="central">스마트폰 · 노트북</text>
+      <text class="ts" x="1083" y="64" text-anchor="middle" dominant-baseline="central">웹 화면 조작</text>
+      <line class="ln sub" x1="888" y1="48" x2="996" y2="48" marker-start="url(#p4ms)" marker-end="url(#p4m)"/>
+      <text class="ts tl" x="942" y="39" text-anchor="middle" dominant-baseline="central">조작</text>
+      <path class="ln up" d="M888,62 H938 V114 H996" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="945" y="90" text-anchor="start" dominant-baseline="central">업로드</text>
+      <rect class="bx ac" x="778" y="100" width="110" height="26"/>
+      <text class="tac" x="833" y="113" text-anchor="middle" dominant-baseline="central">SBC</text>
+      <line class="ln ex" x1="820" y1="68" x2="820" y2="98" marker-end="url(#p4a)"/>
+      <line class="ln up" x1="843" y1="100" x2="843" y2="70" marker-end="url(#p4a)"/>
+      <text class="ts tl" x="812" y="84" text-anchor="end" dominant-baseline="central">추출</text>
+      <text class="ts tl" x="850" y="79" text-anchor="start" dominant-baseline="central">업로드</text>
+      <text class="ts tl" x="850" y="93" text-anchor="start" dominant-baseline="central">Ethernet</text>
+      <line class="ln sub" x1="833" y1="126" x2="833" y2="146"/>
+      <text class="ts" x="827" y="136" text-anchor="end" dominant-baseline="central">UART</text>
+      <line class="ln ex" x1="330" y1="226" x2="364" y2="226"/>
+      <text class="ts" x="372" y="226" text-anchor="start" dominant-baseline="central">추출</text>
+      <line class="ln up" x1="440" y1="226" x2="474" y2="226"/>
+      <text class="ts" x="482" y="226" text-anchor="start" dominant-baseline="central">업로드 (추출 종료 후, Dock 모듈의 인터넷 연결)</text>
+      <line class="ln sub" x1="770" y1="226" x2="804" y2="226"/>
+      <text class="ts" x="812" y="226" text-anchor="start" dominant-baseline="central">조작 · 내부 연결</text>
+      </svg>
+
+    <div class="row" style="margin-top:16px">
+      <div class="col" style="flex:1.45">
+        <table class="t sm tight">
+          <colgroup><col style="width:130px"><col><col style="width:108px"><col style="width:108px"></colgroup>
+          <thead><tr><th>구성품</th><th>역할</th><th>개선 A</th><th>개선 B</th></tr></thead>
+          <tbody>
+            <tr><th>Wi-Fi 모듈</th><td>셀 24대 수신 · 인터넷 연결 (2.4 + 5 GHz)</td><td class="c"><span class="dt">●</span></td><td class="c"><span class="dt">●</span></td></tr>
+            <tr><th>SBC</th><td>추출 수신 · 저장 · 업로드 · 웹 화면</td><td class="c m">—</td><td class="c"><span class="dt">●</span></td></tr>
+            <tr><th>MCU</th><td>충전 · 슬롯 전원 · 온도 (현행 구조)</td><td class="c"><span class="dt">●</span></td><td class="c"><span class="dt">●</span></td></tr>
+            <tr><th>USB 허브</th><td>셀 설정 입력 (Pogo 경유)</td><td class="c">PC 연결 시</td><td class="c">SBC 연결</td></tr>
+            <tr><th>Pogo 접점</th><td>충전 전원 · 설정 입력</td><td class="c"><span class="dt">●</span></td><td class="c"><span class="dt">●</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col" style="flex:1">
+        <table class="t sm tight">
+          <colgroup><col><col style="width:92px"><col style="width:150px"></colgroup>
+          <thead><tr><th>조작 방식</th><th>구성</th><th>판단</th></tr></thead>
+          <tbody>
+            <tr><th>iPad LiveApp</th><td class="c">개선 A</td><td class="c">유지</td></tr>
+            <tr class="rec"><th>SBC 웹 화면</th><td class="c">개선 B</td><td class="c ac">채택</td></tr>
+            <tr><th>모바일 앱</th><td class="c">개선 B</td><td class="c">후속 검토</td></tr>
+            <tr><th>Dock 디스플레이</th><td class="c m">—</td><td class="c">미채택 (표시등)</td></tr>
+            <tr><th>고객 SW 연동 (API)</th><td class="c">개선 B</td><td class="c">병행</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row lines" style="margin-top:14px">
+      <p class="col" style="flex:1.45"><span class="k">확정 사항</span>인터넷: 현장 Wi-Fi·핫스팟 한정 (LTE·유선 LAN 미적용)</p>
+      <p class="col" style="flex:1"><span class="k">확인 필요 사항</span>안테나·외장 재질, WISP 지원, 개선 A 셀 설정 경로</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>4</span></footer>
+</section>
+</div>
+
+<!-- 5. 전원 설계 -->
+<div class="frame">
+<section class="slide" id="s5">
+  <header class="hd"><h1><span class="no">5.</span>전원 설계</h1></header>
+  <p class="msg">내장 배터리의 역할을 셀 충전에서 제어부 비상 전원으로 변경하여, 용량을 현행 대비 1/8 이하로 축소함</p>
+  <div class="body">
+    <p class="sec">전원 경로</p>
+    <svg class="dg" width="1168" height="112" viewBox="0 0 1168 112" role="img" aria-label="전원 경로">
+      <defs><marker id="a5" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <rect class="bx" x="0" y="0" width="220" height="40"/>
+      <text x="110" y="20" text-anchor="middle" dominant-baseline="central">어댑터 (USB-C PD)</text>
+      <rect class="bx ac" x="0" y="72" width="220" height="40"/>
+      <text class="tac" x="110" y="92" text-anchor="middle" dominant-baseline="central">내장 배터리</text>
+      <rect class="bx" x="560" y="0" width="300" height="40"/>
+      <text x="710" y="20" text-anchor="middle" dominant-baseline="central">셀 충전 (슬롯 24개)</text>
+      <rect class="bx" x="560" y="72" width="300" height="40"/>
+      <text x="710" y="92" text-anchor="middle" dominant-baseline="central">제어부 (MCU·SBC·Wi-Fi 모듈)</text>
+      <line class="ln" x1="220" y1="20" x2="558" y2="20" marker-end="url(#a5)"/>
+      <line class="ln" x1="380" y1="20" x2="380" y2="92"/>
+      <line class="ln" x1="220" y1="92" x2="558" y2="92" marker-end="url(#a5)"/>
+      <circle cx="380" cy="20" r="3" class="ah"/>
+      <circle cx="380" cy="92" r="3" class="ah"/>
+      <text class="ts" x="300" y="84" text-anchor="middle">어댑터 분리 시</text>
+      <text class="ts" x="470" y="12" text-anchor="middle">어댑터 연결 시</text>
+    </svg>
+
+    <p class="sec" style="margin-top:26px">용량 비교</p>
+    <table class="t">
+      <colgroup><col style="width:150px"><col style="width:339px"><col style="width:339px"><col></colgroup>
+      <thead><tr><th>구분</th><th>현행</th><th>1안 클럽하우스</th><th>2안 야외</th></tr></thead>
+      <tbody>
+        <tr><th>용도</th><td>야외 셀 24대 충전</td><td>정상 종료 (약 30초)</td><td>추출 1회</td></tr>
+        <tr><th>용량</th><td>약 100 Wh (11.1 V, 9,000 mAh)</td><td>슈퍼커패시터 수준</td><td>약 12 Wh (18650 셀 1개)</td></tr>
+        <tr><th>현행 대비</th><td>100%</td><td>사실상 제거</td><td class="ac">약 1/8</td></tr>
+      </tbody>
+    </table>
+
+    <div class="kw" style="margin-top:20px">
+      <p><span class="k">산정 (2안)</span>50분 × 9 W ÷ 0.8 (수명) ÷ 0.8 (저온) ≈ 12 Wh</p>
+      <p><span class="k">50분</span>추출 최대 20분 + 준비 10분 + 재시도 20분 (일 1회)</p>
+      <p><span class="k">9 W (추정)</span>MCU 0.5 W + SBC 3 W + Wi-Fi 모듈 5 W = 8.5 W → 여유 포함 9 W / 모듈 사양 따라 최대 1.5배</p>
+      <p><span class="k">2안 대안</span>시판 USB-C PD 보조배터리 구동 (고객 지참)</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>5</span></footer>
+</section>
+</div>
+
+<!-- 6. 웹 화면 개발 계획 -->
+<div class="frame">
+<section class="slide" id="s6">
+  <header class="hd"><h1><span class="no">6.</span>웹 화면 개발 계획</h1></header>
+  <p class="msg">개선 B의 웹 화면은 5단계로 병행 개발하며, 셀 연동(P3) 전 통신 규격 문서 확보가 선결 과제임</p>
+  <div class="body">
+    <p class="sec">개발 단계</p>
+    <table class="t">
+      <colgroup><col style="width:170px"><col style="width:390px"><col style="width:270px"><col></colgroup>
+      <thead><tr><th>단계</th><th>내용</th><th>결과물</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><th>P0 화면 시안</th><td>가상 데이터 화면</td><td>조작 시안</td><td class="c ac">진행 중</td></tr>
+        <tr><th>P1 SBC 탑재</th><td>개발보드 웹 서버 구동</td><td>휴대폰 접속</td><td class="c">내부 수행</td></tr>
+        <tr><th>P2 Dock 연동</th><td>MCU 상태 수신 (DataManager 방식)</td><td>슬롯·충전 상태 표시</td><td class="c">내부 수행</td></tr>
+        <tr><th>P3 셀 연동</th><td>셀 데이터 수신 (LiveApp 방식)</td><td>iPad 없는 추출</td><td class="c">규격 문서 필요</td></tr>
+        <tr><th>P4 제품화</th><td>자동 기동·전원 차단 대응·업데이트·보안</td><td>양산 SBC 소프트웨어</td><td class="c">외부 검토 권고</td></tr>
+      </tbody>
+    </table>
+
+    <div class="kw" style="margin-top:26px">
+      <p><span class="k">화면 구성</span>DataManager 메뉴 계승 (Upload / HR ID / SSID / Update) + Dock 설정</p>
+      <p><span class="k">선결 과제</span>DataManager 소스, LiveApp–셀 통신 규격 문서 확보</p>
+      <p><span class="k">참고</span>1단계 성공 기준 (개선 A, iPad 무선 추출)은 SBC 불필요, 웹 화면은 병행</p>
+    </div>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>6</span></footer>
+</section>
+</div>
+
+<!-- 7. 의사결정 요청 및 향후 계획 -->
+<div class="frame">
+<section class="slide" id="s7">
+  <header class="hd"><h1><span class="no">7.</span>의사결정 요청 및 향후 계획</h1></header>
+  <p class="msg">사용 환경 범위와 Dock Wi-Fi 이름 체계 결정 후, 성공 기준 v3를 확정하여 모듈 선정에 착수함</p>
+  <div class="body">
+    <p class="sec">의사결정 요청</p>
+    <table class="t sm">
+      <colgroup><col style="width:52px"><col style="width:170px"><col style="width:250px"><col><col style="width:116px"></colgroup>
+      <thead><tr><th>No</th><th>안건</th><th>선택지</th><th>영향</th><th>현황</th></tr></thead>
+      <tbody>
+        <tr><td class="c">1</td><th>사용 환경 범위</th><td>1안 실내 한정<br>2안 야외 포함</td><td>배터리 용량 (최소 / 약 12 Wh), 외장 설계</td><td class="c">PM 검토 중</td></tr>
+        <tr><td class="c">2</td><th>Dock Wi-Fi 이름 체계</th><td>전 Dock 공통<br>Dock별 고유</td><td>공통: 기존 셀 무설정 접속, 오접속 위험<br>고유: 혼선 없음, 셀별 1회 설정</td><td class="c">추후 논의</td></tr>
+        <tr><td class="c">3</td><th>성공 기준 v3</th><td>2.4 / 5 GHz 동시, 핫스팟 한정<br>배터리 역할 변경</td><td>개발 착수 기준</td><td class="c ac">승인 요청</td></tr>
+      </tbody>
+    </table>
+
+    <p class="sec" style="margin-top:22px">확인 필요 사항</p>
+    <ul class="d" style="display:grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 24px;">
+      <li>DataManager 소스·통신 규격 문서</li>
+      <li>Wi-Fi 모듈 WISP 지원</li>
+      <li>안테나 배치·외장 재질</li>
+      <li>Wi-Fi 모듈 소비 전력</li>
+      <li>Kinexon의 LiveHub 활용 방식</li>
+    </ul>
+
+    <p class="sec" style="margin-top:22px">향후 계획</p>
+    <svg class="dg" width="1168" height="44" viewBox="0 0 1168 44" role="img" aria-label="향후 계획 순서">
+      <defs><marker id="a7" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path class="ah" d="M0,0 L8,4 L0,8 z"/></marker></defs>
+      <rect class="bx" x="0" y="1" width="172" height="42"/>
+      <rect class="bx" x="199.2" y="1" width="172" height="42"/>
+      <rect class="bx" x="398.4" y="1" width="172" height="42"/>
+      <rect class="bx" x="597.6" y="1" width="172" height="42"/>
+      <rect class="bx" x="796.8" y="1" width="172" height="42"/>
+      <rect class="bx" x="996" y="1" width="172" height="42"/>
+      <text class="tb" x="86" y="22" text-anchor="middle" dominant-baseline="central">의사결정</text>
+      <text x="285.2" y="22" text-anchor="middle" dominant-baseline="central">성공 기준 v3 확정</text>
+      <text x="484.4" y="22" text-anchor="middle" dominant-baseline="central">Wi-Fi 모듈 선정·시험</text>
+      <text x="683.6" y="22" text-anchor="middle" dominant-baseline="central">웹 화면 P1–P2</text>
+      <text x="882.8" y="22" text-anchor="middle" dominant-baseline="central">셀 연동 P3</text>
+      <text x="1082" y="22" text-anchor="middle" dominant-baseline="central">제품화 P4</text>
+      <line class="ln" x1="172" y1="22" x2="197.2" y2="22" marker-end="url(#a7)"/>
+      <line class="ln" x1="371.2" y1="22" x2="396.4" y2="22" marker-end="url(#a7)"/>
+      <line class="ln" x1="570.4" y1="22" x2="595.6" y2="22" marker-end="url(#a7)"/>
+      <line class="ln" x1="769.6" y1="22" x2="794.8" y2="22" marker-end="url(#a7)"/>
+      <line class="ln" x1="968.8" y1="22" x2="994" y2="22" marker-end="url(#a7)"/>
+    </svg>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>7</span></footer>
+</section>
+</div>
+
+<!-- 참고. 예외 상황 대응 방향 -->
+<div class="frame">
+<section class="slide" id="s8">
+  <header class="hd"><h1><span class="no">참고.</span>예외 상황 대응 방향</h1></header>
+  <p class="msg">예외 상황 12건 중 7건은 설계에 반영하고, 3건은 화면 안내로 대응하며, 2건은 의사결정이 필요함</p>
+  <div class="body" style="margin-top:16px">
+    <table class="t sm tight ex">
+      <colgroup><col style="width:120px"><col style="width:60px"><col style="width:400px"><col></colgroup>
+      <thead><tr><th>구분</th><th>No</th><th>상황</th><th>대응 방향</th></tr></thead>
+      <tbody>
+        <tr class="gs"><th rowspan="2" class="c ac">결정 필요<br><span class="m" style="font-weight:400">2건</span></th><td class="c">E1</td><td>기존 셀 최초 접속 (Dock 정보 없음)</td><td>LiveHub 이름 사용 / USB 설정 입력</td></tr>
+        <tr><td class="c">E2</td><td>타 팀 Dock 오접속 (대회·합동훈련)</td><td>Dock별 고유 이름 (E1과 상충)</td></tr>
+        <tr class="gs"><th rowspan="7" class="c">설계 반영<br><span class="m" style="font-weight:400">7건</span></th><td class="c">E3</td><td>어댑터 미지참</td><td>USB-C PD 보조배터리 구동</td></tr>
+        <tr><td class="c">E6</td><td>무선 혼잡 (야외·대회)</td><td>신규 셀 5 GHz, 채널 자동 선택</td></tr>
+        <tr><td class="c">E8</td><td>추출 중 연결 끊김</td><td>셀 원본 보존·이어받기, 불완전 파일 실패 처리</td></tr>
+        <tr><td class="c">E9</td><td>인터넷 없음</td><td>Dock·iPad 보관 후 업로드</td></tr>
+        <tr><td class="c">E10</td><td>셀 원본 삭제 시점</td><td>서버 도착 확인 후 삭제</td></tr>
+        <tr><td class="c">E11</td><td>Dock 전원 미차단</td><td>무동작 시 자동 종료 (현행 2시간 타이머)</td></tr>
+        <tr><td class="c">E12</td><td>펌웨어 변경 중 전원 차단</td><td>어댑터 연결 시만 변경 허용</td></tr>
+        <tr class="gs"><th rowspan="3" class="c">현장 대응<br><span class="m" style="font-weight:400">3건</span></th><td class="c">E4</td><td>선수 24명 초과</td><td>Dock 2대 순차 추출 (시간 2배)</td></tr>
+        <tr><td class="c">E5</td><td>일부 셀 접속 실패</td><td>실패 슬롯 표시, 재시작 후 재추출</td></tr>
+        <tr><td class="c">E7</td><td>셀 배터리 방전</td><td>셀 보호 종료, 충전 후 추출</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <footer class="ft"><span>FITOGETHER 하드웨어팀 | 사내 한정</span><span>8</span></footer>
+</section>
+</div>
+
+</div>
+
+<script>
+(function () {
+  function fit() {
+    var f = document.querySelector('.frame');
+    if (!f) return;
+    document.documentElement.style.setProperty('--s', (f.clientWidth / 1280).toFixed(5));
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(document.querySelector('.deck'));
+})();
+</script>
