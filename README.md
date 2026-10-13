@@ -2,6 +2,7 @@
 
 Smart Dock(DKPX-2 / DKPY-2)을 **LiveHub 없이 Dock 혼자 무선으로 추출·업로드하는 제품**으로 만드는 NPI 기획을 모으고 이어서 논의하는 곳입니다.
 공식 기록(게이트 통과·증거)은 사내 시스템 Fitstack 의 NPI 게이트에 남기고, 이 저장소는 그 앞단의 **작업장**입니다.
+GitHub · Fitstack · Claude 를 함께 쓰는 방법은 [`docs/working-model.md`](docs/working-model.md) 에 있습니다.
 
 ## 지금 어디까지 왔나 (2026-10-13 기준)
 
