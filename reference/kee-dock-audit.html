@@ -1,0 +1,332 @@
+<title>스마트 Dock KEE 감수 카드</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #f5f8f7; --card: #ffffff; --ink: #17282a; --ink-soft: #48605f;
+    --line: #d8e2e0; --accent: #0e7c7b; --accent-soft: #e2f0ef;
+    --warn: #a8731c; --warn-soft: #f6ecd9; --danger: #a8483e; --danger-soft: #f7e6e3;
+    --shadow: 0 1px 3px rgba(23, 40, 42, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101b1c; --card: #17282a; --ink: #e4edec; --ink-soft: #9db4b2;
+      --line: #2b4143; --accent: #4cc2b8; --accent-soft: #1b3a3a;
+      --warn: #d9a959; --warn-soft: #3a2f1a; --danger: #d98a80; --danger-soft: #3a2320;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #101b1c; --card: #17282a; --ink: #e4edec; --ink-soft: #9db4b2;
+    --line: #2b4143; --accent: #4cc2b8; --accent-soft: #1b3a3a;
+    --warn: #d9a959; --warn-soft: #3a2f1a; --danger: #d98a80; --danger-soft: #3a2320;
+    --shadow: none;
+  }
+  body {
+    background: var(--ground); color: var(--ink);
+    font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    font-size: 15.5px; line-height: 1.75; margin: 0; -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 12px;
+  }
+  h1 {
+    font-family: "Noto Serif KR", serif; font-weight: 700;
+    font-size: clamp(26px, 4.5vw, 36px); line-height: 1.3; margin: 0 0 8px; text-wrap: balance;
+  }
+  .meta { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 36px; }
+  .verdict {
+    background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--danger);
+    border-radius: 6px; box-shadow: var(--shadow); padding: 22px 26px; margin: 0 0 40px;
+  }
+  .verdict .label {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .14em;
+    color: var(--danger); margin: 0 0 8px;
+  }
+  .verdict p { margin: 0 0 10px; } .verdict p:last-child { margin: 0; }
+  h2 {
+    font-family: "Noto Serif KR", serif; font-weight: 700; font-size: 21px; line-height: 1.4;
+    margin: 56px 0 8px; text-wrap: balance;
+  }
+  h2 .no {
+    font-family: "IBM Plex Mono", monospace; font-weight: 500; font-size: 14px;
+    color: var(--accent); margin-right: 10px; vertical-align: 2px;
+  }
+  .lede { color: var(--ink-soft); margin: 0 0 20px; font-size: 14.5px; }
+  p { max-width: 74ch; margin: 0 0 14px; }
+  ul, ol { max-width: 74ch; margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  strong { font-weight: 700; }
+  em { font-style: normal; background: linear-gradient(transparent 62%, var(--accent-soft) 62%); }
+  code {
+    font-family: "IBM Plex Mono", monospace; font-size: .85em; background: var(--accent-soft);
+    border-radius: 3px; padding: 1px 5px; word-break: break-all;
+  }
+  .kcard {
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: var(--shadow); padding: 20px 24px; margin: 0 0 18px;
+  }
+  .kcard.hi { border-left: 4px solid var(--danger); }
+  .kcard.mid { border-left: 4px solid var(--warn); }
+  .kcard.lo { border-left: 4px solid var(--line); }
+  .kcard h3 {
+    font-size: 16.5px; font-weight: 700; margin: 0 0 12px; line-height: 1.5; text-wrap: balance;
+  }
+  .kcard h3 .id {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .08em;
+    color: var(--accent); display: block; margin-bottom: 4px; font-weight: 500;
+  }
+  .chips { margin: 0 0 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .05em;
+    border-radius: 3px; padding: 2px 8px; background: var(--accent-soft); color: var(--accent);
+    white-space: nowrap;
+  }
+  .chip.u { background: var(--warn-soft); color: var(--warn); }
+  .chip.d { background: var(--danger-soft); color: var(--danger); }
+  .kcard dl { margin: 0; }
+  .kcard dt {
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .08em;
+    color: var(--ink-soft); margin: 12px 0 3px;
+  }
+  .kcard dd { margin: 0; max-width: 74ch; font-size: 14.5px; }
+  .tablewrap {
+    overflow-x: auto; margin: 0 0 24px; border: 1px solid var(--line);
+    border-radius: 6px; background: var(--card); box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; font-size: 13.8px; line-height: 1.6; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  th {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .08em;
+    color: var(--ink-soft); background: color-mix(in srgb, var(--card) 60%, var(--ground)); white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  .foot {
+    margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--line);
+    color: var(--ink-soft); font-size: 13px;
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <p class="eyebrow">KEE 감수 · 자문 효력 · 2026-09-29</p>
+  <h1>스마트 Dock 설계안 — 지적 카드 16장</h1>
+  <p class="meta">감수자: KEE(Kim Engineering Expert) · 재료: 이음새 규칙 49개 · Cell 펌웨어 지도 4장 · Dock 펌웨어 지도 · Dock/Cell 회로 지도 · 시스템 지형도 · 사고 장부 1건 · 없던 재료: Cell 펌웨어 소스 · 기구 도면 · 인증 범위 대장 · 후보 부품 데이터시트</p>
+
+  <div class="verdict">
+    <p class="label">먼저 읽을 것 — 가장 큰 것 넷</p>
+    <p><strong>1. 무선을 쓰지 않는 길이 같은 기판에 이미 배선돼 있다 (카드 13).</strong> 1C 기판에 "외부 USB와 연산 모듈 중 어느 쪽을 허브에 물릴지 고르는 점퍼"(<code>usb_sel</code>)와 "MCU와 연산 모듈을 잇는 양방향 버퍼"(<code>74LVC245APW</code>, U8)가 그려져 있다. 이 둘을 살리면 Dock 안의 리눅스 컴퓨터가 <em>기존 USB 허브를 통해 24칸과 유선으로</em> 대화할 수 있고, 무선안의 미지수 대부분이 사라진다. 대신 "Dock PCBA 무변경"이 깨진다.</p>
+    <p><strong>2. 후퇴가 한 번이 아니라 두 번이다 (카드 04).</strong> 1B에 라즈베리파이 제로 2W가 실장됐다가, 1C에서 <em>지금 우리가 제안하는 바로 그 구조</em>(BPI-M4 연산 모듈 + Wi-Fi AP 라우터 U76 + 이더넷 트랜스 U77)로 바뀌었고, <em>그 대체안도 전부 미실장으로 남았다.</em> 같은 판단이 두 번 뒤집힌 자리에 세 번째로 같은 것을 놓는 셈이다. 후퇴 사유는 어느 문서에도 없다.</p>
+    <p><strong>3. Cell은 FTP로 올리고, 대화를 서버가 먼저 건다 (카드 02).</strong> 라즈베리파이는 "저장하는 컴퓨터"가 아니라 <em>셀이 찾아가는 주소 + FTP 서버(인증 포함) + 업로드를 지시하는 명령자</em> 셋을 동시에 흉내 내야 한다. 셋 중 하나만 틀려도 셀은 아무것도 올리지 않는다.</p>
+    <p><strong>4. 이 감수의 가장 큰 단일 결정은 "Dock PCBA 무변경"을 유지할 것인가이다.</strong> 카드 05·06·08·13이 전부 이 제약 하나에 걸려 있다. 미실장 부품을 올리는 것을 허용하면 넷 중 셋이 풀리지만, 그것은 기판 개정이고 비용과 일정을 낳는다.</p>
+  </div>
+
+  <h2><span class="no">01</span>KEE가 우리 "모르는 것"에서 찾아낸 답</h2>
+  <p class="lede">설계 기록 §6에서 "펌웨어 소스를 읽어야 안다"고 남겼던 것 중 일부가 <strong>저장소 안의 펌웨어 이해 지도</strong>에서 답이 나왔다.</p>
+  <div class="tablewrap"><table>
+    <tr><th>우리가 모른다고 적었던 것</th><th>지도에서 나온 답</th></tr>
+    <tr>
+      <td>Cell이 어떤 무선망 이름으로 붙는가</td>
+      <td><strong>고정값이 아니다.</strong> <code>select_ssid_from_scanned_list</code> — "주변을 훑어 <em>신호가 가장 센 접속점</em>을 고른다". 그리고 SSID는 <code>userdata.c → NVS</code>에 저장되는 <strong>기기별 설정</strong>이고, 그 설정을 써 넣는 통로가 <code>pc_interface.c</code> — 즉 <em>USB·PC</em>다</td>
+    </tr>
+    <tr>
+      <td>어떤 형식으로 올리는가</td>
+      <td><strong>FTP다.</strong> <code>ftp_client.c</code> — "SD 카드에 쌓인 기록 파일을 FTP 서버로 올리는 클라이언트", <code>connectFtpClient</code>("파일 서버에 접속하고 <em>인증</em>한다") · <code>putFileFtpClient</code></td>
+    </tr>
+    <tr>
+      <td>누가 먼저 말을 거는가</td>
+      <td><strong>서버가 먼저 건다.</strong> <code>process_tcp_command</code>("서버가 보낸 명령을 해석해 실행한다") · <code>listen_to_udp_task</code>("서버가 보내는 제어 신호를 기다렸다가 처리한다")</td>
+    </tr>
+    <tr>
+      <td>출하 펌웨어에 OTA가 없다 (우리 서술)</td>
+      <td><strong>한 겹 정밀화 필요.</strong> 코드는 소스에 <em>있고</em>(<code>aws/</code> 아래 9개 파일, 6,500줄 이상), 정식 타깃 빌드가 <code>AWS_OPTION</code>을 안 넘겨 빌드에서 빠질 뿐이다. <em>결론(금지선)은 그대로</em>지만 전제 문장을 고쳐야 한다 (카드 15)</td>
+    </tr>
+  </table></div>
+
+  <h2><span class="no">02</span>지적 카드 16장</h2>
+  <p class="lede">KEE가 낸 순서(위험 순)를 유지한다. 각 카드에 <strong>채택 / 기각(사유 한 줄) / 보류(무엇을 기다리는지) / 일치(PM 심의에서 이미 잡았음)</strong> 중 하나를 표시해 주면 된다. "일치"가 특히 중요하다 — 그것이 없으면 이미 알던 것과 새로 잡은 것이 섞여 KEE의 재현율을 정직하게 셀 수 없다.</p>
+
+  <div class="kcard hi">
+    <h3><span class="id">카드 01</span>셀이 도크에 꽂힌 채 Wi-Fi를 켜고 파일을 올리는 동작이 있는지가 설계 전체의 생사를 가르는데, 그것을 모르는 채로 나머지가 전부 설계됐다</h3>
+    <div class="chips"><span class="chip">이음새 HW↔FW</span><span class="chip d">제품 핵심 성능</span><span class="chip u">모름 — 재료 없음</span></div>
+    <dl>
+      <dt>내용</dt><dd>이 설계의 모든 것이 "셀이 꽂힌 채 무선으로 올린다"에 기대는데, 그 동작이 펌웨어에 있는지가 미확인이고 <strong>없으면 펌웨어 무수정 제약 때문에 우회로가 하나도 없다.</strong></dd>
+      <dt>근거</dt><dd>X6 펌웨어 지도 흐름 ⑦이 도크 삽입으로 아는 동작은 <strong>"PC 명령 대기"뿐</strong>. <code>state_machine.c</code>는 상태를 "부팅·대기·측정·충전·오류"로 열거하지만 충전 상태에서 무선이 사는지는 어느 칸에도 없다.</dd>
+      <dt>제안</dt><dd><strong>다른 무엇보다 먼저 답하라.</strong> 실기 한 대를 도크에 꽂고 주변에서 Wi-Fi 스캔을 돌려 그 셀이 접속점을 찾는 신호를 내는지 본다 — <em>코드를 읽지 않고 30분에 끝난다.</em> "아니오"면 이 설계안은 성립하지 않으며, 그 사실을 아는 비용이 가장 싸다.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard hi">
+    <h3><span class="id">카드 02</span>셀은 FTP로 올린다. 파이는 "저장하는 컴퓨터"가 아니라 특정 주소에서 특정 자격증명으로 여는 FTP 서버이자 셀에게 명령을 보내는 쪽이어야 한다</h3>
+    <div class="chips"><span class="chip">이음새 HW↔FW</span><span class="chip d">제품 핵심 성능</span><span class="chip">실측 근거(지도)</span></div>
+    <dl>
+      <dt>내용</dt><dd>설계안은 파이를 "받아서 저장하는 곳"이라고만 적는데, 실제로는 <strong>주소 · 프로토콜(FTP+인증) · 명령자</strong> 셋을 동시에 흉내 내야 한다.</dd>
+      <dt>제안</dt><dd>"서버 주소를 어떻게 찾는가" 한 질문을 <strong>네 질문으로 갈라</strong> 소스 저장소에 던져라 — ① 주소를 어떻게 정하나(NVS 고정값·DHCP 게이트웨이·UDP 탐색) ② FTP 계정·비밀번호·경로는 어디에 ③ 업로드를 시작시키는 명령의 형식 ④ <code>ftp_client.c</code>와 <code>wifi_tcp.c</code> 중 <em>오늘 실제로 파일을 나르는 것은 어느 쪽인가</em>. <strong>이 답 전까지 "평범한 리눅스 프로그램이면 된다"는 판단은 근거가 없다.</strong></dd>
+    </dl>
+  </div>
+
+  <div class="kcard hi">
+    <h3><span class="id">카드 03</span>"셀 펌웨어 무수정"과 "LiveHub와 공존"은 동시에 만족할 수 없다</h3>
+    <div class="chips"><span class="chip">이음새 설계↔호환성</span><span class="chip d">제품 핵심 성능</span><span class="chip">실측 근거(지도)</span></div>
+    <dl>
+      <dt>내용</dt><dd>셀은 <strong>신호가 가장 센 접속점을 고르므로</strong>, 도크 AP가 셀이 아는 이름으로 서면 훈련 중 도크 근처의 셀이 실시간 경로를 버리고 도크에 붙는다. 반대로 다른 이름을 주면 셀마다 NVS 설정을 새로 써야 하고, <em>그 통로가 하필 이 설계가 없애려던 USB·PC 경로다.</em></dd>
+      <dt>제안</dt><dd>기술 문제가 아니라 <strong>결정</strong>이다. 갈림길 셋 — ① 고유 SSID(공존은 깨끗하나 셀 전량 USB 재설정 1회 필요, 누가 어디서 하는지를 정하면 됨) ② 같은 SSID 사칭(무수정이나 LiveHub 보유 고객에게 못 팖 — 다만 <em>우리 사무실·QA실에는 반드시 둘 다 있다</em>) ③ 송신 출력을 낮춰 도달 범위를 케이스 안에 가둠(실측으로만 성립 여부 확인). <strong>결정 카드로 올릴 것.</strong></dd>
+    </dl>
+  </div>
+
+  <div class="kcard hi">
+    <h3><span class="id">카드 04</span>지금 제안하는 구조는 이미 1C 기판에 배선됐다가 전부 미실장으로 남았다 — 후퇴가 두 번이다</h3>
+    <div class="chips"><span class="chip">문서의 칸과 칸 사이</span><span class="chip">투자비</span><span class="chip u">후퇴 사유 — 재료 없음</span></div>
+    <dl>
+      <dt>근거</dt><dd><code>20260822210307_dock_conn_wireless_rev_controlled_and_fill.sql:17-25</code> — 1B는 <code>RASP-ZERO-2W</code> <strong>실장</strong>, 1C는 <strong>BPI-M4 자리로 바뀌고 전부 미실장(NC)</strong>이며 <strong>Wi-Fi AP 라우터 U76(BL-M7628AR4)</strong>도 <strong>이더넷 트랜스 U77</strong>도 미실장. 그리고 <em>현행 완제품 차수가 이 1C 기판을 단다.</em></dd>
+      <dt>제안</dt><dd><strong>이 목록에서 가장 싸게 큰 것을 얻는 한 줄이다.</strong> 개정을 결정한 사람에게 셋만 물어라 — ① 파이 제로 2W를 뺀 이유(원가·열·품질·인증 중 무엇) ② AP 라우터와 BPI-M4 자리를 그려 놓고 실장하지 않은 이유(시도 후 실패인가, 예비 자리인가) ③ 그때 무선으로 무엇을 하려 했나. <strong>답이 "열"이나 "인증"이면 카드 07·11이 곧바로 확정 결함이 되고, "원가"면 비용 계산을 다시 해야 한다.</strong></dd>
+    </dl>
+  </div>
+
+  <div class="kcard hi">
+    <h3><span class="id">카드 05</span>도크는 협상한 전력을 전부 충전에 배정하도록 펌웨어가 짜여 있다 — AP와 파이는 그 배정 바깥의 미계상 부하다</h3>
+    <div class="chips"><span class="chip">부품·블록 + 이음새</span><span class="chip d">제품 핵심 성능</span><span class="chip">실측 근거(지도)</span></div>
+    <dl>
+      <dt>내용</dt><dd>여유의 문제가 아니라 <strong>중재자 부재</strong>의 문제다. 도크 펌웨어는 PD 협상 결과 전부를 충전 입력 한계로 써 넣으므로 파이·AP 소비는 그 위에 얹히고, 어댑터 용량을 넘기면 전원이 흔들려 도크가 <em>"어댑터가 바뀌었다"로 읽고 스스로 리셋한다.</em></dd>
+      <dt>근거</dt><dd><code>bq25731_write_input_current_limit</code>("어댑터가 감당할 범위를 넘지 않게 한다") · <code>check_adpt</code>("전원이 도중에 바뀌었으면 장치를 리셋한다"). 회로 지도의 <code>rasp_pwr</code>는 셀 충전 레일과 <strong>같은 SYS 노드</strong>에서 갈린다. 1C의 보조 레귤레이터 자리 <code>NC/TPS54331DDA</code>는 3A급 = 5V 기준 <strong>15W</strong>로, 20~25W 목표와 맞지 않는다.</dd>
+      <dt>제안</dt><dd>① <code>read_PDContract_TPS25750</code>을 실기에서 한 번 읽는다 — <strong>함수가 이미 있어 도크를 켜고 읽기만 하면 된다.</strong> ② 24대 충전 시 실제 입력 전력을 잰다. ③ 차이가 AP+파이 소비보다 큰지 본다. 추가로 <strong>파이의 기동 돌입이 <code>get_adpt_type</code> 판별 시점과 겹치면 도크가 어댑터를 잘못 읽을 수 있다.</strong></dd>
+    </dl>
+  </div>
+
+  <div class="kcard hi">
+    <h3><span class="id">카드 06</span>도크는 스스로 전원을 끊는 경로를 셋 갖고 있고, 파이는 그것을 예고 없이 겪는다</h3>
+    <div class="chips"><span class="chip">이음새 HW↔FW</span><span class="chip d">제품 핵심 성능</span><span class="chip u">모름 — 판단 갈림</span></div>
+    <dl>
+      <dt>내용</dt><dd>창고의 전원을 파이가 아니라 <strong>도크 MCU가 쥐고 있고</strong>, 도크 MCU는 파이가 존재한다는 것조차 모른다(데이터선을 없앴으므로). 셋 중 어느 것이 발동해도 파이는 <em>정상 종료 절차 없이</em> 전원을 잃는다.</dd>
+      <dt>근거</dt><dd>흐름 ④ "스스로 꺼지는 세 가지 경로" — <code>check_2h_timer</code>(2시간) · <code>shutdown_due_to_over_temperature</code> · 버튼 20초. 여기에 <code>check_adpt</code> 리셋이 넷째로 더해진다. <strong>2시간 타이머의 발동 조건은 지도만으로 갈리지 않는다</strong>(<code>stop_2h_timer</code>가 따로 있어 조건부로 보임).</dd>
+      <dt>제안</dt><dd>① 어댑터를 꽂은 채 2시간 이상 방치해 꺼지는지 본다(하루면 답). ② <strong>읽기전용 루트를 고른 것은 옳은 판단이고 절반을 막아 준다</strong> — 그러나 데이터 파티션은 정의상 쓰기 가능이라 전송 중 파일이 깨지는 경로는 남는다. ③ 근본 처방은 파이가 종료를 <em>예고받는 것</em>이고, 그것은 "데이터선 없음"을 GPIO 한 줄 푸는 것으로 해결된다 — 그 통로가 1C 기판에 이미 있다(카드 13).</dd>
+    </dl>
+  </div>
+
+  <div class="kcard mid">
+    <h3><span class="id">카드 07</span>무선 장치가 만든 열이, 이 상자가 존재하는 이유인 충전을 느리게 만들고 과열 종료를 부른다</h3>
+    <div class="chips"><span class="chip">이음새 HW↔기구</span><span class="chip d">제품 핵심 성능 · SPEC변경</span><span class="chip u">일반 추론</span></div>
+    <dl>
+      <dt>내용</dt><dd><strong>344 × 202 × 66 mm(4.59 L) 폴리카보네이트 상자</strong>에 20~25W를 상시로 더하면서 <em>그 열을 어디로 뺄 것인지가 설계안에 한 줄도 없다.</em> 내부에는 이미 100Wh급 리튬 팩이 있고, 셀 충전 IC(BQ25176J)의 JEITA 온도 보호가 충전을 늦추거나 멈춘다. 동작 보증은 0~+50 °C.</dd>
+      <dt>제안</dt><dd>① 기존 도크에서 24대 충전 중 내부 온도를 한 번 재라 — <strong>지금 아무도 이 숫자를 갖고 있지 않다.</strong> ② 후보 부품의 최대 부하 소비를 확인하라. ③ 그리고 먼저 답할 질문 하나: <strong>도크가 온도를 어디서 재는가.</strong> 배터리 팩 서미스터라면 파이의 열이 팩 근처인지가 과열 종료 시점을 정한다.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard mid">
+    <h3><span class="id">카드 08</span>도크는 충전이 끝난 칸의 전원을 끄는데, 그 칸이 지금 업로드 중인지 알 방법이 없다</h3>
+    <div class="chips"><span class="chip">이음새 HW↔FW</span><span class="chip d">제품 핵심 성능</span><span class="chip">실측 근거(지도)</span></div>
+    <dl>
+      <dt>내용</dt><dd>데이터선을 없앤 결과 <strong>도크는 업로드 진행 중이라는 것을 영원히 알 수 없고</strong>, 충전 완료 판정만으로 칸 전원을 끈다(<code>manage_cell_battery_charging</code>, 1초 주기). 그 순간 셀이 자기 배터리로 계속 올리는지, 분리된 것으로 판단해 잠드는지가 정해지지 않았다.</dd>
+      <dt>제안</dt><dd>셀 한 대를 거의 만충으로 꽂고 업로드를 시작시킨 뒤, 칸 전원이 내려가는 순간 업로드가 이어지는지 본다. 끊긴다면 <strong>부분 파일이 파이에 무엇으로 남는지</strong>까지 확인하라 — 파이가 그것을 정상 파일로 받아 두면 손실이 조용히 일어난다.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard mid">
+    <h3><span class="id">카드 09</span>셀이 언제 SD를 지우는지 모르는 채, 데이터의 유일한 사본이 iPad에서 Dock으로 옮겨 앉았다</h3>
+    <div class="chips"><span class="chip">이음새 장치↔추출 경로</span><span class="chip d">제품 핵심 성능</span><span class="chip u">모름 — 재료 없음</span></div>
+    <dl>
+      <dt>내용</dt><dd>지형 문서가 무선 경로의 최대 결함으로 <strong>"iPad가 단일 실패점"</strong>을 지목했는데, 이 설계는 그것을 없애는 것이 아니라 <em>Dock으로 옮긴다.</em> 그리고 옮긴 곳이 더 나쁠 수 있다 — iPad는 사람이 들고 다니며 백업하지만, Dock 안 저장장치는 아무도 보지 않고 카드 06·07의 전원 차단과 열을 겪는다.</dd>
+      <dt>제안</dt><dd>유리한 단서 하나 — <code>get_available_capacity_level</code>이 "가득 차면 <em>기록을 멈춘다</em>"라고 적힌 것은 <strong>자동 순환 삭제가 아닐 가능성</strong>을 시사하고, 사실이면 원본이 셀에 남아 재추출이 된다. 답을 받아 두 갈래로 갈라라 — 남으면 Dock은 편의 장치, 지워지면 <strong>소비자급 SD여서는 안 되고</strong> 이중화나 즉시 반출이 출시 조건이 된다.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard mid">
+    <h3><span class="id">카드 10</span>출시 시점에 데이터가 서버에 닿는 경로가 하나도 없다</h3>
+    <div class="chips"><span class="chip">문서 자체의 빈 곳</span><span class="chip">사용자 시나리오 영향</span><span class="chip">실측 근거(문서 대조)</span></div>
+    <dl>
+      <dt>내용</dt><dd>"폰은 데이터 본체를 받지 않는다" + "클라우드 업로드는 출시 이후" 두 문장을 합치면 <strong>출시 제품에서 데이터가 Dock 밖으로 나가는 길이 없다.</strong> 고객이 사는 것은 파일이 아니라 분석인데, 서버·파서·Data Platform에 닿지 않으면 제품이 고객의 일을 끝내지 못한다. 닿게 하려면 PC가 다시 등장해 As-Is 문제 (가)·(나)가 살아남는다.</dd>
+      <dt>제안</dt><dd>설계안에 <strong>출시 제품에서 데이터가 서버에 닿는 경로를 한 줄로 적어라.</strong> 그 줄이 없어 읽는 사람마다 "폰이 나르겠지" 또는 "나중에 열겠지"로 다르게 채운다. 1단계가 정말 로컬 완결이라면, <em>승인된 것이 "추출 일원화"가 아니라 "추출 1단계"</em>임을 문서에 명시하면 충분하다.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard mid">
+    <h3><span class="id">카드 11</span>도크가 무선 제품이 된다 — 현재 공표 사양은 무선이 "해당 없음"이고, 시판 공유기는 인증을 승계하지 못한다</h3>
+    <div class="chips"><span class="chip">이음새 설계↔인증·시장</span><span class="chip d">SPEC변경 · 라벨 · 매뉴얼</span><span class="chip u">모름 — 재료 없음</span></div>
+    <dl>
+      <dt>근거</dt><dd>현행 공표 사양이 무선을 부정한다 — <code>conn_wireless = 'N/A'</code>이고, 그 "N/A"가 빈칸이 아니라 <strong>"이 제품에는 해당 없음"</strong>이라는 뜻임이 명시돼 있다. <strong>인증 범위 대장이 없어</strong> 재시험인지 신고인지 해당 없음인지 KEE는 판정할 수 없다.</dd>
+      <dt>제안</dt><dd>① 인증 담당에게 <strong>리드타임과 비용만 먼저</strong> 물어라 — 일정 전체를 좌우할 수 있고, 카드 04의 후퇴 사유가 인증이었을 가능성도 여기서 가려진다. ② 양산 AP 모듈은 <strong>인증 완료 모듈</strong>로 고르고 그 인증 조건(안테나 종류·이격·출력)을 <em>케이스 설계 전에</em> 받아라 — 나중에 알면 기구를 다시 판다. ③ 사양표·라벨·매뉴얼·판매 자료에서 <code>conn_wireless</code>가 나오는 자리를 전부 세어 두라.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard mid">
+    <h3><span class="id">카드 12</span>24대가 2.4GHz 한 채널을 나눠 3GB를 옮기는 시간을 아무도 재지 않았다</h3>
+    <div class="chips"><span class="chip">이음새 장치↔추출 경로</span><span class="chip d">제품 핵심 성능</span><span class="chip u">일반 추론</span></div>
+    <dl>
+      <dt>내용</dt><dd>세션 파일이 약 135MB면 24대는 약 3.2GB다. 셀의 무선은 <strong>2.4GHz 한 채널·단일 스트림</strong>이고 반이중이라 24대를 붙여도 <em>총 처리량은 한 채널의 몫을 나누는 것</em>이지 24배가 되지 않는다. 24개 송신기가 케이스 안 수 센티 거리에 몰려 서로를 방해하는 문제가 겹친다. 대조군으로 쓸 <strong>유선 시간도 없다.</strong></dd>
+      <dt>제안</dt><dd>실기가 없어도 오늘 할 수 있다 — 셀 2대와 시판 공유기로 ① 1대 단독 처리량 ② 2대 동시 처리량을 재라. ②가 ①의 절반씩으로 갈리면 채널 공유가 지배한다는 뜻이고, 24를 대입하면 전체 시간의 하한이 나온다. <strong>그 결과를 카드 06의 2시간 타이머와 반드시 비교하라</strong> — 가까우면 두 문제가 하나로 합쳐진다.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard hi">
+    <h3><span class="id">카드 13</span>무선을 쓰지 않는 길이 같은 기판에 이미 배선돼 있다 — 연산 모듈을 USB 호스트로 세우는 점퍼와 MCU↔모듈 버퍼</h3>
+    <div class="chips"><span class="chip">부품·블록</span><span class="chip u">판정 불가 — 기각 여부를 KEE가 알 수 없음</span><span class="chip">실측 근거(회로 지도)</span></div>
+    <dl>
+      <dt>근거</dt><dd>1C 회로 지도 — 블록 <code>usb_sel</code>: <strong>"USB 경로 선택 · 점퍼 저항 · 외부 USB와 연산 모듈 중 어느 쪽을 허브에 물릴지 고름"</strong>. 블록 <code>buffer</code>: <strong>"양방향 버퍼 74LVC245APW(U8) · 두뇌와 연산 모듈 사이 신호의 방향·개폐를 정리"</strong>. 1B 세대의 파이 제로 2W도 유선이었다(J1 포고 5핀으로 전원·USB).</dd>
+      <dt>내용</dt><dd>이 둘을 살리면 Dock 안의 리눅스 컴퓨터가 <strong>기존 USB 허브·멀티플렉서를 통해 24칸과 유선으로</strong> 대화하고, <em>카드 01·02·03·12의 미지수가 전부 사라진다</em> — 오늘 DataManager가 쓰는 그 경로를 그대로 쓰기 때문이다.</dd>
+      <dt>제안</dt><dd><strong>권고로 읽지 말 것.</strong> 이 길에도 비용이 있다(미실장 부품을 올려야 해 "PCBA 무변경"이 깨지고, 유선 순차 구조의 시간 제약이 남으며, 접점 불량도 그대로). 설계안에 <strong>"검토한 선택지와 기각 사유" 절</strong>을 더하라 — 지금은 무선안 하나만 적혀 있어 다른 길이 없어서 고른 것인지 비교 끝에 고른 것인지 알 수 없다. 그리고 <strong>버퍼 U8 한 가닥만 살리면 "슬롯별 충전 상태를 못 보여주는 한계"가 풀린다</strong> — 그 한계는 하드웨어의 한계가 아니라 이번 구조 선택의 결과다.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard lo">
+    <h3><span class="id">카드 14</span>도크 네 차수와 Kinexon 브랜드 쌍이 있는데, 무엇을 신형으로 낼지와 현장에서 구형과 어떻게 가를지가 없다</h3>
+    <div class="chips"><span class="chip">이음새 설계↔재고·서비스</span><span class="chip">불용재고 · SVC · 라벨</span><span class="chip u">수량 — 재료 없음</span></div>
+    <dl>
+      <dt>제안</dt><dd>설계안에 한 문단만 더하면 된다 — ① 새 품번인가 새 차수인가 ② 기존 도크에 나중에 얹을 수 있는가(그럴 계획이면 그것은 서비스 부품 설계다) ③ <strong>무선 도크와 기존 도크를 사람이 구분할 방법</strong>(외관·라벨·품번 중 무엇이 달라지나). <em>아무것도 달라지지 않는 경우, 그 사실 자체가 지적이다.</em></dd>
+    </dl>
+  </div>
+
+  <div class="kcard lo">
+    <h3><span class="id">카드 15</span>"OTA 경로가 없다"는 전제를 한 겹 정밀하게 고쳐라 — 코드는 있고, 정식 출하 빌드에서 빠질 뿐이다</h3>
+    <div class="chips"><span class="chip">문서 자체의 빈 곳</span><span class="chip">FW호환성</span><span class="chip">실측 근거(저장소 문서)</span></div>
+    <dl>
+      <dt>제안</dt><dd>문장을 <strong>"정식 출하 빌드에 원격 갱신 경로가 포함돼 있지 않다(코드는 소스에 존재하나 빌드에서 제외된다)"</strong>로 고쳐라. <em>결론은 바뀌지 않는다</em> — 그 경로를 켜는 것 자체가 펌웨어 작업이고 인력이 없다는 사실은 그대로다. <strong>부수 발견:</strong> 펌웨어가 하드웨어 판번호를 읽지 않는다(<code>HW_VER</code> 미사용) — 세대별로 다르게 행동해야 할 일이 생기면 그 손잡이가 지금은 잠겨 있다.</dd>
+    </dl>
+  </div>
+
+  <div class="kcard mid">
+    <h3><span class="id">카드 16</span>As-Is 문제 (가)의 원인이 우리 쪽에 있을 수 있다 — 도크는 ST 예제의 기본 명찰을 그대로 달고 PC에 보인다</h3>
+    <div class="chips"><span class="chip">문서의 칸과 칸 사이</span><span class="chip d">제품 핵심 성능</span><span class="chip u">기여도 — 재료 없음</span></div>
+    <dl>
+      <dt>근거</dt><dd>Dock 펌웨어 지도 <code>usbd_desc.c</code> — <strong>"지금은 ST 예제의 기본값(STMicroelectronics · STM32 Virtual ComPort)이 그대로 들어 있다"</strong>. 제조사 고유 식별자가 없으면 운영체제가 장치를 우리 것으로 인식하지 못하고, 다른 ST 예제 장치와 식별이 겹치며, 드라이버 서명·자동 설치를 통제할 수 없다.</dd>
+      <dt>제안</dt><dd>설계의 결함이 아니라 <strong>문제 정의의 검증</strong>이라 처분은 전적으로 사람 몫이다. 다만 하나만 묻고 싶다 — (가)의 증상 사례 서너 건을 모아 원인을 가려 본 적이 있는가. 상당수가 명찰·드라이버 쪽이면 <strong>펌웨어 문자열 몇 줄과 식별 번호 등록</strong>으로 고쳐지는 종류이고, 이 설계안 전체보다 훨씬 싸다. 반대로 대부분이 (나)·(다)면 이 설계안의 정당성이 오히려 강해진다 — <em>단, (다) 접점 불량은 이 설계로도 남는다.</em></dd>
+    </dl>
+  </div>
+
+  <h2><span class="no">03</span>모름 두 종류 — 갈라 적는다</h2>
+
+  <h3 style="font-size:16.5px;font-weight:700;margin:24px 0 10px">모름(재료 없음) — 자료를 구해 오면 KEE가 답할 수 있다</h3>
+  <div class="tablewrap"><table>
+    <tr><th>무엇을 모르나</th><th>무엇이 있으면 답이 나오나</th><th>카드</th></tr>
+    <tr><td>셀이 도크에서 Wi-Fi를 켜는가</td><td>펌웨어 소스, 또는 <strong>실기 1대 + Wi-Fi 스캔 30분</strong></td><td>01</td></tr>
+    <tr><td>서버 주소 · FTP 자격증명 · 명령 형식</td><td>펌웨어 소스(<code>wifi_udp.c</code>·<code>ftp_client.c</code>·<code>wifi_tcp.c</code>)</td><td>02</td></tr>
+    <tr><td>셀이 SD를 언제 지우는가</td><td>펌웨어 소스(<code>sd_card.c</code>)</td><td>09</td></tr>
+    <tr><td>도크의 실제 요구 급전 사양과 여유</td><td><code>read_PDContract_TPS25750</code> 실측 1회 — <strong>함수가 이미 있다</strong></td><td>05</td></tr>
+    <tr><td>도크 내부 온도, AP·파이 실제 소비</td><td>기존 도크 충전 중 온도 실측 + 후보 부품 데이터시트</td><td>07</td></tr>
+    <tr><td>세션 파일 크기와 24대 추출 시간</td><td>실측 (셀 2대 + 공유기로 대리 측정 가능)</td><td>12</td></tr>
+    <tr><td>전파 인증을 다시 받아야 하는가</td><td><strong>인증 범위 대장 — 지금 존재하지 않는다</strong></td><td>11</td></tr>
+    <tr><td>1B→1C에서 무선을 뺀 사유</td><td><strong>사람의 증언 — 어느 문서에도 없다</strong></td><td>04</td></tr>
+    <tr><td>도크 기구의 열 경로와 내부 여유</td><td><strong>기구 도면 — 지식 그릇 자체가 미정의</strong></td><td>07</td></tr>
+    <tr><td>As-Is (가)의 실제 원인 분포</td><td>고객 증상 사례 기록 — 사고 장부가 1건뿐</td><td>16</td></tr>
+  </table></div>
+
+  <h3 style="font-size:16.5px;font-weight:700;margin:32px 0 10px">모름(판단 갈림) — 재료가 있어도 사람이 정해야 한다</h3>
+  <ol>
+    <li><strong>2시간 타이머를 무선 도크에서 끌 것인가.</strong> 끄면 상시 전원 장치로 성격이 바뀌고, 유지하면 추출 시간과 충돌할 수 있다. 제품 정의의 문제다. (카드 06)</li>
+    <li><strong>SSID 정책 — 고유 / 사칭 / 출력 제한.</strong> 기술 판정이 아니라 <em>어느 고객을 버릴 것인가</em>의 결정이다. (카드 03)</li>
+    <li><strong>출시 1단계의 범위.</strong> "로컬 완결"이 의도된 단계 구분인지 빠뜨린 것인지 문서만으로 갈리지 않는다. (카드 10)</li>
+    <li><strong>"Dock PCBA 무변경" 제약을 유지할 것인가.</strong> 카드 05·06·08·13이 전부 여기 걸려 있다. 미실장 부품을 올리면 넷 중 셋이 풀리지만 기판 개정이고 비용·일정을 낳는다. <strong>이 감수에서 나온 가장 큰 단일 결정이다.</strong> (카드 13)</li>
+  </ol>
+
+  <h2><span class="no">04</span>KEE가 못 본 영역 — 정직하게</h2>
+  <ul>
+    <li><strong>기구</strong>(열 경로·통기·조립 순서) — 도면이 없어 카드 07 한 장으로 묶는 것 이상 못 했다.</li>
+    <li><strong>인증</strong> — 범위 대장이 없어 "리드타임만 물으라"는 제안에서 멈췄다.</li>
+    <li><strong>재고·서비스</strong> — 수량 데이터가 연결돼 있지 않아 카드 14가 질문 형태로만 남았다.</li>
+    <li><strong>양산</strong>(실장·치구·공정 시험) — 부품이 정해지기 전이라 아예 돌리지 않았다. <strong>AP 모듈과 연산 모듈이 확정되면 그때 다시 감수해야 한다.</strong></li>
+  </ul>
+
+  <div class="foot">
+    <p>KEE의 발언 효력은 현재 <strong>자문</strong>이다 — 아직 정답이 있는 문제로 시험받지 않았으므로 이 판정은 참고 의견이며, 결재의 입력이지 관문이 아니다. 각 카드의 처분(채택/기각/보류/일치)을 표시해 주면 KEE의 재현율 장부가 시작되고, 기각 사유 한 줄씩이 쌓여 우리 고유의 이음새 규칙이 된다.</p>
+  </div>
+</div>
