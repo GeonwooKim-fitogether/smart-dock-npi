@@ -1,27 +1,29 @@
 {
   "_note": [
-    "Fitstack NPI 기준 문서(fitstack-npi-reference.md: 5단계 · 표준 태스크 83개 · 마일스톤 · Phase Review 게이트 규칙 · 등급별 시작 단계)를 옮겨 두는 자리다. 이 파일과 tasks.csv 가 GitHub 에 만들 라벨·마일스톤·이슈의 유일한 원본이다.",
-    "2026-10-15 현재 기준 문서를 아직 옮기지 못했다. 작성 세션이 작업 폴더 밖의 파일을 읽을 수 없었기 때문이다. 아래 값은 저장소 안 근거로만 채웠고, 빈 칸이 남아 있는 동안 npi_github.py --apply 는 실행을 거부한다.",
-    "phases 1~3 이름: reference/smart-dock-success-criteria.html 와 reference/smart-dock-ceo-brief.html 의 'Concept · Planning · Development 게이트'.",
-    "phases 4~5 이름: 아직 머지되지 않은 초안(브랜치 docs/working-model)의 'RTM · Launch'. 성공 기준 v2 는 같은 자리를 'Release 게이트'로 적어 서로 다르다. 기준 문서로 확인해 고친다.",
-    "grades: 성공 기준 v2 의 '등급 NPI-A' 와 README 의 '지금 1 · Concept 진행 중' 을 근거로 'NPI-A 는 Concept 부터'라고 추론했다. 다른 등급은 기준 문서에서 옮긴다.",
-    "gate(단계별 통과 조건), gate_rules(Phase Review 공통 규칙), tasks.csv(표준 태스크)는 비어 있다. 옮길 때 대조할 것: Concept 의 통과 조건은 4건이고 그중 하나가 '개발 목표·성공 기준 확정'이다(README, meetings/2026-09-30.md).",
+    "Fitstack NPI 기준 자료(reference/fitstack-npi-reference.md, 원본은 Fitstack main 의 app/src/lib/projects/templates.ts)를 2026-10-16 에 옮겼다. 기준 자료는 저장소에 커밋하지 않는다(.gitignore). 이 파일과 tasks.csv 가 GitHub 에 만들 라벨·마일스톤·이슈의 유일한 원본이다.",
+    "phases: 기준의 5단계를 같은 순서로 적었다. milestones 는 그 단계의 마일스톤 태스크(기준의 ★) 번호를 기준 순서대로 적은 것이고, 맨 끝 번호가 그 단계의 게이트(Phase Review)다.",
+    "grades: NPI-C 의 Development 는 기준 자료의 'C급은 Development 부터 시작'을 옮긴 것이다. 등급 이름은 이 저장소의 NPI-A 표기에 맞췄다. NPI-A 의 Concept 는 기준 자료에 없고, CEO 브리프의 'NPI-A · 게이트 5개'와 성공 기준 v2 의 '등급 NPI-A' 를 근거로 둔 것이다. B급의 시작 단계는 기준 자료에 없어 넣지 않았다.",
+    "기준 자료에 없어 지어내지 않은 것: 단계별 산출물 목록, 단계별 통과 조건(★ 마일스톤 태스크 말고는 없다), 태스크별 담당 역할(tasks.csv 의 role 칸이 비어 있는 이유).",
     "gate_github 는 Fitstack 기준이 아니라 이 저장소가 GitHub 에서 심사를 진행하려고 정한 확인 항목이다."
   ],
   "expect": {"phases": 5, "tasks": 83},
   "phases": [
-    {"name": "Concept", "gate": []},
-    {"name": "Planning", "gate": []},
-    {"name": "Development", "gate": []},
-    {"name": "RTM", "gate": []},
-    {"name": "Launch", "gate": []}
+    {"name": "Concept", "milestones": ["1", "6"]},
+    {"name": "Planning", "milestones": ["7", "8", "9", "17", "18"]},
+    {"name": "Development", "milestones": ["19", "44", "51", "53"]},
+    {"name": "Release to Manufacturing", "milestones": ["57", "69", "70", "71", "72"]},
+    {"name": "Product Launch", "milestones": ["77", "83"]}
   ],
-  "gate_rules": [],
+  "gate_rules": [
+    "단계는 5개이고 순서가 고정이다: Concept, Planning, Development, Release to Manufacturing, Product Launch",
+    "각 단계의 마지막 마일스톤 태스크(★)가 그 단계의 게이트(Phase Review)다",
+    "등급에 따라 게이트 수가 바뀐다(예: C급은 Development 부터 시작한다). 그래서 단계는 번호가 아니라 이름으로 식별한다"
+  ],
   "gate_github": [
     "이 단계 마일스톤에 열린 `NPI 태스크` 가 없다. 해당 없는 태스크는 Close as not planned 로 닫고 이유를 한 줄 남겼다",
-    "통과 조건마다 근거(exports/ 의 PDF, decisions.md 의 결정 줄, 관련 이슈)를 이 이슈 댓글로 링크했다",
+    "마일스톤 태스크마다 근거(exports/ 의 PDF, decisions.md 의 결정 줄, 관련 이슈)를 이 이슈 댓글로 링크했다",
     "심사자가 이 이슈에 '승인' 댓글을 남겼다",
     "Fitstack 게이트에 같은 PDF 와 3~5줄 요약을 올렸다 (자동 동기화가 생기기 전까지 손으로 한다)"
   ],
-  "grades": {"NPI-A": "Concept"}
+  "grades": {"NPI-A": "Concept", "NPI-C": "Development"}
 }

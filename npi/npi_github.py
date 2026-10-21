@@ -6,7 +6,8 @@
   python npi/npi_github.py --grade NPI-A --apply OWNER/REPO  실제로 만든다 (gh 로그인 필요)
 
 만드는 것: 라벨(NPI 태스크 · Phase Review · 역할:*), 등급의 시작 단계부터의 마일스톤,
-단계마다 표준 태스크 이슈와 Phase Review 이슈 하나. 다시 실행하면 이미 있는 것은 건너뛴다
+단계마다 표준 태스크 이슈. 기준상 단계의 마지막 마일스톤 태스크(★)가 그 단계의 게이트이므로,
+그 태스크는 Phase Review 이슈로 만든다(따로 하나 더 만들지 않는다). 다시 실행하면 이미 있는 것은 건너뛴다
 (이슈는 제목 앞 [태스크 번호], 마일스톤은 제목으로 알아본다). 있는 이슈를 고치거나 지우지 않는다.
 사용법: docs/how-to-work.md
 """
@@ -54,7 +55,12 @@ def problems(data, tasks, grade):
     if bad_ids:
         out.append(f"태스크 번호가 비었거나 겹친다: {bad_ids}")
     out += [f"태스크 {t['id']} 의 단계 '{t['phase']}' 가 phases 에 없다" for t in tasks if t["phase"] not in names]
-    out += [f"{p['name']} 의 통과 조건(gate)이 비어 있다" for p in data["phases"] if not p["gate"]]
+    phase_of = {t["id"]: t["phase"] for t in tasks}
+    for p in data["phases"]:
+        if not p.get("milestones"):
+            out.append(f"{p['name']} 의 마일스톤 태스크(milestones)가 비어 있다. 맨 끝 번호가 그 단계의 Phase Review 다")
+        out += [f"{p['name']} 의 milestones 에 그 단계 태스크가 아닌 번호가 있다: {m}"
+                for m in p.get("milestones", []) if phase_of.get(m) != p["name"]]
     if not data["gate_rules"]:
         out.append("Phase Review 공통 규칙(gate_rules)이 비어 있다")
     out += [f"등급 {g} 의 시작 단계 '{p}' 가 phases 에 없다" for g, p in data["grades"].items() if p not in names]
@@ -74,13 +80,19 @@ def plan(data, tasks, grade, repo):
              for n, c, d in labels]
     for i, p in enumerate(data["phases"][start:], start + 1):
         ms = f"{i}. {p['name']}"
+        stars = p.get("milestones", [])
+        gate = stars[-1] if stars else None  # 기준: 단계의 마지막 마일스톤 태스크 = 그 단계의 게이트(Phase Review)
         items.append(("milestone", ms, ["api", f"repos/{repo}/milestones", "-f", f"title={ms}",
-                                        "-f", f"description=Fitstack NPI {i}단계. 심사 이슈: Phase Review: {ms}"]))
+                                        "-f", f"description=Fitstack NPI {p['name']} 단계. 게이트(Phase Review)는 [{gate}] 이슈"]))
         for t in tasks:
-            if t["phase"] == p["name"]:
-                role = [f"역할:{t['role']}"] if t.get("role") else []
-                items.append(issue(f"[{t['id']}] {t['title']}", task_body(t), [TASK_LABEL[0], *role], ms, repo))
-        items.append(issue(f"Phase Review: {ms}", gate_body(p, data), [GATE_LABEL[0]], ms, repo))
+            if t["phase"] != p["name"]:
+                continue
+            role = [f"역할:{t['role']}"] if t.get("role") else []
+            if t["id"] == gate:
+                items.append(issue(f"[{t['id']}] {t['title']}", gate_body(p, tasks, data), [GATE_LABEL[0], *role], ms, repo))
+            else:
+                items.append(issue(f"[{t['id']}] {t['title']}", task_body(t, t["id"] in stars),
+                                   [TASK_LABEL[0], *role], ms, repo))
     return items
 
 
@@ -95,8 +107,9 @@ def cell(v):
     return v.replace("|", "\\|").replace("\n", "<br>")
 
 
-def task_body(t):
-    rows = [("태스크 번호", t["id"]), ("단계", t["phase"]), ("담당 역할", t.get("role", ""))]
+def task_body(t, star=False):
+    rows = [("태스크 번호", t["id"]), ("단계", t["phase"]), ("담당 역할", t.get("role", "")),
+            ("마일스톤 태스크", "★ (이 단계의 Phase Review 에서 확인한다)" if star else "")]
     rows += [(k, v) for k, v in t.items() if k not in FIXED]  # 기준 문서의 나머지 칸은 그대로 싣는다
     table = "\n".join(f"| {k} | {cell(v)} |" for k, v in rows if v)
     return ("Fitstack NPI 표준 태스크\n\n| 항목 | 내용 |\n|---|---|\n" + table + "\n\n"
@@ -104,13 +117,14 @@ def task_body(t):
             "이 프로젝트에 해당하지 않으면 **Close as not planned** 로 닫고 이유를 한 줄 남긴다.")
 
 
-def gate_body(phase, data):
-    todo = "(기준 문서에서 옮겨 올 것)"
-    boxes = lambda xs: "\n".join(f"- [ ] {x}" for x in xs) or f"- [ ] {todo}"
-    rules = "\n".join(f"- {r}" for r in data["gate_rules"]) or f"- {todo}"
-    return (f"{phase['name']} 단계를 마치고 다음 단계로 넘어가도 되는지 심사한다. "
+def gate_body(phase, tasks, data):
+    title = {t["id"]: t["title"] for t in tasks}
+    boxes = lambda xs: "\n".join(f"- [ ] {x}" for x in xs)
+    stars = [f"[{m}] {title.get(m, '?')}" for m in phase["milestones"][:-1]]  # 맨 끝은 이 이슈 자신
+    rules = "\n".join(f"- {r}" for r in data["gate_rules"])
+    return (f"{phase['name']} 단계의 게이트(Phase Review)다. 이 단계를 마쳐도 되는지 심사하고, "
             "아래가 모두 체크되면 이 이슈를 닫는다. 닫힘이 곧 단계 통과다.\n\n"
-            f"### 통과 조건 (Fitstack 기준)\n{boxes(phase['gate'])}\n\n"
+            f"### 이 단계의 마일스톤 태스크 (Fitstack 기준 ★)\n{boxes(stars)}\n\n"
             f"### Phase Review 규칙 (Fitstack 기준)\n{rules}\n\n"
             f"### GitHub 에서 확인할 것\n{boxes(data['gate_github'])}")
 
