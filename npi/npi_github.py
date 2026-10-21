@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Fitstack NPI 기준(npi.json + tasks.csv)을 GitHub 라벨·마일스톤·이슈로 옮긴다.
+"""Fitstack NPI 등급별 태스크(npi.json + tasks.csv)를 GitHub 라벨·마일스톤·이슈로 옮긴다.
 
   python npi/npi_github.py --grade NPI-A                     미리 보기. GitHub 를 읽지도 쓰지도 않는다
   python npi/npi_github.py --grade NPI-A --out plan.txt      미리 보기를 파일로 (UTF-8)
   python npi/npi_github.py --grade NPI-A --apply OWNER/REPO  실제로 만든다 (gh 로그인 필요)
 
-만드는 것: 라벨(NPI 태스크 · Phase Review · 역할:*), 등급의 시작 단계부터의 마일스톤,
-단계마다 표준 태스크 이슈. 기준상 단계의 마지막 마일스톤 태스크(★)가 그 단계의 게이트이므로,
-그 태스크는 Phase Review 이슈로 만든다(따로 하나 더 만들지 않는다). 다시 실행하면 이미 있는 것은 건너뛴다
-(이슈는 제목 앞 [태스크 번호], 마일스톤은 제목으로 알아본다). 있는 이슈를 고치거나 지우지 않는다.
-사용법: docs/how-to-work.md
+만드는 것: 라벨(NPI 태스크 · 역할:*), 등급이 거치는 단계마다 마일스톤, 등급에 깔리는 Fitstack 태스크
+하나마다 이슈 하나. 단계 통과(Phase Review)와 게이트 승인은 Fitstack 에서만 하므로 심사 이슈는 만들지
+않는다. 다시 실행하면 이미 있는 것은 건너뛴다(이슈는 제목 앞 [태스크 번호], 마일스톤은 제목으로 알아본다).
+있는 이슈를 고치거나 지우지 않는다. 사용법: docs/how-to-work.md
 """
 import argparse
 import csv
@@ -22,8 +21,7 @@ from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).parent
-TASK_LABEL = ("NPI 태스크", "1D76DB", "Fitstack NPI 표준 태스크")
-GATE_LABEL = ("Phase Review", "D93F0B", "단계 심사. 이 이슈가 닫히면 그 단계 통과")
+TASK_LABEL = ("NPI 태스크", "1D76DB", "Fitstack NPI 태스크")
 ROLE_COLOR = "C5DEF5"
 FIXED = ("id", "phase", "title", "role")
 
@@ -44,26 +42,21 @@ def load(folder=HERE):
 
 def problems(data, tasks, grade):
     """--apply 를 막는 빈 곳·어긋남. 비어 있으면 옮겨도 된다."""
-    names = [p["name"] for p in data["phases"]]
-    want = data["expect"]
+    names, want = data["phases"], data["expect"]
     out = []
-    if len(names) != want["phases"]:
-        out.append(f"단계가 {len(names)}개다. 기준 문서는 {want['phases']}개")
     if len(tasks) != want["tasks"]:
-        out.append(f"표준 태스크가 {len(tasks)}개다. 기준 문서는 {want['tasks']}개")
+        out.append(f"태스크가 {len(tasks)}개다. 기준 문서는 {want['tasks']}개")
     bad_ids = sorted(i for i, c in Counter(t["id"] for t in tasks).items() if c > 1 or not i)
     if bad_ids:
         out.append(f"태스크 번호가 비었거나 겹친다: {bad_ids}")
     out += [f"태스크 {t['id']} 의 단계 '{t['phase']}' 가 phases 에 없다" for t in tasks if t["phase"] not in names]
-    phase_of = {t["id"]: t["phase"] for t in tasks}
-    for p in data["phases"]:
-        if not p.get("milestones"):
-            out.append(f"{p['name']} 의 마일스톤 태스크(milestones)가 비어 있다. 맨 끝 번호가 그 단계의 Phase Review 다")
-        out += [f"{p['name']} 의 milestones 에 그 단계 태스크가 아닌 번호가 있다: {m}"
-                for m in p.get("milestones", []) if phase_of.get(m) != p["name"]]
-    if not data["gate_rules"]:
-        out.append("Phase Review 공통 규칙(gate_rules)이 비어 있다")
-    out += [f"등급 {g} 의 시작 단계 '{p}' 가 phases 에 없다" for g, p in data["grades"].items() if p not in names]
+    out += [f"태스크 {t['id']} 의 역할 '{t.get('role', '')}' 이 roles 에 없다"
+            for t in tasks if t.get("role") not in data["roles"]]
+    for g, gates in data["grades"].items():
+        out += [f"등급 {g} 의 단계 '{p}' 가 phases 에 없다" for p in gates if p not in names]
+        count = sum(1 for t in tasks if t.get(g))
+        if count != want["grades"].get(g):
+            out.append(f"등급 {g} 의 태스크가 {count}개다. 기준 문서는 {want['grades'].get(g)}개")
     if grade not in data["grades"]:
         out.append(f"등급 '{grade}' 이 grades 에 없다. 있는 것: {', '.join(data['grades']) or '없음'}")
     return out
@@ -71,27 +64,22 @@ def problems(data, tasks, grade):
 
 def plan(data, tasks, grade, repo):
     """만들 것을 순서대로: (종류, 제목, gh 인자). 미리 보기와 실제 실행이 이 목록 하나를 쓴다."""
-    names = [p["name"] for p in data["phases"]]
-    first = data["grades"].get(grade)
-    start = names.index(first) if first in names else len(names)
-    roles = sorted({t.get("role", "") for t in tasks} - {""})
-    labels = [TASK_LABEL, GATE_LABEL] + [(f"역할:{r}", ROLE_COLOR, f"담당 역할 {r}") for r in roles]
+    gates = data["grades"].get(grade, [])
+    hide = {*FIXED, *data["grades"]}  # 등급 칸(O·인증시)은 본문 표에 그대로 싣지 않는다
+    labels = [TASK_LABEL] + [(f"역할:{r}", ROLE_COLOR, f"담당 역할 {r}") for r in data["roles"]]
     items = [("label", n, ["label", "create", n, "--color", c, "--description", d, "--force", "-R", repo])
              for n, c, d in labels]
-    for i, p in enumerate(data["phases"][start:], start + 1):
-        ms = f"{i}. {p['name']}"
-        stars = p.get("milestones", [])
-        gate = stars[-1] if stars else None  # 기준: 단계의 마지막 마일스톤 태스크 = 그 단계의 게이트(Phase Review)
+    for i, p in enumerate(data["phases"], 1):  # 앞 번호는 등급과 관계없는 고정 순번이다
+        if p not in gates:
+            continue
+        ms = f"{i}. {p}"
         items.append(("milestone", ms, ["api", f"repos/{repo}/milestones", "-f", f"title={ms}",
-                                        "-f", f"description=Fitstack NPI {p['name']} 단계. 게이트(Phase Review)는 [{gate}] 이슈"]))
+                                        "-f", f"description=Fitstack NPI {p} 단계. 단계 통과(Phase Review)는 Fitstack 에서 한다"]))
         for t in tasks:
-            if t["phase"] != p["name"]:
-                continue
-            role = [f"역할:{t['role']}"] if t.get("role") else []
-            if t["id"] == gate:
-                items.append(issue(f"[{t['id']}] {t['title']}", gate_body(p, tasks, data), [GATE_LABEL[0], *role], ms, repo))
-            else:
-                items.append(issue(f"[{t['id']}] {t['title']}", task_body(t, t["id"] in stars),
+            # 소속 단계가 이 등급에 없으면 등급의 첫 단계로 내려온다 (Fitstack npi.ts tasksFor)
+            if t.get(grade) and (t["phase"] if t["phase"] in gates else gates[0]) == p:
+                role = [f"역할:{t['role']}"] if t.get("role") else []
+                items.append(issue(f"[{t['id']}] {t['title']}", task_body(t, p, t[grade], hide),
                                    [TASK_LABEL[0], *role], ms, repo))
     return items
 
@@ -107,26 +95,15 @@ def cell(v):
     return v.replace("|", "\\|").replace("\n", "<br>")
 
 
-def task_body(t, star=False):
-    rows = [("태스크 번호", t["id"]), ("단계", t["phase"]), ("담당 역할", t.get("role", "")),
-            ("마일스톤 태스크", "★ (이 단계의 Phase Review 에서 확인한다)" if star else "")]
-    rows += [(k, v) for k, v in t.items() if k not in FIXED]  # 기준 문서의 나머지 칸은 그대로 싣는다
+def task_body(t, phase, mark="O", hide=FIXED):
+    rows = [("태스크 번호", t["id"]), ("단계", phase), ("담당 역할", t.get("role", "")),
+            ("해당 조건", "" if mark == "O" else mark)]  # 예: 인증시 = 인증이 필요한 프로젝트만
+    rows += [(k, v) for k, v in t.items() if k not in hide]  # 기준 문서의 나머지 칸은 그대로 싣는다
     table = "\n".join(f"| {k} | {cell(v)} |" for k, v in rows if v)
-    return ("Fitstack NPI 표준 태스크\n\n| 항목 | 내용 |\n|---|---|\n" + table + "\n\n"
-            "끝나면 산출물·근거(PDF, 시험 결과, 관련 이슈)를 댓글로 남기고 이 이슈를 닫는다. "
-            "이 프로젝트에 해당하지 않으면 **Close as not planned** 로 닫고 이유를 한 줄 남긴다.")
-
-
-def gate_body(phase, tasks, data):
-    title = {t["id"]: t["title"] for t in tasks}
-    boxes = lambda xs: "\n".join(f"- [ ] {x}" for x in xs)
-    stars = [f"[{m}] {title.get(m, '?')}" for m in phase["milestones"][:-1]]  # 맨 끝은 이 이슈 자신
-    rules = "\n".join(f"- {r}" for r in data["gate_rules"])
-    return (f"{phase['name']} 단계의 게이트(Phase Review)다. 이 단계를 마쳐도 되는지 심사하고, "
-            "아래가 모두 체크되면 이 이슈를 닫는다. 닫힘이 곧 단계 통과다.\n\n"
-            f"### 이 단계의 마일스톤 태스크 (Fitstack 기준 ★)\n{boxes(stars)}\n\n"
-            f"### Phase Review 규칙 (Fitstack 기준)\n{rules}\n\n"
-            f"### GitHub 에서 확인할 것\n{boxes(data['gate_github'])}")
+    return ("Fitstack NPI 태스크\n\n| 항목 | 내용 |\n|---|---|\n" + table + "\n\n"
+            "끝나면 산출물·근거(PDF, 시험 결과, 관련 이슈, Fitstack 링크)를 댓글로 남기고 이 이슈를 닫는다. "
+            "이 프로젝트에 해당하지 않으면 **Close as not planned** 로 닫고 이유를 한 줄 남긴다. "
+            "단계 통과(Phase Review)는 Fitstack 에서 한다.")
 
 
 def key(title):
@@ -155,7 +132,7 @@ def main():
     for stream in (sys.stdout, sys.stderr):  # Windows 에서 파일로 받아도 한글이 깨지지 않게
         stream.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--grade", required=True, help="등급 (npi.json 의 grades). 그 등급의 시작 단계부터 만든다")
+    ap.add_argument("--grade", required=True, help="등급 (npi.json 의 grades: NPI-A·NPI-B·NPI-C). 그 등급의 단계와 태스크만 만든다")
     ap.add_argument("--apply", metavar="OWNER/REPO", help="이 저장소에 실제로 만든다. 없으면 미리 보기만 한다")
     # PowerShell 의 > 는 프로그램 출력을 시스템 코드페이지로 읽어 한글을 깨뜨린다. 파일은 여기서 직접 쓴다.
     ap.add_argument("--out", metavar="FILE", help="미리 보기 명령을 화면 대신 이 파일에 UTF-8 로 저장한다")
