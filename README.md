@@ -13,7 +13,7 @@ GitHub · Fitstack · Claude 를 함께 쓰는 방법은 [`docs/working-model.md
 | 1차 미팅 | 2026-09-30 — [`meetings/2026-09-30.md`](meetings/2026-09-30.md) |
 | 다음 미팅 | 미정 |
 | 결정 기록 | [`decisions.md`](decisions.md) |
-| GitHub NPI 운영 | 기준 옮기기 끝, 시험·미리 보기 통과. GitHub 에 깔기 대기 (10/16) — [로드맵](docs/roadmap.md) · [사용 가이드](docs/how-to-work.md) |
+| GitHub NPI 운영 | Fitstack 등급별 태스크(A 34 · B 16 · C 5)로 옮김, 시험·미리 보기 통과. GitHub 에 깔기 대기 (10/16) — [로드맵](docs/roadmap.md) · [사용 가이드](docs/how-to-work.md) |
 
 ## 열린 안건 (다음 미팅에서 논의)
 
@@ -39,8 +39,8 @@ mockups/         Dock 웹 화면 목업 (DataManager 스타일)
 reference/       9/29 사전 검토 자료 (성공 기준 v2, CEO 브리프, 무선 추출 검토, KEE 감수)
 assets/cell/     셀 X 외곽선 SVG (덱·목업에서 셀을 그릴 때 사용)
 tests/           실기 시험 계획과 결과
-npi/             Fitstack NPI 기준(단계 · 표준 태스크 · 단계 심사)과 그것을 GitHub 로 옮기는 스크립트
-docs/            GitHub NPI 로드맵(roadmap.md) · 사용 가이드(how-to-work.md)
+npi/             Fitstack NPI 기준(단계 · 등급별 태스크 34개 · 83개 라이브러리)과 그것을 GitHub 로 옮기는 스크립트
+docs/            운영 틀(working-model.md) · GitHub NPI 로드맵(roadmap.md) · 사용 가이드(how-to-work.md)
 ```
 
 `.claude/`, `.github/workflows/`, `docs/system-layer/`, `templates/`, `tools/` 등은 회사 공용 템플릿(Template-repository)에서 따라온 것입니다. Claude 가 일할 때 쓰는 규칙·도구이니 지우지 마세요.
