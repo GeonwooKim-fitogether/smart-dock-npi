@@ -8,6 +8,7 @@ Smart Dock(DKPX-2/DKPY-2) 무선 추출 NPI 의 **기획·논의 작업장**이�
 1. `README.md` — 지금 상태와 열린 안건
 2. `decisions.md` — 이미 정한 것 (뒤집기 전에 반드시 확인)
 3. 가장 최근 `meetings/*.md`
+4. `docs/working-model.md` — GitHub · Fitstack · Claude 의 역할 분담과 정본 표 (무엇을 어디에 쓰나)
 
 ## 일하는 규칙
 - **결정은 사람이 한다.** Claude 는 안(案)과 근거를 만들고, 결정 기록은 미팅에서 정해진 것만 `decisions.md` 에 적는다. 결정을 뒤집을 때는 앞 줄을 고치지 않고 새 줄을 추가한다.

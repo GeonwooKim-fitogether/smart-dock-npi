@@ -1,0 +1,18 @@
+{
+  "_note": [
+    "Fitstack NPI 등급별 태스크 세트(원본: Fitstack main 의 app/src/lib/projects/npi.ts NPI_TASK_SET 34줄)를 2026-10-16 에 옮겼다. 기준 자료(reference/fitstack-npi-reference.md)는 저장소에 커밋하지 않는다(.gitignore). 이 파일과 tasks.csv 가 GitHub 에 만들 라벨·마일스톤·이슈의 유일한 원본이다.",
+    "phases: Fitstack 의 단계(게이트) 5개를 순서대로 적었다. 마지막 이름 Launch 는 Fitstack 코드의 게이트 이름이다(83개 라이브러리의 Product Launch 를 줄인 것).",
+    "grades: 등급마다 거치는 단계를 순서대로 적었다. 소속 단계가 그 등급에 없는 태스크는 그 등급의 첫 단계로 내려온다(npi.ts tasksFor). 예: B 의 5번 인증 계획 확정은 Concept 으로 간다. 3번 대상 제품 연결은 Fitstack 에서 '각 등급의 첫 게이트' 소속인데, Concept 으로 적으면 이 규칙 때문에 C 에서는 Development 로 내려와 결과가 같다.",
+    "tasks.csv 의 등급 칸: O 는 그 등급에 깔리고, 인증시 는 인증이 필요한 프로젝트(Fitstack 등급 질문 Q4 가 예)에만 깔린다. expect 의 태스크 수는 인증이 필요한 기준이다(인증이 없으면 A 32, B 14).",
+    "단계 통과(Phase Review)와 게이트 승인은 Fitstack 에서만 한다. 그래서 GitHub 에는 심사 이슈를 만들지 않는다.",
+    "83개 태스크(templates.ts)는 Fitstack 에서도 등급 모델 뒤로는 자동으로 깔리지 않는 라이브러리다. task-library.csv 에 그대로 두고, 스크립트는 읽지 않는다."
+  ],
+  "expect": {"tasks": 34, "grades": {"NPI-A": 34, "NPI-B": 16, "NPI-C": 5}},
+  "phases": ["Concept", "Planning", "Development", "Release to Manufacturing", "Launch"],
+  "grades": {
+    "NPI-A": ["Concept", "Planning", "Development", "Release to Manufacturing", "Launch"],
+    "NPI-B": ["Concept", "Development", "Release to Manufacturing"],
+    "NPI-C": ["Development", "Release to Manufacturing"]
+  },
+  "roles": ["PM", "HW", "FW", "ME", "QA", "PROD", "SCM"]
+}

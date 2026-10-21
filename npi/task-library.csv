@@ -1,0 +1,84 @@
+id,phase,title,milestone
+1,Concept,Cross-Functional Product Team Organized,★
+2,Concept,Create Market Requirements,
+3,Concept,Create Sales and Distribution Strategy,
+4,Concept,"Product Planning Assumptions (Pricing, Demand Forecast)",
+5,Concept,Create Business Plan,
+6,Concept,Concept Phase Review,★
+7,Planning,Market Requirements Document Complete,★
+8,Planning,Customer Requirements Specification Complete,★
+9,Planning,Design and Development Plan Complete,★
+10,Planning,Create Manufacturing Plan,
+11,Planning,Create Test Plan,
+12,Planning,Identify Reference Customers for Field Trials,
+13,Planning,Create Sourcing Strategy,
+14,Planning,Create Quality Plan,
+15,Planning,Create a Risk Management Plan,
+16,Planning,Create a Regulatory Plan,
+17,Planning,Integrated Project Plan Complete,★
+18,Planning,Planning Phase Review,★
+19,Development,Design Requirements Specification Complete,★
+20,Development,Identify Reference Manufacturer Part,
+21,Development,Qualify Additional Manufacturer Sources (AML),
+22,Development,"Create ECAD Library (Symbol, Footprint)",
+23,Development,Create Logical Design - Schematic,
+24,Development,Create Physical Design - PCBA Layout,
+25,Development,Manufacturability (DFM) Review,
+26,Development,System Design,
+27,Development,Create Preliminary Drawings,
+28,Development,Create CAD Models,
+29,Development,Release to Proto - Deliver Prototype Documentation Package to EMS,
+30,Development,Prototype Assembly,
+31,Development,Prototype Test and Verification,
+32,Development,Prototype Build and Test,
+33,Development,Refine CAD Models and Drawings,
+34,Development,Identify Supplier Candidates,
+35,Development,Prepare RFQ Proposal Packages,
+36,Development,Distribute RFQ Proposal Packages,
+37,Development,Receive and Analyze RFQ Responses,
+38,Development,Select Prototype Vendors and Issue PO,
+39,Development,Approve Primary Vendor,
+40,Development,Order Long Lead-Time Materials,
+41,Development,Review and Store Certificates of Compliance,
+42,Development,Test and Approve Prototype Build (First Article),
+43,Development,First Article Inspection,
+44,Development,Design Freeze,★
+45,Development,Design Prototype Test Fixtures and Equipment,
+46,Development,Order Test Fixtures and Equipment,
+47,Development,Review EMS Capacity Plan,
+48,Development,Create Test Process Procedures,
+49,Development,Create Manufacturing Process Instructions,
+50,Development,Product Marketing Assessment (4P Review),
+51,Development,Sourcing Complete,★
+52,Development,Customer Advisory Board Review,
+53,Development,Development Phase Review,★
+54,Release to Manufacturing,Build/Acquire Assembly Fixtures,
+55,Release to Manufacturing,Finalize Assembly Drawings & Instructions,
+56,Release to Manufacturing,Negotiate Contract Terms and Conditions,
+57,Release to Manufacturing,Product Standard Cost in ERP,★
+58,Release to Manufacturing,Release to Pilot - Deliver Pilot Documentation Package to EMS,
+59,Release to Manufacturing,Pilot Run Assembly,
+60,Release to Manufacturing,Pilot Run Test,
+61,Release to Manufacturing,EMS Readiness Review,
+62,Release to Manufacturing,Integrated Hardware Test,
+63,Release to Manufacturing,Integrated Software Test,
+64,Release to Manufacturing,Finalize Distribution and Logistics Plan,
+65,Release to Manufacturing,Review Marketing Collateral,
+66,Release to Manufacturing,Pilot Production Acceptance Test,
+67,Release to Manufacturing,Create Quality Test Procedures and Check Lists,
+68,Release to Manufacturing,EMS Readiness Review,
+69,Release to Manufacturing,Design Validation Complete,★
+70,Release to Manufacturing,Regulatory Submission Complete,★
+71,Release to Manufacturing,Manufacturing Process Validation Complete,★
+72,Release to Manufacturing,Release to Manufacturing Review,★
+73,Product Launch,Release to Production,
+74,Product Launch,Update Production AVL - Production Sources of Supply,
+75,Product Launch,Create Incoming Inspection Plan,
+76,Product Launch,Finalize Warranty Targets,
+77,Product Launch,Product Marketing Launch Plan Complete,★
+78,Product Launch,Complete Reliability Test,
+79,Product Launch,Sales Training,
+80,Product Launch,Support Training,
+81,Product Launch,Update Website and Product Catalogs,
+82,Product Launch,Conduct Quality Audit,
+83,Product Launch,Launch Product,★

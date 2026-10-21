@@ -1,0 +1,35 @@
+id,phase,title,role,NPI-A,NPI-B,NPI-C
+1,Concept,개발 목표·성공 기준 확정,PM,O,O,
+2,Concept,개발 팀·역할 배정,PM,O,,
+3,Concept,대상 제품 연결,PM,O,O,O
+4,Planning,제품 요구사항 확정,PM,O,,
+5,Planning,인증 계획 확정,QA,인증시,인증시,
+6,Planning,생산 경로(EMS·조립처) 결정,PM,O,,
+7,Planning,시험 세트 등록·연결,QA,O,,
+8,Development,설계 ECO 연결,HW,O,O,O
+9,Development,설계 릴리스 완료,HW,O,O,O
+10,Development,제품 BOM 확정,HW,O,O,
+11,Development,시제품 빌드·검증 완료,ME,O,O,
+12,Development,DFM·초도품 검사 판정,HW,O,,
+13,Development,설계 검토 완료,HW,O,,
+14,Development,펌웨어 릴리스 확인,FW,O,,
+15,Release to Manufacturing,필수 시험 전건 통과,QA,O,O,O
+16,Release to Manufacturing,인증서 등록,QA,인증시,인증시,
+17,Release to Manufacturing,양산 릴리스 완료,HW,O,O,O
+18,Launch,스펙 카드·매뉴얼 확정,PM,O,,
+19,Development,시제품 업체 선정·발주,SCM,O,O,
+20,Development,장납기 자재 발주,SCM,O,O,
+21,Development,시험 치구 설계,QA,O,,
+22,Development,시험 치구·장비 발주,QA,O,,
+23,Development,EMS 생산능력 검토,PROD,O,,
+24,Development,생산 작업지시서 작성,PROD,O,,
+25,Release to Manufacturing,조립 치구 제작·확보,ME,O,,
+26,Release to Manufacturing,조립 도면·작업지시 확정,ME,O,,
+27,Release to Manufacturing,양산 계약 조건 확정,PM,O,,
+28,Release to Manufacturing,표준원가 산정,PM,O,,
+29,Release to Manufacturing,파일럿 문서 패키지 전달,PROD,O,O,
+30,Release to Manufacturing,파일럿 조립,PROD,O,O,
+31,Release to Manufacturing,파일럿 시험,QA,O,O,
+32,Release to Manufacturing,EMS 준비도 검토,PROD,O,O,
+33,Release to Manufacturing,파일럿 생산 수락 시험,QA,O,,
+34,Launch,입고검사 계획 수립,QA,O,,

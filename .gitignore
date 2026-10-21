@@ -32,3 +32,7 @@ _site/
 # 열쇠는 위와 같은 이유로 커밋되면 안 되고, 기록은 이 컴퓨터의 세션에만 뜻이 있다.
 .claude/branch-unlock
 .claude/state/
+
+# Fitstack NPI 기준 자료(사내 시스템 원문 발췌). 올리지 않고, 있는 컴퓨터에서만 npi/ 시험이 대조한다.
+# 폴더 전체가 아니라 이 파일만 막는다 — reference/ 의 다른 검토 자료는 계속 커밋한다.
+reference/fitstack-npi-reference.md
