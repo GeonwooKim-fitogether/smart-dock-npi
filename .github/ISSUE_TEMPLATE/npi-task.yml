@@ -1,0 +1,21 @@
+name: NPI 태스크 (표준 외 추가)
+description: 표준 태스크 말고 이 프로젝트에만 필요한 할 일을 더할 때 쓴다. 표준 태스크는 npi/npi_github.py 가 미리 만든다.
+title: "[추가] "
+labels: ["NPI 태스크"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        만든 뒤 오른쪽 **Milestone** 에서 단계를 고르고, **Labels** 에서 담당 `역할:` 라벨을 더한다. 자세한 사용법은 `docs/how-to-work.md` 에 있다.
+  - type: textarea
+    id: goal
+    attributes:
+      label: 할 일과 완료 기준
+      description: 무엇이 되면 이 이슈를 닫을 수 있는가
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 산출물·근거
+      description: PDF, 시험 결과, 관련 이슈 링크. 나중에 댓글로 더해도 된다.
