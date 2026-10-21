@@ -12,7 +12,7 @@ Smart Dock(DKPX-2 / DKPY-2)을 **LiveHub 없이 Dock 혼자 무선으로 추출�
 | 1차 미팅 | 2026-09-30 — [`meetings/2026-09-30.md`](meetings/2026-09-30.md) |
 | 다음 미팅 | 미정 |
 | 결정 기록 | [`decisions.md`](decisions.md) |
-| GitHub NPI 운영 | 도구 준비, 기준 문서 옮기기 대기 (10/15) — [로드맵](docs/roadmap.md) · [사용 가이드](docs/how-to-work.md) |
+| GitHub NPI 운영 | 기준 옮기기 끝, 시험·미리 보기 통과. GitHub 에 깔기 대기 (10/16) — [로드맵](docs/roadmap.md) · [사용 가이드](docs/how-to-work.md) |
 
 ## 열린 안건 (다음 미팅에서 논의)
 

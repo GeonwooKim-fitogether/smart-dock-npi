@@ -1,6 +1,6 @@
 # 사용 가이드 — GitHub 에서 NPI 일하는 법
 
-> **한 줄 요지:** NPI 의 **단계는 마일스톤**, **표준 태스크는 이슈**, **단계 심사(Phase Review)는 단계마다 하나 있는 심사 이슈**다. 팀원은 브라우저에서 내 이슈를 찾아 진행을 댓글로 남기고, 끝나면 근거를 달아 닫는다. 한 단계의 태스크가 모두 닫히면 그 단계의 Phase Review 이슈로 심사하고, 심사 이슈가 닫히면 그 단계를 통과한 것이다.
+> **한 줄 요지:** NPI 의 **단계는 마일스톤**, **표준 태스크는 이슈**, **단계 심사(Phase Review)는 단계마다 하나 있는 심사 이슈**다. 심사 이슈는 따로 만든 것이 아니라 그 단계의 마지막 마일스톤 태스크(★) 이슈다. Fitstack 기준에서 그 태스크가 곧 단계 게이트이기 때문이다. 팀원은 브라우저에서 내 이슈를 찾아 진행을 댓글로 남기고, 끝나면 근거를 달아 닫는다. 한 단계의 태스크가 모두 닫히면 그 단계의 Phase Review 이슈로 심사하고, 심사 이슈가 닫히면 그 단계를 통과한 것이다.
 
 이 가이드는 [로드맵](roadmap.md) 2단계(GitHub 에 깔기)가 끝난 뒤를 전제로 한다. 그 전이라면 Issues 탭에 아래 이슈들이 아직 없다.
 
@@ -8,15 +8,18 @@
 
 | Fitstack NPI | GitHub | 어디서 보나 |
 |---|---|---|
-| 단계 (5단계) | 마일스톤 `1. Concept` 부터 `5. …` 까지 | Issues 탭 → Milestones |
-| 표준 태스크 (83개) | 제목이 `[태스크 번호] 제목` 인 이슈, 라벨 `NPI 태스크` | Issues 탭, 각 마일스톤 화면 |
-| 담당 역할 | `역할:HW` 같은 라벨 (기준 문서에 역할이 적혀 있을 때) | 이슈 오른쪽의 Labels |
-| Phase Review (단계 심사) | 제목이 `Phase Review: N. 단계명` 인 이슈, 라벨 `Phase Review`. 본문이 그 단계의 심사 체크리스트다 | 각 마일스톤의 맨 끝 이슈 |
-| 등급별 시작 단계 | 처음 깔 때 어느 단계부터 만들지 고르는 값(`--grade`) | `npi/npi.json` 의 `grades` |
+| 단계 (5단계) | 마일스톤 `1. Concept`, `2. Planning`, `3. Development`, `4. Release to Manufacturing`, `5. Product Launch` | Issues 탭 → Milestones |
+| 표준 태스크 (83개) | 제목이 `[태스크 번호] 제목` 인 이슈. 라벨은 `NPI 태스크` 이고, 단계 게이트 5건만 `Phase Review` 다 | Issues 탭, 각 마일스톤 화면 |
+| 마일스톤 태스크 (★, 18개) | 이슈 본문 표의 `마일스톤 태스크 ★` 줄. 그 단계 Phase Review 이슈의 체크 항목이 된다 | 각 이슈의 본문 |
+| 담당 역할 | `역할:HW` 같은 라벨. 지금 기준 자료에는 역할이 없어 만들어지지 않는다 | 이슈 오른쪽의 Labels |
+| Phase Review (단계 심사) | 그 단계의 마지막 ★ 태스크 이슈 (예: `[6] Concept Phase Review`), 라벨 `Phase Review`. 본문이 그 단계의 심사 체크리스트다 | 검색창에 `label:"Phase Review"` |
+| 등급별 시작 단계 | 처음 깔 때 어느 단계부터 만들지 고르는 값(`--grade`). `NPI-A` 는 Concept 부터, `NPI-C` 는 Development 부터 | `npi/npi.json` 의 `grades` |
 | 증거·산출물 | 이슈 댓글의 링크와 첨부 파일, `exports/` 의 PDF | 각 이슈 |
 | 공식 기록 | 당분간 Fitstack 그대로다. Phase Review 가 끝나면 PM 이 같은 PDF 와 요약을 Fitstack 에 손으로 올린다 | Fitstack |
 
-기준의 원본은 `npi/npi.json`(단계·통과 조건·심사 규칙·등급)과 `npi/tasks.csv`(표준 태스크 목록) 두 파일이다. GitHub 의 이슈는 이 두 파일로 만든 사본이므로, 기준이 바뀌면 이슈보다 이 파일을 먼저 고친다. `tasks.csv` 를 GitHub 에서 열면 검색할 수 있는 표로 보인다.
+Fitstack 의 "마일스톤 태스크(★)"와 GitHub 의 "마일스톤"은 이름만 같고 다른 것이다. GitHub 마일스톤은 한 단계의 이슈를 담는 상자이고, ★ 는 단계 안에서 기준이 핵심으로 표시한 태스크다.
+
+기준의 원본은 `npi/npi.json`(단계·마일스톤 태스크·심사 규칙·등급)과 `npi/tasks.csv`(표준 태스크 목록) 두 파일이다. GitHub 의 이슈는 이 두 파일로 만든 사본이므로, 기준이 바뀌면 이슈보다 이 파일을 먼저 고친다. `tasks.csv` 를 GitHub 에서 열면 검색할 수 있는 표로 보인다.
 
 ## 팀원 — 매일 하는 일
 
@@ -51,7 +54,7 @@ python npi\npi_github.py --grade NPI-A --apply GeonwooKim-fitogether/smart-dock-
 - **미리 보기를 파일로 받을 때는 `>` 대신 `--out` 을 쓴다.** PowerShell 의 `>` 는 한글을 깨뜨린다.
 - **실제 실행은 몇 분 걸린다.** GitHub 이 권하는 대로 하나를 만들 때마다 1초씩 쉰다. 화면에 "만듦:" 과 이슈 주소가 한 줄씩 찍힌다.
 - **중간에 끊기면 같은 명령을 다시 돌린다.** 이미 있는 마일스톤과 이슈는 "건너뜀"으로 넘어가고 남은 것만 만든다.
-- **실행이 끝나면** Issues 탭 → Milestones 에 단계별 마일스톤이 보이고, 각 마일스톤 안에 그 단계의 태스크와 맨 끝의 Phase Review 이슈가 있다.
+- **실행이 끝나면** Issues 탭 → Milestones 에 단계별 마일스톤이 보이고, 각 마일스톤 안에 그 단계의 태스크가 있다. 그중 `Phase Review` 라벨이 붙은 한 건이 그 단계의 심사 이슈다.
 - **기존 안건 이슈(#2~#8)는** 이슈마다 오른쪽 Milestone 에서 `1. Concept` 을 고른다. 여러 개를 한 번에 하려면 Issues 목록에서 체크한 뒤 위쪽의 Milestone 메뉴를 쓴다.
 - **마일스톤 마감일은 스크립트가 넣지 않는다.** Milestones 화면에서 각 마일스톤의 Edit 를 눌러 넣는다.
 
@@ -63,11 +66,11 @@ python npi\npi_github.py --grade NPI-A --apply GeonwooKim-fitogether/smart-dock-
 
 ## 단계 끝 — Phase Review 하는 법
 
-1. 그 단계 마일스톤의 맨 끝에 있는 `Phase Review: N. 단계명` 이슈를 연다. 본문이 체크리스트이고, 세 묶음으로 나뉜다.
-   - **통과 조건 (Fitstack 기준):** 기준 문서에서 옮긴 그 단계의 조건이다.
+1. 그 단계 마일스톤에서 `Phase Review` 라벨이 붙은 이슈(예: `[6] Concept Phase Review`)를 연다. 본문이 체크리스트이고, 세 묶음으로 나뉜다.
+   - **이 단계의 마일스톤 태스크 (Fitstack 기준 ★):** 그 단계의 ★ 태스크들이다. 기준 자료에는 단계별 통과 조건이 따로 없어서, 기준이 핵심으로 표시한 ★ 태스크를 체크 항목으로 쓴다.
    - **Phase Review 규칙 (Fitstack 기준):** 모든 단계에 공통인 심사 규칙이다.
    - **GitHub 에서 확인할 것:** 열린 태스크가 남지 않았는지, 근거를 링크했는지, 승인 댓글이 있는지, Fitstack 에도 올렸는지를 본다. 이 묶음은 Fitstack 기준이 아니라 GitHub 에서 심사를 진행하려고 이 저장소가 정한 항목이다.
-2. 통과 조건마다 근거(PDF, 결정 기록, 관련 이슈의 링크)를 댓글로 남기고 체크한다. 확정본 PDF 는 `exports/` 에 둔다.
+2. 마일스톤 태스크마다 근거(PDF, 결정 기록, 관련 이슈의 링크)를 댓글로 남기고 체크한다. 확정본 PDF 는 `exports/` 에 둔다.
 3. 심사자가 댓글로 "승인"을 남긴다.
 4. 같은 PDF 와 3~5줄 요약을 Fitstack 게이트에 올린다. 자동 동기화가 생기기 전까지는 사람이 한다.
 5. 모두 체크되면 Phase Review 이슈를 닫는다. **이 이슈가 닫혔다는 것이 그 단계를 통과했다는 뜻이다.**
@@ -80,7 +83,7 @@ python npi\npi_github.py --grade NPI-A --apply GeonwooKim-fitogether/smart-dock-
 
 `tasks.csv` 를 Excel 로 고쳤다면 **CSV UTF-8(쉼표로 분리)** 형식으로 저장한다. 그냥 "CSV" 로 저장하면 한글 인코딩이 달라져, 스크립트가 UTF-8 로 다시 저장하라고 알리며 멈춘다. 첫 줄의 `id`·`phase`·`title` 칸은 꼭 있어야 하고, `role` 칸이 있으면 역할 라벨이 붙는다. 그 밖에 더한 칸(예: 산출물, 기한)은 이슈 본문의 표에 그대로 실린다.
 
-스크립트를 고쳤다면 시험을 돌린다. `python npi\test_npi_github.py` 는 GitHub 를 부르지 않는다.
+스크립트나 데이터를 고쳤다면 시험을 돌린다. `python -m pytest npi` 는 GitHub 를 부르지 않는다(pytest 가 없는 PC 에서는 `python npi\test_npi_github.py` 로 같은 시험이 돈다). 기준 자료(`reference/fitstack-npi-reference.md`, 저장소에 올리지 않는 파일)가 있는 컴퓨터에서는 데이터가 기준 자료와 한 줄씩 같은지도 함께 대조하고, 없는 컴퓨터에서는 그 시험만 건너뛴다.
 
 ## Claude 에게 맡길 수 있는 것
 
